@@ -1,0 +1,10 @@
+Package: tunesviewer
+Version: 1.1
+Section: net
+Priority: optional
+Depends: python (>= 2.6), python-gtk2 (>= 2.16), python-lxml (>= 2.0), python-webkit (>=1.1)
+Suggests: vlc (>=1.0)
+Maintainer: Luke
+Architecture: all
+Description: A small, easy-to-use program to access iTunesU media and podcasts.
+Installed-Size: 240

@@ -1,0 +1,14 @@
+
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Exec=/usr/bin/tunesviewer %U
+Name[en_US]=TunesViewer
+Comment[en_US]=Small, easy-to-use program to access iTunesU media
+Name=TunesViewer
+Comment=Small, easy-to-use program to access iTunesU media
+Icon=/usr/share/icons/hicolor/scalable/apps/tunesview.svg
+Categories=Application;Network;
+Comment[en_US.utf8]=Small, easy-to-use program to access iTunesU media
