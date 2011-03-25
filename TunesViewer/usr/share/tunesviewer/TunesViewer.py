@@ -2002,7 +2002,12 @@ class TunesViewer:
 			elif element.tag == "PictureView" and element.get("url").find("/stars/rating_star_")>-1:
 				text += "*"
 			else:
-				if element.text:
+				try:
+					int(element.text)
+					isInt = True
+				except:
+					isInt = False
+				if element.text and not(isInt and element.get("normalStyle")=="descriptionTextColor"): #To ignore repeated numbers like <SetFontStyle normalStyle="descriptionTextColor">8</SetFontStyle>
 					text += element.text
 				for i in element:
 					t,g = self.searchLink(i)
