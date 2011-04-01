@@ -69,3 +69,13 @@ def start(program, arg):
 				"Error starting %s\n%s" % (program,e))
 		msg.run()
 		msg.destroy()
+
+##
+# Gets the file type of the url. (.mp3,.pdf, etc)
+def typeof(filename):
+	out = filename[filename.rfind("."):]
+	if (out.find("?")>-1):
+		out = out[:out.find("?")]
+	if (out.find("%")>-1):
+		out = out[:out.find("%")]
+	return out

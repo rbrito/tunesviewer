@@ -30,6 +30,7 @@ from configbox import ConfigBox
 from findinpagebox import FindInPageBox
 from downloadbox import DownloadBox
 from findbox import FindBox
+from itemdetails import ItemDetails
 from common import *
 
 try:
@@ -84,16 +85,6 @@ def removeOldData(dom):
 		if (i.get("comparison")=="lt" or (i.get("comparison") and i.get("comparison").find("less")>-1)):
 			i.getparent().remove(i)
 
-##
-# Gets the file type of the url. (.mp3,.pdf, etc)
-def typeof(filename):
-	out = filename[filename.rfind("."):]
-	if (out.find("?")>-1):
-		out = out[:out.find("?")]
-	if (out.find("%")>-1):
-		out = out[:out.find("%")]
-	return out
-
 def htmlentitydecode(s):
 	if s: # based on http://wiki.python.org/moin/EscapingHtml
 		from htmlentitydefs import name2codepoint
@@ -142,7 +133,8 @@ class TunesViewer:
 	def __init__(self, dname = None):
 		self.downloadbox = DownloadBox(self)# Only one downloadbox is constructed
 		self.findbox = FindBox(self)
-		self.findInPage = FindInPageBox(self)
+		self.findInPage = FindInPageBox()
+		self.findInPage.connect('find', self.find_in_page_cb)
 		# Create a new window, initialize all widgets:
 		self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 		self.window.set_title("TunesViewer")
@@ -792,6 +784,28 @@ class TunesViewer:
 			if url!="":
 				self.gotoURL(url,True)
 			context.finish(True, False, time)
+
+	def find_in_page_cb(self, widget, findT):
+		while(1):
+			widget.currentFound+=1
+			if widget.currentFound >= len(self.liststore):
+				msg = gtk.MessageDialog(widget, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, "End of page.")
+				msg.run()
+				msg.destroy()
+				widget.currentFound = -1 #start at beginning.
+				break
+			thisrow = self.liststore[widget.currentFound]
+			if str(thisrow[1]).lower().find(findT)>-1 \
+				or str(thisrow[2]).lower().find(findT)>-1 \
+				or str(thisrow[3]).lower().find(findT)>-1 \
+				or str(thisrow[4]).lower().find(findT)>-1 \
+				or str(thisrow[5]).lower().find(findT)>-1 \
+				or str(thisrow[6]).lower().find(findT)>-1 \
+				or str(thisrow[7]).lower().find(findT)>-1:
+					print str(thisrow[1]) #this is a match.
+					self.treeview.get_selection().select_iter(thisrow.iter)
+					self.treeview.scroll_to_cell(thisrow.path,None,False,0,0)
+					break
 	
 	def openDownloadDir(self, obj):
 		openDefault(self.config.downloadfolder)
@@ -857,7 +871,7 @@ class TunesViewer:
 		self.findbox.window.show_all()
 		
 	def searchCurrent(self,obj):
-		self.findInPage.window.show_all()
+		self.findInPage.show_all()
 
 	##
 	# Get clipboard contents, and goto link.
@@ -2042,72 +2056,7 @@ class VWin:
 		self.sw.add(self.viewer)
 		self.window.add(self.sw)
 		self.window.show_all()
-		
-class ItemDetails:
-	def __init__(self,mainwin,selection):
-		if selection == None:
-			print "No selection."
-		else:
-			self.mainwin = mainwin
-			self.selection = selection
-			self.window = gtk.Dialog()
-			self.window.set_title("Item Information: %s" % selection[1])
-			self.window.set_size_request(300,300)
-			self.sw = gtk.ScrolledWindow()
-			self.sw.set_policy(gtk.POLICY_AUTOMATIC,gtk.POLICY_AUTOMATIC)
-			self.viewer = gtk.TextView()
-			self.viewer.set_wrap_mode(gtk.WRAP_WORD)
-			self.viewer.set_editable(False)
-			self.window.add_button(gtk.STOCK_CLOSE,gtk.RESPONSE_CLOSE)
-			self.window.connect("response",self.leave)
-			mainhbox = gtk.HBox()
-			self.sw.add(self.viewer)
-			mainhbox.pack_start(self.sw,True,True,0)
-			self.window.get_content_area().pack_start(mainhbox,True,True,0)
-			self.updateText(self.selection,"")
-			self.window.show_all()
-			print "starting item thread"
-			#Start thread:
-			t = Thread(target=self.update, args=())
-			t.start()
-	
-	def updateText(self,selection,filesize):
-		if selection:
-			self.window.set_icon(selection[0])
-			self.text = htmlentitydecode(selection[1])+"\n"+selection[2]+"\n"
-			if selection[3]:
-				self.text += "Length: "+selection[3]+"\n"
-			if selection[4]:
-				self.text += "This is a "+selection[4]+" file.\n"
-			if filesize:
-				self.text += "File size: "+filesize+"\n"
-			if selection[5]:
-				self.text += "Comment:\n"+selection[5]+"\n"
-			if selection[6]:
-				self.text += "Released:\n"+selection[6]+"\n"
-			if selection[7]:
-				self.text += "Modified:\n"+selection[7]+"\n"
-			if selection[8]:
-				self.text += "This links to:\n"+selection[8]+"\n\n"
-			if selection[9]:
-				self.text += "This file is at:\n"+selection[9]+"\n\n"
-			if selection[10]:
-				self.text += "The image is from:\n"+selection[10]+"\n\n"
-			if selection[11]:
-				self.text += "id:"+selection[11]
-			gtk.gdk.threads_enter();
-			self.viewer.get_buffer().set_text(self.text)
-			gtk.gdk.threads_leave();
-	
-	def update(self):
-		try:
-			op = self.mainwin.opener.open(self.selection[9])
-			self.updateText(self.selection, desc(int(op.info()['Content-Length'])) )
-			op.close()
-		except Exception, e:
-			print e
-	def leave(self,obj,obj2):
-		self.window.destroy()
+
 
 args = sys.argv[1:]
 url = ""
