@@ -498,9 +498,9 @@ class TunesViewer:
 		#Location buttons: (University > section > title)
 		self.locationhbox = gtk.HBox()
 		#self.locationhbox.set_size_request(prefheight,-1)
-		self.locationhbox.pack_start(gtk.Label(" Location: "),False,False,0)
+		self.locationhbox.pack_start(gtk.Label(" Media files on this page: "),False,False,0)
 		#This will hold references to the buttons in this box:
-		self.locationbuttons = []
+		#self.locationbuttons = [] not needed
 		self.notebook = gtk.Notebook()
 		self.notebook.set_property("enable-popup",True)
 		self.notebook.connect_after("switch-page",self.tabChange) #important to connect-after! Normal connect will cause display problems and sometimes segfault.
@@ -669,7 +669,12 @@ class TunesViewer:
 		#test console:
 		#while True:
 		#		print eval(raw_input(">"))
-		
+	
+	##
+	# Location buttons handler
+	def buttonGoto(self,obj,url):
+		self.gotoURL(url,True)
+	
 	def getDirectory(self):
 		#Set up quick links:
 		done = False
@@ -1286,8 +1291,6 @@ class TunesViewer:
 			self.notebook.remove_page(self.notebook.get_n_pages()-1)
 		
 		self.liststore.clear()
-		for i in self.locationbuttons:
-			i.destroy()
 		
 		# fix performance problem. The treeview shouldn't be connected to 
 		# the treeview while updating! see http://eccentric.cx/misc/pygtk/pygtkfaq.html
@@ -1364,21 +1367,14 @@ class TunesViewer:
 		
 		keys = dom.xpath("//key") #important parts of document! this is only calculated once to save time
 		#Now get location path:
-		location = []; lastloc = "" # location description and last location in location bar.
+		location = []; locationLinks=[]; lastloc = "" # location description and links and last location in location bar.
 		locationelements = dom.xpath("//Path")
 
 		if len(locationelements) > 0:
 			for i in locationelements[0]:
 				if (type(i).__name__=='_Element' and i.tag=="PathElement"):
 					location.append(i.get("displayName"))
-					#Create a new locationbar-button for this path:
-					bt = gtk.Button(i.get("displayName"))
-					self.locationbuttons.append(bt)
-					bt.show()
-					#Set this button to go to this link:
-					bt.connect("clicked",self.buttonGoto,i.text)
-					self.locationhbox.pack_start(bt,False,False,0)
-					lastloc = i.text
+					locationLinks.append(i.text)
 		if location == ["iTunes U"]:
 			section = dom.xpath("//HBoxView") #looking for first section with location info.
 			if len(section)>0: # may be out of range
@@ -1388,12 +1384,8 @@ class TunesViewer:
 						for j in i:
 							if type(j).__name__=='_Element' and j.tag=="GotoURL":
 								location.append(j.text.strip())
-								bt = gtk.Button(j.text.strip())
-								self.locationbuttons.append(bt)
+								locationLinks.append(j.get("url"))
 								print j.text.strip(), j.get("url")
-								bt.show()
-								bt.connect("clicked",self.buttonGoto,j.get("url"))
-								self.locationhbox.pack_start(bt,False,False,0)
 								lastloc = j.get("url")
 				#print textContent(section)
 				if textContent(section).find(">")>-1:
@@ -1535,6 +1527,10 @@ class TunesViewer:
 		else:
 			out = " > ".join(location)+"\n"
 			self.window.set_title(out[:-1]+" - TunesViewer")
+			out = ""
+			for i in range(len(location)):
+				out += "<a href=\""+locationLinks[i]+"\">"+location[i]+"</a> &gt; "
+			out = out [:-6]
 			if dom.tag == "html":
 				self.window.set_title(dom.xpath("/html/head/title")[0].text_content()+" - TunesViewer")
 		#Got a page, so clear the redirect list
@@ -2031,11 +2027,7 @@ class TunesViewer:
 					if g!=None:
 						goto = g
 		return text, goto
-	
-	##
-	# Location buttons handler
-	def buttonGoto(self,obj,url):
-		self.gotoURL(url,True)
+
 
 ##
 # When initialized, this will show a new window with text.
