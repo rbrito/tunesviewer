@@ -32,13 +32,19 @@ def safeFilename(name):
 def openDefault(filename):
 	start("xdg-open",filename)
 
-##
-# Gives markup for name
 def markup(text,isheading):
-		if isheading:
-			return "<u><i>%s</i></u>" % (glib.markup_escape_text(text))
-		else:
-			return glib.markup_escape_text(text)
+	"""Gives markup for name - for liststore"""
+	if isheading:
+		return "<u><i>%s</i></u>" % (glib.markup_escape_text(text))
+	else:
+		return glib.markup_escape_text(text)
+
+def HTmarkup(text,isheading):
+	"""Gives html markup for name - for webkit view."""
+	if isheading:
+		return "<u><i>%s</i></u><br>" % (text)
+	else:
+		return text+"<br>"
 
 ##
 # Describes length in kb or mb, given a number of bytes.

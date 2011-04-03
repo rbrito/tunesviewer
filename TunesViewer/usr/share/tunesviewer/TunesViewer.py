@@ -1289,7 +1289,6 @@ class TunesViewer:
 		self.taburls = [] #reset tab-urls until finished to keep it from going to other tabs.
 		while self.notebook.get_n_pages():
 			self.notebook.remove_page(self.notebook.get_n_pages()-1)
-		
 		self.liststore.clear()
 		
 		# fix performance problem. The treeview shouldn't be connected to 
@@ -1705,7 +1704,9 @@ class TunesViewer:
 						if self.last_el_link == urllink:
 							arturl = self.last_el_pic
 							#(last pic was the icon for this, it will be added:)
-						self.liststore.append([None, markup(name.strip(),isheading), author.strip(), "", "", "(Link)", "", "", urllink, "", arturl, ""])
+							self.Description += "<img src=\"%s\" width=%s height=%s>" % (self.last_el_pic, self.config.imagesizeN, self.config.imagesizeN)
+						self.Description += "<a href=\"%s\">%s - %s</a><br>" % (urllink, HTmarkup(name,isheading), author);
+						#self.liststore.append([None, markup(name.strip(),isheading), author.strip(), "", "", "(Link)", "", "", urllink, "", arturl, ""])
 					elif len(element): #No name, this must be the picture-link that comes before the text-link. 
 						picurl = "" # We'll try to find picture url in the <PictureView> inside the <View> inside this <GotoURL>.
 						el = element[0] # first childnode
@@ -1715,7 +1716,8 @@ class TunesViewer:
 							self.last_el_link = urllink
 							self.last_el_pic = picurl
 							if el.get("alt")=="next page" or el.get("alt")=="previous page":
-								self.liststore.append([None, markup(el.get("alt"),isheading), "", "","","(Link)","","",urllink,"",picurl,""])
+								self.Description += "<a href=\"%s\">%s</a>" % (urllink, HTmarkup(el.get("alt"),isheading))
+								#self.liststore.append([None, markup(el.get("alt"),isheading), "", "","","(Link)","","",urllink,"",picurl,""])
 						elif el != None and isinstance(el.tag,str) and el.tag == "View":
 							el = el[0]
 							if el != None and isinstance(el.tag,str) and el.tag == "PictureView":
@@ -1737,23 +1739,24 @@ class TunesViewer:
 				# If there's a TextView-node right after, it should be the author-text or college name.
 				if nexttext != None and isinstance(nexttext.tag,str) and nexttext.tag == "TextView":
 					author = textContent(nexttext).strip()
-				if urllink and urllink[0:4]=="itms":
-					lnk = "(Link)"
-				else:
-					lnk = "(Web Link)"
-				self.liststore.append([None, markup(name.strip(),isheading), author.strip(), "","",lnk,"","",urllink,"","",""])
+				self.Description += "<a href=\"%s\">%s" % (urllink, HTmarkup(name,isheading))
+				#if urllink and urllink[0:4]=="itms":
+					#lnk = "(Link)"
+				#else:
+					#lnk = "(Web Link)"
+				#self.liststore.append([None, markup(name.strip(),isheading), author.strip(), "","",lnk,"","",urllink,"","",""])
 			elif element.tag == "TextView":
 				if element.get("headingLevel")=="2" or (element.get("topInset")=="1" and element.get("leftInset")=="1"):
 					isheading = True
 				text, goto = self.searchLink(element)
 				if text.strip() != self.last_text: # don't repeat (without this some text will show twice).
-					if self.addingD: # put in description (top box)
-						self.Description += "\n%s\n" % text.strip()
-					else:
-						self.liststore.append([None,markup(text.strip(),isheading),"","","","","","","","","",""])
-						if element.get("styleSet")=="normal11":
-							#text style. May be description/review/info, show in description box also:
-							self.Description += "\n%s\n" % text.strip()
+					if True:# self.addingD: # put in description (top box)
+						self.Description += "\n%s\n<br>" % text.strip()
+					#else:
+					#	self.liststore.append([None,markup(text.strip(),isheading),"","","","","","","","","",""])
+					#	if element.get("styleSet")=="normal11":
+					#		#text style. May be description/review/info, show in description box also:
+					#		self.Description += "\n%s\n" % text.strip()
 					self.last_text = text.strip()
 				if goto != None:
 					for i in element:
@@ -1762,7 +1765,8 @@ class TunesViewer:
 			else:
 				#sometimes podcast ratings are in hboxview alt, get the text alts.
 				if element.tag == "HBoxView" and element.get("alt"): #and element.getAttribute("alt").lower()!=element.getAttribute("alt").upper():
-					self.liststore.append([None,markup(element.get("alt"),False),"","","","","","","","","",""])
+					self.Description += HTmarkup(element.get("alt"),False)
+					#self.liststore.append([None,markup(element.get("alt"),False),"","","","","","","","","",""])
 				
 				# Recursively do this to all elements:
 				for node in element:
