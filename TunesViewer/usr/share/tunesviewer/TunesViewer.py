@@ -1149,8 +1149,15 @@ class TunesViewer:
 	def gotoURL(self,url,newurl):
 		oldurl = self.url # previous url, to add to back stack.
 		if self.downloading:
-			gtk.gdk.beep()
 			return
+		# Fix url based on http://bugs.python.org/issue918368
+		try:
+			url = urllib.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
+		except KeyError:
+			#A workaround for bad input: http://bugs.python.org/issue1712522
+			print "Error: unexpected input, ",url
+			return
+		print url
 		self.downloading = True
 		self.tbStop.set_sensitive(True)
 		#Fix page-link:
@@ -1159,9 +1166,6 @@ class TunesViewer:
 				url = urllib.unquote(url[url.find("Url=")+4:])
 			else:
 				print "Dead end page"
-		# Fix url based on http://bugs.python.org/issue918368
-		url = urllib.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
-		print url
 		
 		if (str.upper(url)[:4] == "ITMS" or str.upper(url)[:4] == "ITPC"):
 			url = "http"+url[4:]
