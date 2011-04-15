@@ -525,7 +525,11 @@ class TunesViewer:
 		vpaned.set_position(125)
 		sw = gtk.ScrolledWindow()
 		sw.set_policy(gtk.POLICY_AUTOMATIC,gtk.POLICY_AUTOMATIC)
-		self.descView = webkit.WebView()#gtk.TextView() #TODO: Change to webkit.WebView.
+		self.descView = webkit.WebView()
+		#Set user-agent of this webkit view (based on code from http://nullege.com/codes/show/src%40p%40r%40PrisPy-HEAD%40PrisPy.py/33/webkit.WebView/python)
+		settings=webkit.WebSettings()
+		settings.set_property('user-agent', 'iTunes/10.2')
+		self.descView.set_settings(settings)
 		self.descView.connect("load-finished",self.webKitLoaded)
 		self.descView.connect("navigation-policy-decision-requested",self.webkitGo)
 		self.descView.connect("resource-request-starting",self.webkitReqStart)
