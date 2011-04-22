@@ -112,7 +112,7 @@ class TunesViewer:
 	infoboxes = []
 	redirectPages = []
 	
-	tempcache = tempfile.mkdtemp("TunesViewer") # for cached images etc. This directory will be REMOVED at exit.
+	#tempcache = tempfile.mkdtemp("TunesViewer") # for cached images etc. This directory will be REMOVED at exit.
 	cachemap = {}
 	nextcachename = 1 #filename for next file
 	
@@ -1122,14 +1122,14 @@ class TunesViewer:
 			if (answer == gtk.RESPONSE_YES):
 				self.downloadbox.cancelAll()
 				self.downloadbox.window.destroy()
-				shutil.rmtree(self.tempcache)
+				#shutil.rmtree(self.tempcache)
 				gtk.main_quit()
 				sys.exit()
 				return False
 			else:
 				return True
 		else:
-			shutil.rmtree(self.tempcache)
+			#shutil.rmtree(self.tempcache)
 			gtk.main_quit()
 	
 	def setLoadDisplay(self,load):
@@ -1922,38 +1922,6 @@ class TunesViewer:
 					return out
 			return ""
 	
-	##
-	# Gets an image pixbuf from a url. Uses cached image if available.
-	def getImagePixbuf(self,url):
-		#print "getimagepixbuf for",url
-		if self.cachemap.has_key(url): #already downloaded.
-			cached = os.path.join(self.tempcache,self.cachemap[url])
-			if os.path.isfile(cached):
-				try:
-					return gtk.gdk.pixbuf_new_from_file(cached)
-				except:
-					print "can't make image from",cached
-		else: #download:
-			myid = self.nextcachename
-			self.nextcachename += 1
-			try:
-				net = self.opener.open(url)
-			except ValueError, e:
-					import urlparse
-					print "relative url?"
-					print self.url,url
-					url = urlparse.urljoin(self.url,url)
-					net = self.opener.open(url)
-			filename = os.path.join(self.tempcache, str(myid))
-			local = open(filename,"wb")
-			local.write(net.read())
-			local.close(); net.close();
-			self.cachemap[url] = filename
-			print filename
-			try:
-				return gtk.gdk.pixbuf_new_from_file(filename)
-			except:
-				print "can't make image from",filename
 	
 	def imgText(self,picurl,height,width):
 		if self.config.scaleImage and height and width:
@@ -1977,36 +1945,6 @@ class TunesViewer:
 				self.liststore.set(row.iter,0, self.icon_link)
 			url = row[10]
 		# rows have basic icons now.
-		# set up threads to download image icons:
-		if self.config.imagesizeN > 0:
-			for i in range(4):
-				t = Thread(target=self.imagedownloader, args=(4,i,self.url))
-				t.start()
-	
-	def imagedownloader(self, mod, number, pageurl):
-		# downloads and sets image when the row number % mod == number.
-		for i in range(len(self.liststore)):
-			if i % mod == number and pageurl==self.url:
-				tries = 3
-				while tries and os.path.isdir(self.tempcache) and i<len(self.liststore) and self.liststore[i][10]:
-					try:
-						if self.url==pageurl:
-							pixbuf = self.getImagePixbuf(self.liststore[i][10])
-							if pageurl==self.url and pixbuf != None:
-								pixbuf = pixbuf.scale_simple(self.config.imagesizeN,self.config.imagesizeN,gtk.gdk.INTERP_BILINEAR)
-								self.liststore.set(self.liststore[i].iter,0,pixbuf)
-							else: #left the page. cancel all this.
-								return
-						else:
-							return
-					except IOError,e:
-						print "Row pic error:",e#,self.liststore[i][10]
-						tries -= 1
-					except IndexError,e:
-						print "update index error:",e
-						tries=0
-					else: #ok.
-						tries=0
 	
 	##
 	# Given an element, finds all text in it and the link in it (if any).
