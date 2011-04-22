@@ -1,5 +1,6 @@
 #Common functions for tunesviewer
 import glib
+import re
 
 ##
 # Given milliseconds, returns time in mm:ss format.
@@ -16,6 +17,14 @@ def timeFind(ms):
 	if len(sec) == 1:
 		sec = "0"+sec
 	return min + ":" + sec
+
+def htmlentitydecode(s):
+	if s: # based on http://wiki.python.org/moin/EscapingHtml
+		from htmlentitydefs import name2codepoint
+		return (re.sub('&(%s);' % '|'.join(name2codepoint), 
+				lambda m: unichr(name2codepoint[m.group(1)]), s)).replace("&apos;","'")
+	else:
+		return ""
 
 def safeFilename(name):
 	#Turning string into a valid file name for dos/fat filesystem.

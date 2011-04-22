@@ -85,14 +85,6 @@ def removeOldData(dom):
 		if (i.get("comparison")=="lt" or (i.get("comparison") and i.get("comparison").find("less")>-1)):
 			i.getparent().remove(i)
 
-def htmlentitydecode(s):
-	if s: # based on http://wiki.python.org/moin/EscapingHtml
-		from htmlentitydefs import name2codepoint
-		return (re.sub('&(%s);' % '|'.join(name2codepoint), 
-				lambda m: unichr(name2codepoint[m.group(1)]), s)).replace("&apos;","'")
-	else:
-		return ""
-
 
 ##
 # Gets all text content of the node.
@@ -684,7 +676,9 @@ class TunesViewer:
 		done = False
 		while (not(done)):
 			try:
-				mainpage = self.opener.open("http://phobos.apple.com/WebObjects/MZStore.woa/wa/viewGrouping?id=38").read()
+				opener = urllib2.build_opener()
+				opener.addheaders = [('User-agent', 'iTunes/8.2')] # Get old xml format.
+				mainpage = opener.open("http://phobos.apple.com/WebObjects/MZStore.woa/wa/viewGrouping?id=38").read()
 				mainpage = etree.fromstring(mainpage)
 				els = mainpage.xpath("/a:Document/a:Protocol/a:plist/a:dict/a:dict/a:array/a:dict", namespaces={'a':'http://www.apple.com/itms/'})
 				for i in els:

@@ -1,4 +1,6 @@
 import gtk
+from common import *
+from threading import Thread
 
 class ItemDetails:
 	def __init__(self,mainwin,selection):
