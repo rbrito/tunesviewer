@@ -1267,8 +1267,33 @@ class TunesViewer:
 		self.webkitLoading=False
 	
 	def webKitLoaded(self, view,frame):
-		#Fix <a target="external" etc.
-		self.descView.execute_script("window.onload = new function strt() {as = document.getElementsByTagName(\"a\"); for (a in as) {as[a].target=\"\"}; /*alert(as.length)*/}")
+		""" Onload code - note that this is run many times... """
+		self.descView.execute_script("""
+
+function player () {
+/* Catches iTunes-api calls from http://r.mzstatic.com/htmlResources/6018/dt-storefront-base.jsz */
+    this.playURL = function(input) {
+        var ne = document.createElement("video");
+        ne.id = "previewPlayer";
+        ne.setAttribute("controls","true")
+        document.body.appendChild(ne);
+        document.getElementById("previewPlayer").src=input.url;
+        document.getElementById("previewPlayer").play()
+        return "not 0";
+    };
+    this.stop = function() {
+        document.getElementById("previewPlayer").pause();
+        document.body.removeChild(document.getElementById("previewPlayer"))
+        return true;
+    }
+}
+document.onload= new function() {
+	iTunes = new player();
+	
+	//Fix <a target="external" etc.
+	as = document.getElementsByTagName(\"a\"); for (a in as) {as[a].target=\"\"};
+}
+		""")
 	##
 	# Updates display based on the current self.source. (Parses the xml and displays.)
 	def update(self):
