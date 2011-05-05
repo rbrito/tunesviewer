@@ -25,6 +25,7 @@ import pygtk, pango, glib
 pygtk.require('2.0')
 import gtk
 import webkit
+from inspector import Inspector
 
 from configbox import ConfigBox
 from findinpagebox import FindInPageBox
@@ -228,7 +229,6 @@ class TunesViewer:
 		col.set_sort_column_id(5)
 		self.treeview.append_column(col)
 		self.treeview.set_search_column(0)
-		#gtk.Settings.
 		
 		col = gtk.TreeViewColumn("Release Date")
 		col.pack_start(cell)
@@ -521,11 +521,14 @@ class TunesViewer:
 		#Set user-agent of this webkit view (based on code from http://nullege.com/codes/show/src%40p%40r%40PrisPy-HEAD%40PrisPy.py/33/webkit.WebView/python)
 		settings=webkit.WebSettings()
 		settings.set_property('user-agent', 'iTunes/10.2')
+		#Enable inspector:
+		settings.set_property("enable-developer-extras",True)
+		self._inspector = Inspector(self.descView.get_web_inspector())
 		self.descView.set_settings(settings)
 		self.descView.connect("load-finished",self.webKitLoaded)
 		self.descView.connect("navigation-policy-decision-requested",self.webkitGo)
 		self.descView.connect("resource-request-starting",self.webkitReqStart)
-		#resource_cb)#
+		self.injectJavascript = file("Javascript.js","r").read()
 		sw.add(self.descView)
 		vpaned.add1(sw)
 		vpaned.add2(bottom)
@@ -1268,32 +1271,8 @@ class TunesViewer:
 	
 	def webKitLoaded(self, view,frame):
 		""" Onload code - note that this is run many times... """
-		self.descView.execute_script("""
-
-function player () {
-/* Catches iTunes-api calls from http://r.mzstatic.com/htmlResources/6018/dt-storefront-base.jsz */
-    this.playURL = function(input) {
-        var ne = document.createElement("video");
-        ne.id = "previewPlayer";
-        ne.setAttribute("controls","true")
-        document.body.appendChild(ne);
-        document.getElementById("previewPlayer").src=input.url;
-        document.getElementById("previewPlayer").play()
-        return "not 0";
-    };
-    this.stop = function() {
-        document.getElementById("previewPlayer").pause();
-        document.body.removeChild(document.getElementById("previewPlayer"))
-        return true;
-    }
-}
-document.onload= new function() {
-	iTunes = new player();
-	
-	//Fix <a target="external" etc.
-	as = document.getElementsByTagName(\"a\"); for (a in as) {as[a].target=\"\"};
-}
-		""")
+		# Javascript.js is executed on this page.
+		self.descView.execute_script(self.injectJavascript)
 	##
 	# Updates display based on the current self.source. (Parses the xml and displays.)
 	def update(self):
