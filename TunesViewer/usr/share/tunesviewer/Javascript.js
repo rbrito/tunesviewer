@@ -4,6 +4,7 @@
  */
 function player () {
 	this.playURL = function(input) {
+		// Construct the preview display:
 		var div = document.createElement("div");
 		div.setAttribute("class","quick-view video movie active activity-video-dialog");
 		div.setAttribute("style","width:50%; height:auto; position:fixed; left: 25%; float: top ; top:10px");
@@ -19,19 +20,32 @@ function player () {
 		vid.setAttribute("controls","true")
 		div.appendChild(vid)
 		document.body.appendChild(div);
+		// Start the media:
 		document.getElementById("previewPlayer").src=input.url;
 		document.getElementById("previewPlayer").play()
 		return "not 0";
 	};
 	this.stop = function() {
-		document.getElementById("previewPlayer").pause();
+		//document.getElementById("previewPlayer").pause();
 		document.getElementById("previewer-container").parentNode.removeChild(document.getElementById("previewer-container"))
 		return true;
 	};
+	this.doPodcastDownload = function(obj, number) {
+		alert("podcastdownload");
+		alert(obj.getAttribute("episode-url"))
+	};
 	this.doAnonymousDownload = function(obj) {
-		alert(obj.url);
-		//It has the url... just needs a way to tell the main program to download it.
+		alert(obj.itemName + "\n"+obj.url);
+		//It has the url... just needs a way to tell the main program to download it (webkit transaction?)
 	}
+}
+
+function defined(something) {
+	return true;
+}
+
+function iTSVideoPreviewWithObject (obj) {
+	alert(obj);
 }
 
 document.onload= new function() {

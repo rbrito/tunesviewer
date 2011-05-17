@@ -652,9 +652,6 @@ class TunesViewer:
 		self.descView.zoom_out()
 		
 	def webkitGo(self,view,frame,net_req,nav_act,pol_dec):
-		#if (self.noload):
-		#	print "noload"
-		#	return True;
 		print "webkit-request."
 		if self.webkitLoading==False:
 			print "Noload" #Don't load in browser, let this program download it...
@@ -663,11 +660,7 @@ class TunesViewer:
 			return True
 			
 	def webkitReqStart(self, webView, webFrame, webResource, NetReq, NetResp):
-		pass#print dir(NetReq.get_property('message'));#the soupmessage... how to change headers????
-		#print NetReq.get_property('message').get_property('request-headers'), "HEAD"
-		#test console:
-		#while True:
-		#		print eval(raw_input(">"))
+		pass
 	
 	##
 	# Location buttons handler
@@ -677,7 +670,8 @@ class TunesViewer:
 	def getDirectory(self):
 		#Set up quick links:
 		done = False
-		while (not(done)):
+		tried = 0
+		while (tried < 3):
 			try:
 				opener = urllib2.build_opener()
 				opener.addheaders = [('User-agent', 'iTunes/8.2')] # Get old xml format.
@@ -719,10 +713,13 @@ class TunesViewer:
 									item.connect("activate",self.buttonGoto,url)
 									item.show(); self.itunesuDir.append(item)
 				done = True
+				tried = 4 #exit
 			except Exception,e:
+				print self.downloadbox.window
 				print "Directory error:",e
 				import random
-				time.sleep(random.randint(5,20))
+				time.sleep(random.randint(1,10))
+				tried+=1
 	
 	##
 	# When no row is selected, buttons are greyed out.
@@ -1116,6 +1113,7 @@ class TunesViewer:
 	# Called when exiting, checks if downloads should be cancelled.
 	def delete_event(self, widget, event, data=None):
 		#print self.downloadbox.downloadrunning, self.downloadbox.total
+		print "del-event"
 		import shutil
 		if self.downloadbox.downloadrunning:
 			msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO,
@@ -1125,15 +1123,15 @@ class TunesViewer:
 			if (answer == gtk.RESPONSE_YES):
 				self.downloadbox.cancelAll()
 				self.downloadbox.window.destroy()
-				#shutil.rmtree(self.tempcache)
 				gtk.main_quit()
-				sys.exit()
+				#sys.exit()
 				return False
 			else:
 				return True
 		else:
-			#shutil.rmtree(self.tempcache)
+			self.downloadbox.window.destroy()
 			gtk.main_quit()
+			#sys.exit()
 	
 	def setLoadDisplay(self,load):
 		if load:
@@ -1657,14 +1655,7 @@ class TunesViewer:
 		#while True:
 		#		print eval(raw_input(">"))
 		print "update took:",(time.time() - sttime),"seconds"
-		if HTMLSet:
-			for i in self.liststore:
-				if i[4]!='':
-					print "selecting item",i
-					#self.treeview.get_selection().select_iter(i.iter)
-					self.treeview.scroll_to_cell(i.path,None,False,0,0)
-					break;
-		else:
+		if not(HTMLSet):
 			self.loadIntoWebKit("<html><style>img {float:left; margin-right:6px; -webkit-box-shadow: 0 3px 5px #999999;}</style><body>"+HTMLImage+out.replace("\n","<br>")+"<p>"+self.Description.replace("\n","<br>")+"</body></html>","about:");
 	#recursively looks at xml elements:
 	def seeElement(self,element,isheading):
@@ -1787,54 +1778,11 @@ class TunesViewer:
 	
 	def seeHTMLElement(self,element):
 		if isinstance(element.tag,str): # normal element
-			if element.get("audio-preview-url") or element.get("video-preview-url"): #Ping audio/vid.
-				if element.get("video-preview-url"):
-					url = element.get("video-preview-url")
-				else:
-					url = element.get("audio-preview-url")
-				title = ""
-				if element.get("preview-title"):
-					title = element.get("preview-title")
-				author = ""
-				if element.get("preview-artist"):
-					author = element.get("preview-artist")
-				duration = ""
-				if element.get("preview-duration"):
-					duration = timeFind(element.get("preview-duration"))
-				self.liststore.append([None,markup(title,False),author,duration,typeof(url),"","","","",url,"",""])
-			elif element.tag == "a" or element.tag=="option":
-				# Get link data
-				urllink = element.get("href")
-				#img = self.getImgUrl(element)
-				img = "" #In html
-				name = self.getTextByClass(element,"name")
-				
-				if name =="" and element.get("tooltip-title"):
-					name = element.get("tooltip-title")#For Ping profiles
-				if name =="":
-					name = element.text_content()
-				if name =="" and element.get("class"):
-					name = element.get("class")
-				
-				author = self.getTextByClass(element,"artist")
-				if author == "" and element.get("tooltip-artist"):
-					author = element.get("tooltip-artist")#For Ping profiles
-				if urllink and name != "" and name !="artwork-link": #and author != "":
-					if element.get("href")==self.last_el_link:
-						img = self.last_el_pic
-					self.liststore.append([None,markup(name.rstrip().lstrip(),False), author.strip(), "","","(Link)","","",urllink,"",img,""])
-				elif element.getnext() is not None and element.getnext().get("class")=="lockup-info": # next one is the real link.
-					self.last_el_link = element.get("href")
-					self.last_el_pic = img
-				elif name=="artwork-link":
-					self.last_el_link = element.get("href")
-					self.last_el_pic = img
-				elif urllink: # other; it must be single image link.
-					self.liststore.append([None,markup(name.rstrip().lstrip(),False), author.rstrip().lstrip(), "","","(Link)","","",urllink,"",img,""])
-				#print urllink
-			elif element.tag=="tr" and element.get("class") and (element.get("class").find("track-preview")>-1 or element.get("class").find("podcast-episode")>-1):
+			if element.tag=="tr" and element.get("class") and (element.get("class").find("track-preview")>-1 or element.get("class").find("podcast-episode")>-1):
 				#If you view the source of podcast html in browser, you'll find the info in the rows using firebug.
-				title=""; exp=""
+				title=""; exp=""; itemid="";
+				if element.get("adam-id"):
+					itemid=element.get("adam-id")
 				if element.get("preview-title"):
 					title = element.get("preview-title")
 				artist = ""
@@ -1842,7 +1790,6 @@ class TunesViewer:
 					artist = element.get("preview-artist")
 				time="";
 				if element.get("duration"):
-					print element.get("duration")
 					time = timeFind(element.get("duration"))
 				if element.get("rating-riaa") and element.get("rating-riaa")!="0":
 					exp = "[Explicit] "
@@ -1870,7 +1817,7 @@ class TunesViewer:
 							releaseDate=val
 						if cl.find("description")>-1:
 							comment = val
-				self.liststore.append([None,markup(title,False),artist,time,type,exp+comment,releaseDate,"",gotou,url,"",""])
+				self.liststore.append([None,markup(title,False),artist,time,type,exp+comment,releaseDate,"",gotou,url,"",itemid])
 				for i in element:
 					self.seeHTMLElement(i)
 			#Don't need to show all elements, with webkit view...
@@ -1888,12 +1835,57 @@ class TunesViewer:
 				#if self.hasAlink(element):
 					#for i in element:
 						#self.seeHTMLElement(i)
+			#elif element.tag == "a" or element.tag=="option":
+				## Get link data
+				#urllink = element.get("href")
+				##img = self.getImgUrl(element)
+				#img = "" #In html
+				#name = self.getTextByClass(element,"name")
+				
+				#if name =="" and element.get("tooltip-title"):
+					#name = element.get("tooltip-title")#For Ping profiles
+				#if name =="":
+					#name = element.text_content()
+				#if name =="" and element.get("class"):
+					#name = element.get("class")
+				
+				#author = self.getTextByClass(element,"artist")
+				#if author == "" and element.get("tooltip-artist"):
+					#author = element.get("tooltip-artist")#For Ping profiles
+				#if urllink and name != "" and name !="artwork-link": #and author != "":
+					#if element.get("href")==self.last_el_link:
+						#img = self.last_el_pic
+					#self.liststore.append([None,markup(name.rstrip().lstrip(),False), author.strip(), "","","(Link)","","",urllink,"",img,""])
+				#elif element.getnext() is not None and element.getnext().get("class")=="lockup-info": # next one is the real link.
+					#self.last_el_link = element.get("href")
+					#self.last_el_pic = img
+				#elif name=="artwork-link":
+					#self.last_el_link = element.get("href")
+					#self.last_el_pic = img
+				#elif urllink: # other; it must be single image link.
+					#self.liststore.append([None,markup(name.rstrip().lstrip(),False), author.rstrip().lstrip(), "","","(Link)","","",urllink,"",img,""])
+				##print urllink
+			elif element.get("audio-preview-url") or element.get("video-preview-url"): #Ping audio/vid.
+				if element.get("video-preview-url"):
+					url = element.get("video-preview-url")
+				else:
+					url = element.get("audio-preview-url")
+				title = ""
+				if element.get("preview-title"):
+					title = element.get("preview-title")
+				author = ""
+				if element.get("preview-artist"):
+					author = element.get("preview-artist")
+				duration = ""
+				if element.get("preview-duration"):
+					duration = timeFind(element.get("preview-duration"))
+				self.liststore.append([None,markup(title,False),author,duration,typeof(url),"","","","",url,"",""])
 			elif element.tag=="button" and element.get("anonymous-download-url"):#Added for epub feature
 				self.liststore.append([None,markup(element.get("title"),False),element.get("item-name"),"",typeof(element.get("anonymous-download-url")),"","","",element.get("anonymous-download-url"),"","",""])#Special 
 			else: # go through the childnodes.
-				if element.tail and element.tail.strip():
-					#Added to get Ping updates:
-					self.liststore.append([None,markup(element.tail.strip(),False),"","","","","","","","","",""])
+				#if element.tail and element.tail.strip():
+					##Added to get Ping updates:
+					#self.liststore.append([None,markup(element.tail.strip(),False),"","","","","","","","","",""])
 				for i in element:
 					self.seeHTMLElement(i)
 	
