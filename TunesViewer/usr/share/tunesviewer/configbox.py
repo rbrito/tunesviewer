@@ -21,6 +21,8 @@ class ConfigBox:
 	autoRedirect = True
 	# new for 1.0:
 	alwaysHTML = ["/artist/","/institution/","/wa/viewGenre","/wa/viewRoom","/wa/viewSeeAll","/wa/viewArtist","/wa/viewTagged","/wa/viewGrouping","://c.itunes.apple.com","://t.co/"]
+	# new in 1.1:
+	home = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewGrouping?id=27753"
 	
 	def __init__(self,mw):
 		self.window = gtk.Dialog("TunesViewer Preferences",None,gtk.DIALOG_DESTROY_WITH_PARENT,(gtk.STOCK_OK,1,gtk.STOCK_CANCEL,0))
@@ -82,11 +84,14 @@ class ConfigBox:
 		# End download tab
 		
 		# Start of Display tab
+		self.homeEntry = gtk.Entry()
 		self.toolbarCheck = gtk.CheckButton("Show Toolbar")
 		self.statusbarCheck = gtk.CheckButton("Show Statusbar")
 		self.throbberCheck = gtk.CheckButton("Show Loading icon")
 		self.scaleImageCheck = gtk.CheckButton("Scale main image to recommended size")
 		self.autoRedirectCheck = gtk.CheckButton("Automatically redirect")
+		vtab.pack_start(gtk.Label("Home page:"),False,False,0)
+		vtab.pack_start(self.homeEntry,False,False,0)
 		vtab.pack_start(self.toolbarCheck,False,False,5)
 		vtab.pack_start(self.statusbarCheck,False,False,0)
 		vtab.pack_start(self.throbberCheck,False, False, 5)
@@ -178,6 +183,7 @@ class ConfigBox:
 		self.scaleImage = self.scaleImageCheck.get_active()
 		self.throbber = self.throbberCheck.get_active()
 		self.downloadfolder = self.downloadsel.get_current_folder()
+		self.home = self.homeEntry.get_text()
 		if self.downloadfolder == None:
 			self.downloadfolder = os.path.expanduser("~")
 		self.defaultcommand = self.combo.get_active()
@@ -210,6 +216,7 @@ class ConfigBox:
 		config.set(sec,"ScaleImage",self.scaleImage)
 		config.set(sec,"alwaysHTML-URLs", "\n".join(self.alwaysHTML))
 		config.set(sec,"throbber",self.throbber)
+		config.set(sec,"Home",self.home)
 		config.write(open(os.path.expanduser("~/.tunesviewerprefs"),"w"))
 		self.setVisibility()
 
@@ -243,6 +250,7 @@ class ConfigBox:
 				self.autoRedirect = (config.get(sec,"AutoRedirect")=="True")
 				self.alwaysHTML = config.get(sec,"alwaysHTML-URLs").split("\n")
 				self.throbber = (config.get(sec,"Throbber")=="True")
+				self.home = config.get(sec,"Home")
 			except Exception,e:
 				print "Load-settings error:",e
 		else:
@@ -267,6 +275,7 @@ class ConfigBox:
 		self.imagesize.set_text(str(self.imagesizeN))
 		self.iconsize.set_text(str(self.iconsizeN))
 		self.alwaysHTMLText.get_buffer().set_text("\n".join(self.alwaysHTML))
+		self.homeEntry.set_text(self.home)
 		#print self.defaultcommand
 		if first:
 			self.first_setup()

@@ -404,6 +404,9 @@ class TunesViewer:
 			mod, gtk.ACCEL_VISIBLE)
 		stop.connect("activate",self.stop)
 		gomenu.append(stop)
+		homeb = gtk.ImageMenuItem(gtk.STOCK_HOME)
+		homeb.connect("activate",self.goHome)
+		gomenu.append(homeb)
 		
 		itemmenu = gtk.Menu()
 		itemm = gtk.MenuItem("_Actions")
@@ -528,6 +531,7 @@ class TunesViewer:
 		self.descView.connect("load-finished",self.webKitLoaded)
 		self.descView.connect("navigation-policy-decision-requested",self.webkitGo)
 		self.descView.connect("resource-request-starting",self.webkitReqStart)
+		self.descView.set_highlight_text_matches(highlight=True)
 		self.injectJavascript = file("Javascript.js","r").read()
 		sw.add(self.descView)
 		vpaned.add1(sw)
@@ -666,6 +670,9 @@ class TunesViewer:
 	# Location buttons handler
 	def buttonGoto(self,obj,url):
 		self.gotoURL(url,True)
+		
+	def goHome(self,obj):
+		self.gotoURL(self.config.home,True)
 	
 	def getDirectory(self):
 		#Set up quick links:
@@ -809,6 +816,9 @@ class TunesViewer:
 					self.treeview.get_selection().select_iter(thisrow.iter)
 					self.treeview.scroll_to_cell(thisrow.path,None,False,0,0)
 					break
+		#TODO: Fix webkit search so it will highlight the text:
+		self.descView.search_text(findT, False, True, True)
+		self.descView.set_highlight_text_matches(highlight=True)
 	
 	def openDownloadDir(self, obj):
 		openDefault(self.config.downloadfolder)
@@ -1103,7 +1113,7 @@ class TunesViewer:
 	# Startup function
 	def main(self):
 		if (self.url==""):
-			self.gotoURL(self.url,False)
+			self.gotoURL(self.config.home,False)
 		else:
 			self.gotoURL(self.url,True)
 		self.throbber.hide()
