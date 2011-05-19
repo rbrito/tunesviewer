@@ -1,6 +1,7 @@
 import os
 import ConfigParser
 import gtk
+from firstsetup import FirstSetup
 
 class ConfigBox:
 	#Initialize variable defaults, these variables are directly accessed by the other classes.
@@ -129,7 +130,7 @@ class ConfigBox:
 		defv = gtk.VBox()
 		defFrame.add(defv)
 		setbutton = gtk.Button("Set TunesViewer as default opener")
-		setbutton.connect("clicked",self.setdefault)
+		setbutton.connect("clicked",FirstSetup().setdefault)
 		defv.pack_start(setbutton,True,False,0)
 		self.setOtherProg = gtk.Entry()
 		self.setOtherProg.set_text("rhythmbox %s")
@@ -144,10 +145,9 @@ class ConfigBox:
 		
 		#Set initial configuration:
 		self.load_settings()
-		
-	##
-	# Turns text into a dictionary of filetype -> program associations.
+	
 	def getopeners(self,text):
+		""" Turns text into a dictionary of filetype -> program associations. """
 		# Map filetype to opener, start new dictionary:
 		out = dict()
 		list = text.split("\n")
@@ -291,73 +291,31 @@ class ConfigBox:
 		else:
 			self.mainwin.statusbar.hide()
 	
-	##
-	# Cancels close, only hides window.
 	def delete_event(self, widget, event, data=None):
+		""" Cancels close, only hides window. """
 		self.window.hide()
 		return True # Hide, don't close.
 		
 	def first_setup(self):
-		import subprocess
-		try:
-			self.save_settings()
-			subprocess.Popen(["/usr/share/tunesviewer/firstsetup.py"])
-		except Exception,e:
-			print "First-time setup error:",e
-		
-	##
-	# Saves or loads settings when ok or cancel or close is selected.
+		FirstSetup().run()
+	
 	def response(self,obj,value):
+		""" Saves or loads settings when ok or cancel or close is selected. """
 		if value==1:
 			self.save_settings()
 		else:
 			self.load_settings()
 		#Done, call the hide-window event:
 		self.delete_event(None,None,None)
-		
-	##
-	# Sets this as the default protocol opener.
-	def setdefault(self,obj):
-		try:
-			file("/usr/bin/tunesviewer")
-		except IOError:
-			msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE,
-				"The link /usr/bin/tunesviewer does not exist.")
-			msg.run()
-			msg.destroy()
-			return
-		# Try setting the protocol defaults:
-		err = 0
-		err += self.setdefaultprotocol("itms","/usr/bin/tunesviewer %s")
-		err += self.setdefaultprotocol("itmss","/usr/bin/tunesviewer %s")
-		err += self.setdefaultprotocol("itpc","/usr/bin/tunesviewer %s")
-		if (err):
-			msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE,
-				"Unable to set defaults.")
-			msg.run()
-			msg.destroy()
-		else:
-			msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE,
-				"Default set. Now you should be able to open itunesU with this program using a web browser.")
-			msg.run()
-			msg.destroy()
-			
+	
 	def setOtherDefault(self,obj):
+		setup = FirstSetup()
 		err = 0
-		err += self.setdefaultprotocol("itms",self.setOtherProg.get_text());
-		err += self.setdefaultprotocol("itmss",self.setOtherProg.get_text());
-		err += self.setdefaultprotocol("itpc",self.setOtherProg.get_text());
+		err += setup.setdefaultprotocol("itms",self.setOtherProg.get_text());
+		err += setup.setdefaultprotocol("itmss",self.setOtherProg.get_text());
+		err += setup.setdefaultprotocol("itpc",self.setOtherProg.get_text());
 		if (err):
 			msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE,
 				"Unable to set defaults.")
 			msg.run()
 			msg.destroy()
-
-	def setdefaultprotocol(self,protocol,program):
-		"""Try to set program as default protocol handler
-		Return True if there is an error.
-		"""
-		err = os.system("gconftool-2 -s /desktop/gnome/url-handlers/"+protocol+"/enabled --type Boolean true")
-		err2 = os.system("gconftool-2 -s /desktop/gnome/url-handlers/"+protocol+"/command '"+program+"' --type String")
-		return (err or err2)
-		

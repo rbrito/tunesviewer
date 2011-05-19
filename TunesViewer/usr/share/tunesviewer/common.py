@@ -34,7 +34,6 @@ def safeFilename(name):
 	if len(name) > 250: # Get the first part of filename, with extension:
 		name = name[:240] + typeof(name)
 	return name
-	
 
 ##
 # Opens file/url in the system default opener.

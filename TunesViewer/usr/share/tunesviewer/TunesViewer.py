@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 # TunesViewer
-# Small, easy-to-use tool to access iTunesU and podcast media.
-# Designed by Luke 2009 - 2011
+# A small, easy-to-use tool to access iTunesU and podcast media.
+# Designed by Luke Bryan 2009 - 2011
 # Loading-icon is from mozilla's throbber icon.
 
 #Licensed under Apache license
@@ -14,7 +14,7 @@
 
 #Import the standard python libraries needed:
 import urllib, urllib2, cookielib
-import sys, os, tempfile, subprocess, time
+import sys, os, subprocess, time
 from threading import Thread
 import gc, re
 
@@ -24,14 +24,13 @@ gobject.threads_init()
 import pygtk, pango, glib
 pygtk.require('2.0')
 import gtk
-import webkit
-from inspector import Inspector
 
 from configbox import ConfigBox
 from findinpagebox import FindInPageBox
 from downloadbox import DownloadBox
 from findbox import FindBox
 from itemdetails import ItemDetails
+from webkitview import WebKitView
 from common import *
 
 try:
@@ -64,11 +63,8 @@ def resource_cb(view, frame, resource, request, response):
 			data = page.read();
 			request.set_uri("data:"+page.info().gettype()+","+data)
 
-
-
-##
-# Tries to get the array element of the dom, returns None if it doesn't exist.
 def getItemsArray(dom):
+	""" Tries to get the array element of the dom, returns None if it doesn't exist. """
 	array = None
 	els = dom.xpath("/Document/TrackList/plist/dict/key")#isinstance(i.tag,str) and i.tag == "key" and 
 	for i in els: #all childnodes:
@@ -76,20 +72,17 @@ def getItemsArray(dom):
 			array = i.getnext()
 	return array
 
-
-##
-# Removes nodes like <Test comparison="lt" value="7.1" property="iTunes version">
-# Including these would make many duplicates.
 def removeOldData(dom):
+	"""
+	Removes xml nodes like <Test comparison="lt" value="7.1" property="iTunes version">
+	Including these would make many duplicates."""
 	tests = dom.xpath("//Test") # get all <test> elements
 	for i in tests:
 		if (i.get("comparison")=="lt" or (i.get("comparison") and i.get("comparison").find("less")>-1)):
 			i.getparent().remove(i)
 
-
-##
-# Gets all text content of the node.
 def textContent(element):
+	""" Gets all text content of the node. """
 	#out = element.text
 	#for i in element.itertext(): # includes comment nodes... :(
 	#	out += i
@@ -112,10 +105,6 @@ class TunesViewer:
 	downloadError=""
 	infoboxes = []
 	redirectPages = []
-	
-	#tempcache = tempfile.mkdtemp("TunesViewer") # for cached images etc. This directory will be REMOVED at exit.
-	cachemap = {}
-	nextcachename = 1 #filename for next file
 	
 	# Lists can be used as stacks: just use list.append(...) and list.pop()
 	# Stacks for back and forward buttons:
@@ -520,19 +509,8 @@ class TunesViewer:
 		vpaned.set_position(125)
 		sw = gtk.ScrolledWindow()
 		sw.set_policy(gtk.POLICY_AUTOMATIC,gtk.POLICY_AUTOMATIC)
-		self.descView = webkit.WebView()
-		#Set user-agent of this webkit view (based on code from http://nullege.com/codes/show/src%40p%40r%40PrisPy-HEAD%40PrisPy.py/33/webkit.WebView/python)
-		settings=webkit.WebSettings()
-		settings.set_property('user-agent', 'iTunes/10.2')
-		#Enable inspector:
-		settings.set_property("enable-developer-extras",True)
-		self._inspector = Inspector(self.descView.get_web_inspector())
-		self.descView.set_settings(settings)
-		self.descView.connect("load-finished",self.webKitLoaded)
-		self.descView.connect("navigation-policy-decision-requested",self.webkitGo)
-		self.descView.connect("resource-request-starting",self.webkitReqStart)
-		self.descView.set_highlight_text_matches(highlight=True)
-		self.injectJavascript = file("Javascript.js","r").read()
+		self.descView = WebKitView(self)
+		
 		sw.add(self.descView)
 		vpaned.add1(sw)
 		vpaned.add2(bottom)
@@ -654,28 +632,16 @@ class TunesViewer:
 		
 	def webkitZO(self,obj):
 		self.descView.zoom_out()
-		
-	def webkitGo(self,view,frame,net_req,nav_act,pol_dec):
-		print "webkit-request."
-		if self.webkitLoading==False:
-			print "Noload" #Don't load in browser, let this program download it...
-			print net_req.get_uri()
-			self.gotoURL(net_req.get_uri(),True);
-			return True
-			
-	def webkitReqStart(self, webView, webFrame, webResource, NetReq, NetResp):
-		pass
 	
-	##
-	# Location buttons handler
 	def buttonGoto(self,obj,url):
+		"Menu directory-shortcuts handler"
 		self.gotoURL(url,True)
-		
+	
 	def goHome(self,obj):
 		self.gotoURL(self.config.home,True)
 	
 	def getDirectory(self):
-		#Set up quick links:
+		"Set up quick links in the Go menu."
 		done = False
 		tried = 0
 		while (tried < 3):
@@ -728,22 +694,19 @@ class TunesViewer:
 				time.sleep(random.randint(1,10))
 				tried+=1
 	
-	##
-	# When no row is selected, buttons are greyed out.
 	def noneSelected(self):
+		"When no row is selected, buttons are greyed out."
 		self.tbInfo.set_sensitive(False)
 		self.tbPlay.set_sensitive(False)
 		self.tbGoto.set_sensitive(False)
 		self.tbDownload.set_sensitive(False)
 	
-	##
-	# Check for updates to this program.
 	def progUpdate(self,obj):
+		"Checks for update to the program."
 		openDefault("http://tunesviewer.sourceforge.net/checkversion.php?version=1.0")
 	
-	##
-	# Called when selection changes, changes the enabled toolbar buttons.
 	def treesel(self,selection, model):
+		"Called when selection changes, changes the enabled toolbar buttons."
 		self.tbInfo.set_sensitive(True)
 		ind = selection[0]
 		gotoable = (self.liststore[ind][8] != "")
@@ -816,20 +779,19 @@ class TunesViewer:
 					self.treeview.get_selection().select_iter(thisrow.iter)
 					self.treeview.scroll_to_cell(thisrow.path,None,False,0,0)
 					break
-		#TODO: Fix webkit search so it will highlight the text:
+		#TODO: Fix webkit search so it will search and highlight the text, this should work, but it doesn't:
 		self.descView.search_text(findT, False, True, True)
 		self.descView.set_highlight_text_matches(highlight=True)
 	
 	def openDownloadDir(self, obj):
 		openDefault(self.config.downloadfolder)
 	
-	##
-	# Starts a new View Source box based on current url and source.
 	def viewsource(self,obj):
+		"Starts a new View Source box based on current url and source."
 		VWin("Source of: "+self.url,self.source)
 	
-	# see http://faq.pygtk.org/index.py?req=show&file=faq13.017.htp
 	def treeclick(self, treeview, event):
+		"For right click menu - see http://faq.pygtk.org/index.py?req=show&file=faq13.017.htp"
 		if event.button == 3:
 			x = int(event.x)
 			y = int(event.y)
@@ -863,8 +825,6 @@ class TunesViewer:
 		msg.run()
 		msg.destroy()
 
-	##
-	# Shows the downloads-box.
 	def viewDownloads(self,obj):
 		self.downloadbox.window.show()
 
@@ -878,25 +838,22 @@ class TunesViewer:
 				for k3 in self.cj._cookies[k][k2]:
 					cList.append("	  "+k3+" = "+self.cj._cookies[k][k2][k3].value)
 		VWin("Cookies","\n".join(cList))
-	##
-	# Shows the find-box.
+	
 	def advancedSearch(self,obj):
 		self.findbox.window.show_all()
 		
 	def searchCurrent(self,obj):
 		self.findInPage.show_all()
 
-	##
-	# Get clipboard contents, and goto link.
 	def pastego(self,obj):
+		"Gets the clipboard contents, and goes to link."
 		clip = gtk.clipboard_get()
 		text = clip.wait_for_text()
 		if text != None:
 			self.gotoURL(text,True)
 
-	##
-	# Add to podcast manager.
 	def addPod(self,obj):
+		"Adds the current podcast to the specified podcast manager."
 		cmds = self.config.podcastprog.split(" ")
 		for i in range(len(cmds)):
 			if cmds[i]=="%u":
@@ -911,15 +868,13 @@ class TunesViewer:
 			msg.run()
 			msg.destroy()
 
-	##
-	# Copies the standard rss podcast link for the current page.
 	def copyrss(self,obj):
+		"Copies the standard rss podcast link for the current page."
 		print "copying:",self.podcast
 		gtk.Clipboard().set_text(self.podcast)
 	
-	##
-	# Called when back-button is pressed.
 	def goBack(self,obj):
+		"Called when back-button is pressed."
 		if len(self.backStack)>0 and not(self.downloading):
 			print self.backStack, self.forwardStack
 			self.forwardStack.append(self.url)
@@ -936,9 +891,8 @@ class TunesViewer:
 		#Update the back, forward buttons:
 		self.updateBackForward()
 	
-	##
-	# Called when forward-button is pressed.
 	def goForward(self,obj):
+		"Called when forward button is pressed"
 		if len(self.forwardStack)>0 and not(self.downloading):
 			self.backStack.append(self.url)
 			self.gotoURL(self.forwardStack[-1],False)
@@ -951,26 +905,23 @@ class TunesViewer:
 		else:
 			gtk.gdk.beep()
 		self.updateBackForward()
-	##
-	# Disables the back and forward buttons when appropriate.
+	
 	def updateBackForward(self):
+		"Disables the back and forward buttons when appropriate."
 		#Only enable the button when there is something to go back/forward to on the stack:
 		self.tbForward.set_sensitive(len(self.forwardStack))
 		self.tbBack.set_sensitive(len(self.backStack))
 	
-	##
-	# Called when stop is pressed, tries to stop downloader.
 	def stop(self,obj):
+		"Called when stop is pressed, tries to stop downloader."
 		self.downloading = False
 	
-	##
-	# Called when refresh is pressed, reopens current page.
 	def refresh(self,obj):
+		"Called when refresh is pressed, reopens current page."
 		self.gotoURL(self.url,False)
 	
-	##
-	# Called when the go-button is pressed.
 	def gobutton(self,obj):
+		"Called when the go-button is pressed."
 		ind = self.modecombo.get_active()
 		if (ind==0):
 			self.gotoURL(self.locationentry.get_text(),True)
@@ -980,9 +931,8 @@ class TunesViewer:
 		else:
 			self.gotoURL('http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&term='+self.locationentry.get_text()+'&media=podcast',True)
 	
-	##
-	# Follows link of the selected item.
 	def followlink(self,obj):
+		"Follows link of the selected item."
 		if self.selected() == None:
 			return
 		self.gotoURL(self.selected()[8],True)
@@ -993,9 +943,8 @@ class TunesViewer:
 		print self.selected()[8]
 		gtk.Clipboard().set_text(self.selected()[8])
 	
-	##
-	# Called when the search/url combobox is changed, sets focus to the location-entry.
 	def combomodechanged(self,obj):
+		""" Called when the search/url combobox is changed, sets focus to the location-entry. """
 		self.window.set_focus(self.locationentry)
 		if self.modecombo.get_active() == 0:
 			self.locationentry.set_text(self.url)
@@ -1006,10 +955,8 @@ class TunesViewer:
 	def exitclicked(self,obj):
 		self.delete_event(None,None,None)
 	
-	##
-	# Called when row is selected with enter or double-click,
-	# runs the default action.
 	def rowSelected(self, treeview, path, column):
+		""" Called when row is selected with enter or double-click, runs default action. """
 		model = self.treeview.get_model()
 		iter = model.get_iter(path)
 		print model.get_value(iter,0)
@@ -1035,9 +982,8 @@ class TunesViewer:
 			else:
 				self.gotoURL(gotourl,True)
 	
-	##
-	# Plays or views the selected file (Streaming to program direct, not downloading).
 	def playview(self,obj):
+		""" Plays or views the selected file (Streaming to program directly, not downloading). """
 		print self.selected()
 		if self.selected() == None:
 			return
@@ -1061,9 +1007,9 @@ class TunesViewer:
 		# the reference to the new ItemDetails is stored in infoboxes array.
 		# if it isn't stored, the garbage collector will mess it up.
 		self.infoboxes.append(ItemDetails(self,self.selected()))
-	##
-	# Gives array of properties of selected item.
+	
 	def selected(self):
+		""" Gives the array of properties of selected item. """
 		(model,iter) = self.treeview.get_selection().get_selected()
 		out = []
 		for i in range(12):
@@ -1109,9 +1055,8 @@ class TunesViewer:
 		self.downloadbox.newDownload(properties[0],url,os.path.join(self.config.downloadfolder,local),self.opener)
 		print "starting download",local
 		self.downloadbox.window.show()
-	##
-	# Startup function
-	def main(self):
+	
+	def main(self): #Startup
 		if (self.url==""):
 			self.gotoURL(self.config.home,False)
 		else:
@@ -1119,9 +1064,8 @@ class TunesViewer:
 		self.throbber.hide()
 		gtk.main()
 	
-	##
-	# Called when exiting, checks if downloads should be cancelled.
 	def delete_event(self, widget, event, data=None):
+		""" Called when exiting, checks if downloads should be cancelled. """
 		#print self.downloadbox.downloadrunning, self.downloadbox.total
 		print "del-event"
 		import shutil
@@ -1152,10 +1096,9 @@ class TunesViewer:
 			self.window.window.set_cursor(None)
 			self.throbber.hide()
 	
-	##
-	# downloads data, then calls update.
-	# If newurl is true, forward is cleared.
 	def gotoURL(self,url,newurl):
+		""" Downloads data, then calls update.
+		If newurl is true, forward is cleared."""
 		oldurl = self.url # previous url, to add to back stack.
 		if self.downloading:
 			return
@@ -1266,24 +1209,13 @@ class TunesViewer:
 			print e
 		self.downloading = False
 		self.tbStop.set_sensitive(False)
-		
-	##
-	# Changes the weird DateTTimeZ format found in the xml date-time.
+	
 	def formatTime(self,text):
+		""" Changes the weird DateTTimeZ format found in the xml date-time. """
 		return text.replace("T"," ").replace("Z"," ")
 	
-	def loadIntoWebKit(self,html, url):
-		self.webkitLoading=True
-		self.descView.load_html_string(html,url);
-		self.webkitLoading=False
-	
-	def webKitLoaded(self, view,frame):
-		""" Onload code - note that this is run many times... """
-		# Javascript.js is executed on this page.
-		self.descView.execute_script(self.injectJavascript)
-	##
-	# Updates display based on the current self.source. (Parses the xml and displays.)
 	def update(self):
+		""" Updates display based on the current html or xml in self.source """
 		print "startupdate",self.url
 		if self.url.startswith("https://"):
 			tip = "Secure page."
@@ -1326,17 +1258,16 @@ class TunesViewer:
 			print "ERR", e
 			if (self.source.lower().find('<html xmlns="http://www.apple.com/itms/"')>-1):
 					print "Parsing HTML"
-					self.loadIntoWebKit(self.source,self.url);
+					self.descView.loadHTML(self.source,self.url);
 					HTMLSet = True
 					import lxml.html
 					dom = lxml.html.document_fromstring(self.source.replace('<html xmlns="http://www.apple.com/itms/"','<html'))
 			elif (self.source != ""): # There is data, but invalid data.
-				#self.loadIntoWebKit("","about:")
 				msg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_WARNING, gtk.BUTTONS_YES_NO,
 						"This seems to be a page that should open with a web browser:\n%s\nDo you want to view it?" % self.url)
 				if msg.run()==gtk.RESPONSE_YES:
 					openDefault(self.url)
-				self.loadIntoWebKit("(This page should be opened in a web browser)","about:")
+				self.descView.loadHTML("(This page should be opened in a web browser)","about:")
 				HTMLSet = True
 				msg.destroy()
 				return
@@ -1666,9 +1597,10 @@ class TunesViewer:
 		#		print eval(raw_input(">"))
 		print "update took:",(time.time() - sttime),"seconds"
 		if not(HTMLSet):
-			self.loadIntoWebKit("<html><style>img {float:left; margin-right:6px; -webkit-box-shadow: 0 3px 5px #999999;}</style><body>"+HTMLImage+out.replace("\n","<br>")+"<p>"+self.Description.replace("\n","<br>")+"</body></html>","about:");
-	#recursively looks at xml elements:
+			self.descView.loadHTML("<html><style>img {float:left; margin-right:6px; -webkit-box-shadow: 0 3px 5px #999999;}</style><body>"+HTMLImage+out.replace("\n","<br>")+"<p>"+self.Description.replace("\n","<br>")+"</body></html>","about:");
+	
 	def seeElement(self,element,isheading):
+		""" Recursively looks at xml elements. """
 		if isinstance(element.tag,str):
 			# check this element:
 			if element.tag == "GotoURL":
@@ -1789,7 +1721,7 @@ class TunesViewer:
 	def seeHTMLElement(self,element):
 		if isinstance(element.tag,str): # normal element
 			if element.tag=="tr" and element.get("class") and (element.get("class").find("track-preview")>-1 or element.get("class").find("podcast-episode")>-1):
-				#If you view the source of podcast html in browser, you'll find the info in the rows using firebug.
+				#You'll find the info in the rows using the inspector (right click, inspect).
 				title=""; exp=""; itemid="";
 				if element.get("adam-id"):
 					itemid=element.get("adam-id")
@@ -1928,16 +1860,14 @@ class TunesViewer:
 					return out
 			return ""
 	
-	
 	def imgText(self,picurl,height,width):
 		if self.config.scaleImage and height and width:
 			return '<img src="%s" height="%s" width="%s">' % (picurl, height, width)
 		else:
 			return '<img src="%s">' % picurl
 	
-	##
-	# Updates the icons in the liststore based on contents.
 	def updateListIcons(self):
+		""" Sets the icons in the liststore based on the media type. """
 		for row in self.liststore:
 			type = row[4].lower()
 			if type:
@@ -1950,11 +1880,9 @@ class TunesViewer:
 			elif row[8]: #it's a link
 				self.liststore.set(row.iter,0, self.icon_link)
 			url = row[10]
-		# rows have basic icons now.
 	
-	##
-	# Given an element, finds all text in it and the link in it (if any).
 	def searchLink(self,element):
+		""" Given an element, finds all text in it and the link in it (if any). """
 		text, goto = "", None
 		if isinstance(element.tag,str):#element.nodeType == element.ELEMENT_NODE:
 			if element.tag == "OpenURL" or element.tag == "GotoURL" or element.tag == "a": # for both xml and html <a.
@@ -1978,12 +1906,9 @@ class TunesViewer:
 						goto = g
 		return text, goto
 
-
-##
-# When initialized, this will show a new window with text.
 class VWin:
 	def __init__(self,title,source):
-		#print url,source
+		"""When initialized, this will show a new window with text."""
 		self.window = gtk.Window()
 		self.window.set_size_request(400, 400)
 		self.window.set_title(title)
@@ -1998,7 +1923,6 @@ class VWin:
 		self.sw.add(self.viewer)
 		self.window.add(self.sw)
 		self.window.show_all()
-
 
 args = sys.argv[1:]
 url = ""
