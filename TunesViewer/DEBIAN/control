@@ -2,9 +2,15 @@ Package: tunesviewer
 Version: 1.1
 Section: net
 Priority: optional
+Installed-Size: 240
 Depends: python (>= 2.6), python-gtk2 (>= 2.16), python-lxml (>= 2.0), python-webkit (>=1.1)
 Suggests: vlc (>=1.0)
-Maintainer: Luke
+Maintainer: Luke <lb1programmer@users.sourceforge.net>
 Architecture: all
 Description: A small, easy-to-use program to access iTunesU media and podcasts.
-Installed-Size: 240
+ TunesViewer is a small, easy-to-use program to access iTunesU media and podcasts from Linux.
+ TunesViewer lets you:
+ * Search, browse, and download videos, audio lectures, and ebooks.
+ * Go directly from the "loading iTunes-U..." page to viewing podcast with TunesViewer.
+ * Reveal the standard rss-podcast-feed of an iTunes podcast, for use in podcast software.
+ * Log in to download students-and-staff-only media.

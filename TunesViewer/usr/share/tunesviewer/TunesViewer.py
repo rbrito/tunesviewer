@@ -512,8 +512,8 @@ class TunesViewer:
 		self.descView = WebKitView(self)
 		
 		sw.add(self.descView)
-		vpaned.add1(sw)
-		vpaned.add2(bottom)
+		vpaned.pack1(sw,resize=True)
+		vpaned.pack2(bottom,resize=False)
 		
 		self.toolbar = gtk.Toolbar()
 		self.tbBack = gtk.ToolButton(gtk.STOCK_GO_BACK)
@@ -1097,11 +1097,18 @@ class TunesViewer:
 			self.throbber.hide()
 	
 	def gotoURL(self,url,newurl):
-		""" Downloads data, then calls update.
+		"""Downloads data, then calls update.
 		If newurl is true, forward is cleared."""
 		oldurl = self.url # previous url, to add to back stack.
 		if self.downloading:
 			return
+		#elif url.startswith("download://"):
+			#label = url[11:].split(" ")
+			#print "download://"+label[0];
+			#if len(label)==2:
+				#name=label[0]
+				#url=label[1]
+				#self.downloadbox.newDownload(None,url,os.path.join(self.config.downloadfolder,name),self.opener)
 		# Fix url based on http://bugs.python.org/issue918368
 		try:
 			url = urllib.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
@@ -1275,35 +1282,6 @@ class TunesViewer:
 				print "unknown source:",self.source
 				return
 		
-		print "tag",dom.tag
-		if dom.tag=="rss": #rss files are added
-			items = dom.xpath("//item")
-			print "rss:",len(items)
-			for item in items:
-				title=""
-				author=""
-				linkurl=""
-				duration=""
-				url=""
-				description=""
-				pubdate=""
-				for i in item:
-					if i.tag=="title":
-						title=i.text
-					elif i.tag=="author" or i.tag.endswith("author"):
-						author=i.text
-					elif i.tag=="link":
-						linkurl=i.text
-					elif i.tag=="description":
-						description=i.text
-					elif i.tag=="pubDate":
-						pubdate=i.text
-					elif i.tag=="enclosure":
-						url=i.get("url")
-					elif i.tag.endswith("duration"):
-						duration = i.text
-				self.liststore.append([None,markup(title,False),author,duration,typeof(url),description,pubdate,"",linkurl,url,"",""])
-		
 		removeOldData(dom)
 		
 		items = []
@@ -1351,19 +1329,50 @@ class TunesViewer:
 			if len(ks):
 				arr = ks
 				print "Special end page after html link?"
+				
+		print "tag",dom.tag
+		if dom.tag=="rss": #rss files are added
+			self.Description += "<p>This is a podcast feed, click Add to Podcast manager button on the toolbar to subscribe.</p>"
+			items = dom.xpath("//item")
+			print "rss:",len(items)
+			for item in items:
+				title=""
+				author=""
+				linkurl=""
+				duration=""
+				url=""
+				description=""
+				pubdate=""
+				for i in item:
+					if i.tag=="title":
+						title=i.text
+					elif i.tag=="author" or i.tag.endswith("author"):
+						author=i.text
+					elif i.tag=="link":
+						linkurl=i.text
+					elif i.tag=="description":
+						description=i.text
+					elif i.tag=="pubDate":
+						pubdate=i.text
+					elif i.tag=="enclosure":
+						url=i.get("url")
+					elif i.tag.endswith("duration"):
+						duration = i.text
+				self.liststore.append([None,markup(title,False),author,duration,typeof(url),description,pubdate,"",linkurl,url,"",""])
 		
 		if arr == None: #No tracklisting.
 			hasmedia=False
 			if len(self.liststore)==0: #blank.
 				print "nothing here!"
 				for i in keys:
-					if i.text == "url":
+					if i.text == "url" or i.text == "feedURL":
 						el = i.getnext()
 						url = el.text
 						print url
 						#fix it...
-						self.liststore.append([None,"Redirect, try this link","","","","(Link)","","",url,"","",""])
-						self.liststore.append([None,"(Try selecting View menu - Request HTML Mode, and refresh this page...)","","","","","","","","","",""])
+						self.Description += "<br><a href=\"%s\">(%s redirect)</a>" % (url,i.text)
+						#self.liststore.append([None,"Redirect, try this link","","","","(Link)","","",url,"","",""])
+						#self.liststore.append([None,"(Try selecting View menu - Request HTML Mode, and refresh this page...)","","","","","","","","","",""])
 						if self.config.autoRedirect:
 							if self.redirectPages.count(url):
 								print "redirect loop :(" #already redirected here.

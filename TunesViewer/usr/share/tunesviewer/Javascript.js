@@ -35,7 +35,9 @@ function player () {
 		alert(obj.getAttribute("episode-url"))
 	};
 	this.doAnonymousDownload = function(obj) {
-		alert(obj.itemName + "\n"+obj.url);
+		//alert(obj.itemName + "\n"+obj.url);
+		//location.href="download://"+encodeURI(obj.itemName)+" "+encodeURI(obj.url);
+		location.href=obj.url
 		//It has the url... just needs a way to tell the main program to download it (webkit transaction?)
 	}
 }
@@ -54,4 +56,11 @@ document.onload= new function() {
 	//Fix <a target="external" etc.
 	as = document.getElementsByTagName("a");
 	for (a in as) {as[a].target=""};
+	
+	buttons = document.getElementsByTagName('button');
+	for (i=0; i<buttons.length; i++) {
+		if (buttons[i].getAttribute('subscribe-podcast-url')!=null) {
+			buttons[i].addEventListener('click',function () {location.href=this.getAttribute('subscribe-podcast-url')},true);
+		}
+	}
 }
