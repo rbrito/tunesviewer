@@ -18,7 +18,7 @@ class Downloader:
 		self.url = url
 		self.localfile = localfile
 		self.count = 0 #bytes downloaded
-		self.filesize = 0 #
+		self.filesize = 0 #total bytes
 		#Reference to the download window's class
 		self.downloadWindow = downloadWindow
 		self.copyfile = downloadWindow.devicedir
@@ -78,7 +78,7 @@ class Downloader:
 		openDefault(self.localfile);
 
 	def getElement(self):
-		"""Return element containing the display for this download"""
+		"""Return element containing the gui display for this download"""
 		return self.element
 	
 	##
@@ -107,9 +107,8 @@ class Downloader:
 			else:
 				self.progress.set_text("Copied to %s." % self.copydir)
 	
-	##
-	# Called when the downloader's combo-box is changed.
 	def actionSelect(self,obj):
+		"Called when the downloader's combo-box is changed."
 		print self.combo.get_active()
 		if self.combo.get_active()==3:
 			self.mediasel.show()
@@ -128,9 +127,8 @@ class Downloader:
 			print "del"
 			self.deletefile()
 	
-	##
-	# Cancels this download. (this is also called by delete command)
 	def cancel(self,obj):
+		"Cancels this download. (this is also called by delete command)"
 		#if self.downloading:
 		self.downloading = False
 		self.t.join() #wait for thread to cancel! Destroying this before the thread finishes may cause major crash!
@@ -145,16 +143,13 @@ class Downloader:
 		self.downloadWindow.downloaders.remove(self)
 		print self.downloadWindow.downloaders
 	
-	##
-	# Starts download thread
 	def start(self):
-		#Start thread:
+		"Starts download thread"
 		self.t = Thread(target=self.downloadThread, args=())
 		self.t.start()
 	
-	##
-	# This does the actual downloading, it should run as a thread.
 	def downloadThread(self):
+		"This does the actual downloading, it should run as a thread."
 		self.downloading = True
 		self.starttime = time.time()
 		self.progress.set_text("Starting Download...")
@@ -210,7 +205,6 @@ class Downloader:
 			except Exception,e:
 				self.progress.set_text("Error: "+str(e))
 				self.downloading=False
-			#print self.count
 		print "finished one"
 		self.outfile.close()
 		self.netfile.close()
@@ -254,5 +248,4 @@ class Downloader:
 			t = time.time() - self.starttime
 			remaining = timeFind((t * self.filesize/self.count - t)*1000)
 			self.progress.set_text("%s%% of %s (%s remaining)" % (str(round(self.count/self.filesize *100,1)),self.readsize, remaining))
-		#print "end update"
 		return True

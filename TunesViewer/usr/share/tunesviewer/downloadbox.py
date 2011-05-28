@@ -5,16 +5,12 @@ from common import *
 
 class DownloadBox:
 	"""Window for showing and keeping track of downloads"""
-	##
-	# Holds references to the downloader objects:
-	downloaders = []
+	downloaders = [] # Holds references to the downloader objects
 	downloaded = 0
 	total = 0
 	lastCompleteDownloads = 0
 	
-	##
-	# Holds the last selected mp3-player directory:
-	devicedir = None
+	devicedir = None #last selected mp3-player directory:
 	
 	##
 	# True when a download is running
@@ -34,11 +30,9 @@ class DownloadBox:
 		scrolledwindow.set_policy(gtk.POLICY_NEVER,gtk.POLICY_AUTOMATIC)
 		scrolledwindow.add_with_viewport(self.vbox)
 		self.window.add(scrolledwindow)
-		#Window initialized.
 	
-	##
-	# Updates each downloader display.
 	def updateLoop(self):
+		"Updates each downloader display. "
 		#Get downloaded/total
 		self.downloaded = 0
 		self.total = 0
@@ -57,10 +51,8 @@ class DownloadBox:
 		else:
 			return True
 	
-	##
-	# Cancels closing window, hides it instead.
 	def onclose(self,widget,data):
-		print "hiding downloads"
+		"Cancels closing window, hides it instead."
 		self.window.hide()
 		return True #Cancel close window.
 	
@@ -76,7 +68,6 @@ class DownloadBox:
 		self.window.set_title("Downloads (%s/%s downloaded)" % (str(downloaded), str(total)))
 	
 	def downloadNotify(self):
-		print "dlnotify"
 		if self.Wopener.config.notifyseconds != 0 and self.lastCompleteDownloads!=self.downloaded:
 			self.lastCompleteDownloads = self.downloaded
 			try:

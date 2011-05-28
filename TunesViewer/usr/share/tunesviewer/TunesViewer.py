@@ -98,7 +98,7 @@ def textContent(element):
 	return "".join(out)
 
 class TunesViewer:
-	source= "" # full xml source
+	source= "" # full html/xml source
 	url= "" # page url
 	podcast= "" #podcast url
 	downloading=False #when true, don't download again, freezing prog. (Enforces having ONE gotoURL)
@@ -907,8 +907,7 @@ class TunesViewer:
 		self.updateBackForward()
 	
 	def updateBackForward(self):
-		"Disables the back and forward buttons when appropriate."
-		#Only enable the button when there is something to go back/forward to on the stack:
+		"Disables the back and forward buttons when no back/forward is on stack."
 		self.tbForward.set_sensitive(len(self.forwardStack))
 		self.tbBack.set_sensitive(len(self.backStack))
 	
@@ -1258,7 +1257,8 @@ class TunesViewer:
 			bad = "[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD]"#\x10000-\x10FFFF]"
 			self.source = re.sub(bad," ",self.source) # now it should be valid xml.
 			dom = etree.fromstring(self.source.replace('xmlns="http://www.apple.com/itms/"',''))#(this xmlns causes problems with xpath)
-			if dom.tag == "html" or dom.tag=="{http://www.w3.org/2005/Atom}feed":
+			#Some pages may have root element {http://www.w3.org/1999/xhtml}html
+			if dom.tag.find("html")>-1 or dom.tag=="{http://www.w3.org/2005/Atom}feed":
 				#Don't want normal pages/atom pages, those are for the web browser!
 				raise Exception
 		except Exception, e:
@@ -1319,10 +1319,12 @@ class TunesViewer:
 		self.last_text = ""
 		self.addingD = False
 		self.Description = ""
+		self.bgcolor = ""
 		if dom.tag=="html":
 			self.seeHTMLElement(dom)
 		else:
-			self.seeElement(dom,False)
+			#XML parsing still needs work
+			self.seeXMLElement(dom,False)
 		
 		if arr == None:
 			ks = dom.xpath("/Document/Protocol/plist/dict/array/dict")
@@ -1368,11 +1370,8 @@ class TunesViewer:
 					if i.text == "url" or i.text == "feedURL":
 						el = i.getnext()
 						url = el.text
-						print url
-						#fix it...
+						#Redirect page, add link:
 						self.Description += "<br><a href=\"%s\">(%s redirect)</a>" % (url,i.text)
-						#self.liststore.append([None,"Redirect, try this link","","","","(Link)","","",url,"","",""])
-						#self.liststore.append([None,"(Try selecting View menu - Request HTML Mode, and refresh this page...)","","","","","","","","","",""])
 						if self.config.autoRedirect:
 							if self.redirectPages.count(url):
 								print "redirect loop :(" #already redirected here.
@@ -1521,6 +1520,7 @@ class TunesViewer:
 				else:
 					print "Not a podcast page."
 		else: # not a podcast page? Check for html podcast feed-url in page:
+			#Maybe redundant, with the subscribe links working.
 			buttons = dom.xpath("//button")
 			if len(buttons):
 				isPod = True
@@ -1531,7 +1531,8 @@ class TunesViewer:
 				if isPod and podurl: # Every media file has link to same url, so it must be podcast url of this page.
 					self.podcast = podurl
 				elif len(buttons)>1 and buttons[0].get("subscribe-podcast-url"):
-					self.podcast = buttons[0].get("subscribe-podcast-url") #unfortunately these seem to be blocked for now?
+					if not(buttons[0].get("subscribe-podcast-url").startswith("http://itunes.apple.com/WebObjects/DZR.woa/wa/subscribePodcast?id=")):
+						self.podcast = buttons[0].get("subscribe-podcast-url")
 		#Enable podcast-buttons if this is podcast:
 		self.tbCopy.set_sensitive(self.podcast!="")
 		self.tbAddPod.set_sensitive(self.podcast!="")
@@ -1606,12 +1607,14 @@ class TunesViewer:
 		#		print eval(raw_input(">"))
 		print "update took:",(time.time() - sttime),"seconds"
 		if not(HTMLSet):
-			self.descView.loadHTML("<html><style>img {float:left; margin-right:6px; -webkit-box-shadow: 0 3px 5px #999999;}</style><body>"+HTMLImage+out.replace("\n","<br>")+"<p>"+self.Description.replace("\n","<br>")+"</body></html>","about:");
+			self.descView.loadHTML("<html><style>img {float:left; margin-right:6px; -webkit-box-shadow: 0 3px 5px #999999;}</style><body bgcolor=\""+self.bgcolor+"\">"+HTMLImage+out.replace("\n","<br>")+"<p>"+self.Description.replace("\n","<br>")+"</body></html>","about:");
 	
-	def seeElement(self,element,isheading):
+	def seeXMLElement(self,element,isheading):
 		""" Recursively looks at xml elements. """
 		if isinstance(element.tag,str):
-			# check this element:
+			# Good element, check this element:
+			if element.get("backColor") and self.bgcolor == "":
+				self.bgcolor = element.get("backColor")
 			if element.tag == "GotoURL":
 				urllink = element.get("url")
 				name = textContent(element).strip()
@@ -1653,7 +1656,7 @@ class TunesViewer:
 							arturl = self.last_el_pic
 							#(last pic was the icon for this, it will be added:)
 							self.Description += "<img src=\"%s\" width=%s height=%s>" % (self.last_el_pic, self.config.imagesizeN, self.config.imagesizeN)
-						self.Description += "<a href=\"%s\">%s - %s</a><br>" % (urllink, HTmarkup(name,isheading), author);
+						self.Description += "<a href=\"%s\">%s</a><br>" % (urllink, HTmarkup(name,isheading));
 						#self.liststore.append([None, markup(name.strip(),isheading), author.strip(), "", "", "(Link)", "", "", urllink, "", arturl, ""])
 					elif len(element): #No name, this must be the picture-link that comes before the text-link. 
 						picurl = "" # We'll try to find picture url in the <PictureView> inside the <View> inside this <GotoURL>.
@@ -1709,7 +1712,7 @@ class TunesViewer:
 				if goto != None:
 					for i in element:
 						if isinstance(i.tag,str):
-							self.seeElement(i,isheading)
+							self.seeXMLElement(i,isheading)
 			else:
 				#sometimes podcast ratings are in hboxview alt, get the text alts.
 				if element.tag == "HBoxView" and element.get("alt"): #and element.getAttribute("alt").lower()!=element.getAttribute("alt").upper():
@@ -1718,8 +1721,7 @@ class TunesViewer:
 				
 				# Recursively do this to all elements:
 				for node in element:
-					self.seeElement(node,isheading)
-				#[self.seeElement(e,isheading) for e in element] #faster??
+					self.seeXMLElement(node,isheading)
 		elif type(element).__name__=='_Comment': #element.nodeType == element.COMMENT_NODE:
 			# Set it to add the description to self.Description when it is between these comment nodes:
 			if element.text.find("BEGIN description")>-1:

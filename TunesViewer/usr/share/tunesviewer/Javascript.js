@@ -50,7 +50,7 @@ function iTSVideoPreviewWithObject (obj) {
 	alert(obj);
 }
 
-document.onload= new function() {
+document.onpageshow= new function() {
 	iTunes = new player();
 	
 	//Fix <a target="external" etc.
