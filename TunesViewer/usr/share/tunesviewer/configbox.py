@@ -279,6 +279,7 @@ class ConfigBox:
 		#print self.defaultcommand
 		if first:
 			self.first_setup()
+			self.save_settings()
 		self.setVisibility()
 	
 	def setVisibility(self):
