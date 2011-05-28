@@ -1,10 +1,9 @@
 TunesViewer Help
 
 Basics: The main screen is split into 2 parts:
-The top part shows information and comments on the current page you are viewing.
+The top part shows links, information and comments on the current page you are viewing.
 
-The lower part shows the links and podcast media.
-Double-click or press enter on a row to open it.
+The lower part shows podcast media files, double-click or press enter on a row to open it.
 To subscribe to the page, go to edit-preferences, and choose your podcast manager (rhythmbox/gpodder/amarok) from the podcast manager command drop down menu.
 Select Ok, and click the add button on the toolbar, or Actions Menu - Add Page to Podcast Manager. Now you should be subscribed to the podcast.
 
@@ -21,17 +20,18 @@ View
 	Request HTML Mode - Check this if you have problems with a page not loading.
 	Show Downloads - shows current downloads.
 	Downloads Directory - shows the files in your file manager.
-	View Page Source - shows the source text of current page.
+	Page Source - shows the source text of current page.
 	Selection Info - shows information on the current row selected, including comments and filesize.
 	
 Actions
 	Goto Link - Goes to the link of the row currently selected.
-	Play/View - Opens selected link streaming, using the program you chose in preferences.
-	Download - Downloads currently selected link.
+	Play/View File - Opens selected link streaming, using the program you chose in preferences.
+	Download File - Downloads currently selected link.
 	Add Page to Podcast Manager - Adds to your podcast manager (you can choose this program in the preferences)
 	
 When files are downloaded, you can choose an action from the lower left dropdown box by the progress bar.
 Actions are:
 	Open file - opens the file with the system default opener for this filetype.
 	Copy to device - lets you choose the device to copy to (this should work with any portable player that shows up as a normal usb drive.)
+	Convert File - opens converter program (you must have soundconverter package installed)
 	Delete File - permanently deletes the file.

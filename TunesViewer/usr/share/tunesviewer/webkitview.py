@@ -1,6 +1,6 @@
 import gtk
 import webkit
-import sys, os
+import os
 from inspector import Inspector
 
 # The main browser view, shows the page, or a description of the podcast page.
@@ -22,7 +22,7 @@ class WebKitView(webkit.WebView):
 		self.connect("load-finished",self.webKitLoaded)
 		self.connect("navigation-policy-decision-requested",self.webkitGo)
 		#self.descView.connect("resource-request-starting",self.webkitReqStart)
-		current = os.path.dirname(sys.argv[0])
+		current = os.path.dirname(os.path.realpath(__file__))
 		self.injectJavascript = file(os.path.join(current,"Javascript.js"),"r").read()
 		
 	def webKitLoaded(self, view,frame):

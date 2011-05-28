@@ -119,7 +119,12 @@ class Downloader:
 			openDefault(self.localfile)
 		elif self.combo.get_active()==2 and self.success:
 			import subprocess
-			subprocess.Popen(["soundconverter",self.localfile])
+			try:
+				subprocess.Popen(["soundconverter",self.localfile])
+			except OSError:
+				msg = gtk.MessageDialog(None,gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR,gtk.BUTTONS_CLOSE, "Soundconverter not found, try installing it with your package manager.")
+				msg.run()
+				msg.destroy()
 		elif self.combo.get_active()==3 and self.success:
 			#Try to copy, finished.
 			self.copy2device()

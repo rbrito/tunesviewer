@@ -703,7 +703,7 @@ class TunesViewer:
 	
 	def progUpdate(self,obj):
 		"Checks for update to the program."
-		openDefault("http://tunesviewer.sourceforge.net/checkversion.php?version=1.0")
+		openDefault("http://tunesviewer.sourceforge.net/checkversion.php?version=1.1")
 	
 	def treesel(self,selection, model):
 		"Called when selection changes, changes the enabled toolbar buttons."
@@ -1066,7 +1066,6 @@ class TunesViewer:
 	def delete_event(self, widget, event, data=None):
 		""" Called when exiting, checks if downloads should be cancelled. """
 		#print self.downloadbox.downloadrunning, self.downloadbox.total
-		print "del-event"
 		import shutil
 		if self.downloadbox.downloadrunning:
 			msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO,
@@ -1701,13 +1700,8 @@ class TunesViewer:
 					isheading = True
 				text, goto = self.searchLink(element)
 				if text.strip() != self.last_text: # don't repeat (without this some text will show twice).
-					if True:# self.addingD: # put in description (top box)
-						self.Description += "\n%s\n<br>" % text.strip()
-					#else:
-					#	self.liststore.append([None,markup(text.strip(),isheading),"","","","","","","","","",""])
-					#	if element.get("styleSet")=="normal11":
-					#		#text style. May be description/review/info, show in description box also:
-					#		self.Description += "\n%s\n" % text.strip()
+					#if True:# self.addingD: # put in description (top box)
+					self.Description += "\n%s\n<br>" % text.strip()
 					self.last_text = text.strip()
 				if goto != None:
 					for i in element:
@@ -1717,7 +1711,6 @@ class TunesViewer:
 				#sometimes podcast ratings are in hboxview alt, get the text alts.
 				if element.tag == "HBoxView" and element.get("alt"): #and element.getAttribute("alt").lower()!=element.getAttribute("alt").upper():
 					self.Description += HTmarkup(element.get("alt"),False)
-					#self.liststore.append([None,markup(element.get("alt"),False),"","","","","","","","","",""])
 				
 				# Recursively do this to all elements:
 				for node in element:
@@ -1773,51 +1766,7 @@ class TunesViewer:
 				self.liststore.append([None,markup(title,False),artist,time,type,exp+comment,releaseDate,"",gotou,url,"",itemid])
 				for i in element:
 					self.seeHTMLElement(i)
-			#Don't need to show all elements, with webkit view...
-			#elif element.tag!="script" and element.text and element.text.strip():
-				#isHeading = (element.tag=="h3" or element.tag=="h2" or element.tag=="h1")
-				#self.liststore.append([None,markup(element.text.strip(),isHeading),"","","","","","","","","",""])
-				#if element.tail and element.tail.strip():
-					##Added to get Ping updates:
-					#self.liststore.append([None,markup(element.tail.strip(),False),"","","","","","","","","",""])
-				#for i in element:
-					#self.seeHTMLElement(i)
-					
-			#elif 0:#element.tag == "div" and element.text_content().rstrip().lstrip():# text?
-				#self.liststore.append([None,markup(element.text_content().strip(),False),"","","","","","","","","",""])
-				#if self.hasAlink(element):
-					#for i in element:
-						#self.seeHTMLElement(i)
-			#elif element.tag == "a" or element.tag=="option":
-				## Get link data
-				#urllink = element.get("href")
-				##img = self.getImgUrl(element)
-				#img = "" #In html
-				#name = self.getTextByClass(element,"name")
-				
-				#if name =="" and element.get("tooltip-title"):
-					#name = element.get("tooltip-title")#For Ping profiles
-				#if name =="":
-					#name = element.text_content()
-				#if name =="" and element.get("class"):
-					#name = element.get("class")
-				
-				#author = self.getTextByClass(element,"artist")
-				#if author == "" and element.get("tooltip-artist"):
-					#author = element.get("tooltip-artist")#For Ping profiles
-				#if urllink and name != "" and name !="artwork-link": #and author != "":
-					#if element.get("href")==self.last_el_link:
-						#img = self.last_el_pic
-					#self.liststore.append([None,markup(name.rstrip().lstrip(),False), author.strip(), "","","(Link)","","",urllink,"",img,""])
-				#elif element.getnext() is not None and element.getnext().get("class")=="lockup-info": # next one is the real link.
-					#self.last_el_link = element.get("href")
-					#self.last_el_pic = img
-				#elif name=="artwork-link":
-					#self.last_el_link = element.get("href")
-					#self.last_el_pic = img
-				#elif urllink: # other; it must be single image link.
-					#self.liststore.append([None,markup(name.rstrip().lstrip(),False), author.rstrip().lstrip(), "","","(Link)","","",urllink,"",img,""])
-				##print urllink
+			
 			elif element.get("audio-preview-url") or element.get("video-preview-url"): #Ping audio/vid.
 				if element.get("video-preview-url"):
 					url = element.get("video-preview-url")
