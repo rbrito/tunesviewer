@@ -121,7 +121,7 @@ class TunesViewer:
 		self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 		self.window.set_title("TunesViewer")
 		self.window.set_size_request(350, 350) #minimum
-		self.window.resize(580,500)
+		self.window.resize(610,520)
 		self.window.connect("delete_event", self.delete_event)
 		# set add drag-drop, based on: http://stackoverflow.com/questions/1219863/python-gtk-drag-and-drop-get-url
 		self.window.drag_dest_set(0, [], 0)
@@ -135,7 +135,7 @@ class TunesViewer:
 		except:
 			print "Couldn't load window icon."
 		
-		# will hold icon, title, artist, time, type, comment, releasedate,datemodified, gotourl, previewurl, imageurl, itemid.
+		# will hold icon, title, artist, time, type, comment, releasedate,datemodified, gotourl, previewurl, price, itemid.
 		self.liststore = gtk.ListStore(gtk.gdk.Pixbuf,str,str,str,str,str,str,str,str,str,str,str)
 		
 		#Liststore goes in a TreeView inside a Scrolledwindow:
@@ -327,6 +327,23 @@ class TunesViewer:
 		viewmenu = gtk.Menu()
 		viewm = gtk.MenuItem("_View")
 		viewm.set_submenu(viewmenu)
+		
+		ziItem = gtk.ImageMenuItem(gtk.STOCK_ZOOM_IN)
+		key, mod = gtk.accelerator_parse("<Ctrl>plus")
+		ziItem.add_accelerator("activate",agr,key,mod,gtk.ACCEL_VISIBLE)
+		ziItem.connect("activate",self.webkitZI)
+		viewmenu.append(ziItem)
+		zoItem = gtk.ImageMenuItem(gtk.STOCK_ZOOM_OUT)
+		key, mod = gtk.accelerator_parse("<Ctrl>minus")
+		zoItem.add_accelerator("activate",agr,key,mod,gtk.ACCEL_VISIBLE)
+		zoItem.connect("activate",self.webkitZO)
+		viewmenu.append(zoItem)
+		znItem = gtk.ImageMenuItem(gtk.STOCK_ZOOM_100)
+		key, mod = gtk.accelerator_parse("<Ctrl>0")
+		znItem.add_accelerator("activate",agr,key,mod,gtk.ACCEL_VISIBLE)
+		znItem.connect("activate",self.webkitZN)
+		viewmenu.append(znItem)
+		viewmenu.append(gtk.SeparatorMenuItem())
 		self.htmlmode = gtk.CheckMenuItem("Request _HTML Mode")
 		viewmenu.append(self.htmlmode)
 		viewmenu.append(gtk.SeparatorMenuItem())
@@ -352,6 +369,13 @@ class TunesViewer:
 		viewprop.add_accelerator("activate",agr,key,mod,gtk.ACCEL_VISIBLE)
 		viewmenu.append(viewprop)
 		viewprop.connect("activate",self.viewprop)
+		
+		self.locShortcut = gtk.MenuItem("Current URL")
+		key, mod = gtk.accelerator_parse("<Ctrl>L")
+		self.locShortcut.add_accelerator("activate",agr,key,mod,gtk.ACCEL_VISIBLE)
+		viewmenu.append(self.locShortcut)
+		self.locShortcut.hide()
+		self.locShortcut.connect("activate",self.locationBar)
 		
 		gomenu = gtk.Menu()
 		gom = gtk.MenuItem("_Go")
@@ -506,7 +530,7 @@ class TunesViewer:
 
 		# adjustable panel with description box above listing:
 		vpaned = gtk.VPaned()
-		vpaned.set_position(125)
+		vpaned.set_position(260)
 		sw = gtk.ScrolledWindow()
 		sw.set_policy(gtk.POLICY_AUTOMATIC,gtk.POLICY_AUTOMATIC)
 		self.descView = WebKitView(self)
@@ -627,11 +651,16 @@ class TunesViewer:
 		t = Thread(target=self.getDirectory, args=())
 		t.start()
 		
+		#self.treeview.get_column(6).set_property('visible',False)
+		#self.treeview.get_column(7).set_property('visible',False)
 	def webkitZI(self,obj):
 		self.descView.zoom_in()
 		
 	def webkitZO(self,obj):
 		self.descView.zoom_out()
+		
+	def webkitZN(self,obj):
+		self.descView.set_zoom_level(1)
 	
 	def buttonGoto(self,obj,url):
 		"Menu directory-shortcuts handler"
@@ -703,20 +732,21 @@ class TunesViewer:
 	
 	def progUpdate(self,obj):
 		"Checks for update to the program."
-		openDefault("http://tunesviewer.sourceforge.net/checkversion.php?version=1.1")
+		openDefault("http://tunesviewer.sourceforge.net/checkversion.php?version=1.1.1")
 	
 	def treesel(self,selection, model):
 		"Called when selection changes, changes the enabled toolbar buttons."
 		self.tbInfo.set_sensitive(True)
 		ind = selection[0]
 		gotoable = (self.liststore[ind][8] != "")
-		downloadable = (self.liststore[ind][9] != "")
+		playable = (self.liststore[ind][9] != "")
+		downloadable = (self.liststore[ind][9] != "" and (self.liststore[ind][10]=="" or self.liststore[ind][10]=="0"))
 		self.tbGoto.set_sensitive(gotoable) # only if there is goto url
-		self.tbPlay.set_sensitive(downloadable) # only if there is media url
+		self.tbPlay.set_sensitive(playable) # only if there is media url
 		self.tbDownload.set_sensitive(downloadable)
 		self.rcgoto.set_sensitive(gotoable)
 		self.rccopy.set_sensitive(gotoable)
-		self.rcplay.set_sensitive(downloadable)
+		self.rcplay.set_sensitive(playable)
 		self.rcdownload.set_sensitive(downloadable) 
 		return True
 	
@@ -821,7 +851,7 @@ class TunesViewer:
 		openDefault("/usr/share/tunesviewer/help.txt")
 
 	def showAbout(self,obj):
-		msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "TunesViewer - Easy iTunesU access in Linux\nVersion 1.1 by Luke Bryan\nThis is open source software, distributed 'as is'")
+		msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "TunesViewer - Easy iTunesU access in Linux\nVersion 1.1.1 by Luke Bryan\nThis is open source software, distributed 'as is'")
 		msg.run()
 		msg.destroy()
 
@@ -947,6 +977,7 @@ class TunesViewer:
 		self.window.set_focus(self.locationentry)
 		if self.modecombo.get_active() == 0:
 			self.locationentry.set_text(self.url)
+		self.locationentry.select_region(0,-1)
 	
 	def openprefs(self,obj):
 		self.config.window.show_all()
@@ -1002,6 +1033,10 @@ class TunesViewer:
 			msg.run()
 			msg.destroy()
 	
+	def locationBar(self,obj):
+		"Selects the url, similar to Ctrl+L in web browser"
+		self.modecombo.set_active(0)
+	
 	def viewprop(self,obj):
 		# the reference to the new ItemDetails is stored in infoboxes array.
 		# if it isn't stored, the garbage collector will mess it up.
@@ -1034,6 +1069,8 @@ class TunesViewer:
 			msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_WARNING, gtk.BUTTONS_CLOSE, "This item is not a file.")
 			msg.run()
 			msg.destroy()
+			return
+		if properties[10] != "0" and properties[10] != "":
 			return
 		#Now make an appropriate local-file name:
 		local = self.config.downloadfile.replace("%n",name).replace("%a",artist).replace("%c",comment).replace("%t",type).replace("%l",duration).replace(os.sep,"-")
@@ -1656,7 +1693,6 @@ class TunesViewer:
 							#(last pic was the icon for this, it will be added:)
 							self.Description += "<img src=\"%s\" width=%s height=%s>" % (self.last_el_pic, self.config.imagesizeN, self.config.imagesizeN)
 						self.Description += "<a href=\"%s\">%s</a><br>" % (urllink, HTmarkup(name,isheading));
-						#self.liststore.append([None, markup(name.strip(),isheading), author.strip(), "", "", "(Link)", "", "", urllink, "", arturl, ""])
 					elif len(element): #No name, this must be the picture-link that comes before the text-link. 
 						picurl = "" # We'll try to find picture url in the <PictureView> inside the <View> inside this <GotoURL>.
 						el = element[0] # first childnode
@@ -1667,7 +1703,6 @@ class TunesViewer:
 							self.last_el_pic = picurl
 							if el.get("alt")=="next page" or el.get("alt")=="previous page":
 								self.Description += "<a href=\"%s\">%s</a>" % (urllink, HTmarkup(el.get("alt"),isheading))
-								#self.liststore.append([None, markup(el.get("alt"),isheading), "", "","","(Link)","","",urllink,"",picurl,""])
 						elif el != None and isinstance(el.tag,str) and el.tag == "View":
 							el = el[0]
 							if el != None and isinstance(el.tag,str) and el.tag == "PictureView":
@@ -1724,28 +1759,24 @@ class TunesViewer:
 	
 	def seeHTMLElement(self,element):
 		if isinstance(element.tag,str): # normal element
-			if element.tag=="tr" and element.get("class") and (element.get("class").find("track-preview")>-1 or element.get("class").find("podcast-episode")>-1):
+			if element.tag=="tr" and element.get("class") and (element.get("class").find("track-preview")>-1 or element.get("class").find("podcast-episode")>-1 or element.get("class").find("song")>-1 or element.get("class").find("video")>-1):
 				#You'll find the info in the rows using the inspector (right click, inspect).
-				title=""; exp=""; itemid="";
+				title=""; exp=""; itemid=""; artist = ""; time=""; url = ""; comment = ""; releaseDate=""; gotou = ""; price=""
 				if element.get("adam-id"):
 					itemid=element.get("adam-id")
 				if element.get("preview-title"):
 					title = element.get("preview-title")
-				artist = ""
 				if element.get("preview-artist"):
 					artist = element.get("preview-artist")
-				time="";
 				if element.get("duration"):
 					time = timeFind(element.get("duration"))
 				if element.get("rating-riaa") and element.get("rating-riaa")!="0":
 					exp = "[Explicit] "
-				url = ""
 				if element.get("audio-preview-url"):
 					url = element.get("audio-preview-url")
 				elif element.get("video-preview-url"):
 					url = element.get("video-preview-url")
 				type = typeof(url)
-				comment = ""; releaseDate=""; gotou = ""
 				for sub in element:
 					cl = sub.get("class")
 					val = sub.get("sort-value")
@@ -1763,10 +1794,9 @@ class TunesViewer:
 							releaseDate=val
 						if cl.find("description")>-1:
 							comment = val
-				self.liststore.append([None,markup(title,False),artist,time,type,exp+comment,releaseDate,"",gotou,url,"",itemid])
-				for i in element:
-					self.seeHTMLElement(i)
-			
+						if cl.find("price")>-1:
+							price = val
+				self.liststore.append([None,markup(title,False),artist,time,type,exp+comment,releaseDate,"",gotou,url,price,itemid])
 			elif element.get("audio-preview-url") or element.get("video-preview-url"): #Ping audio/vid.
 				if element.get("video-preview-url"):
 					url = element.get("video-preview-url")
@@ -1785,9 +1815,6 @@ class TunesViewer:
 			elif element.tag=="button" and element.get("anonymous-download-url"):#Added for epub feature
 				self.liststore.append([None,markup(element.get("title"),False),element.get("item-name"),"",typeof(element.get("anonymous-download-url")),"","","",element.get("anonymous-download-url"),"","",""])#Special 
 			else: # go through the childnodes.
-				#if element.tail and element.tail.strip():
-					##Added to get Ping updates:
-					#self.liststore.append([None,markup(element.tail.strip(),False),"","","","","","","","","",""])
 				for i in element:
 					self.seeHTMLElement(i)
 	
@@ -1892,7 +1919,7 @@ elif len(args) > 0:
 	url = args[0]
 
 # Create the TunesViewer instance and run it:
-print "TunesViewer 1.1"
+print "TunesViewer 1.1.1"
 prog = TunesViewer()
 prog.url = url
 prog.main()

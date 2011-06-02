@@ -24,6 +24,11 @@ class ConfigBox:
 	alwaysHTML = ["/artist/","/institution/","/wa/viewGenre","/wa/viewRoom","/wa/viewSeeAll","/wa/viewArtist","/wa/viewTagged","/wa/viewGrouping","://c.itunes.apple.com","://t.co/"]
 	# new in 1.1:
 	home = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewGrouping?id=27753"
+	# new in 1.1.1:
+	zoomAll=True
+	releasedCol=False
+	modifiedCol=False
+	
 	
 	def __init__(self,mw):
 		self.window = gtk.Dialog("TunesViewer Preferences",None,gtk.DIALOG_DESTROY_WITH_PARENT,(gtk.STOCK_OK,1,gtk.STOCK_CANCEL,0))
@@ -88,16 +93,24 @@ class ConfigBox:
 		self.homeEntry = gtk.Entry()
 		self.toolbarCheck = gtk.CheckButton("Show Toolbar")
 		self.statusbarCheck = gtk.CheckButton("Show Statusbar")
+		
+		self.checkReleasedCol = gtk.CheckButton("Show release date column")
+		self.checkModifiedCol = gtk.CheckButton("Show modified date column")
+		self.checkZoomAll = gtk.CheckButton("Zoom text and images")
+		
 		self.throbberCheck = gtk.CheckButton("Show Loading icon")
 		self.scaleImageCheck = gtk.CheckButton("Scale main image to recommended size")
 		self.autoRedirectCheck = gtk.CheckButton("Automatically redirect")
 		vtab.pack_start(gtk.Label("Home page:"),False,False,0)
 		vtab.pack_start(self.homeEntry,False,False,0)
-		vtab.pack_start(self.toolbarCheck,False,False,5)
+		vtab.pack_start(self.toolbarCheck,False,False,0)
 		vtab.pack_start(self.statusbarCheck,False,False,0)
-		vtab.pack_start(self.throbberCheck,False, False, 5)
+		vtab.pack_start(self.checkReleasedCol,False,False,0)
+		vtab.pack_start(self.checkModifiedCol,False,False,0)
+		vtab.pack_start(self.checkZoomAll,False,False,0)
+		vtab.pack_start(self.throbberCheck,False, False, 0)
 		vtab.pack_start(self.scaleImageCheck,False,False,0)
-		vtab.pack_start(self.autoRedirectCheck,False,False,05)
+		vtab.pack_start(self.autoRedirectCheck,False,False,0)
 		
 		hbox = gtk.HBox()
 		hbox.pack_start(gtk.Label("Show download notification for "),False,False,0)
@@ -184,6 +197,9 @@ class ConfigBox:
 		self.throbber = self.throbberCheck.get_active()
 		self.downloadfolder = self.downloadsel.get_current_folder()
 		self.home = self.homeEntry.get_text()
+		self.releasedCol = self.checkReleasedCol.get_active()
+		self.modifiedCol = self.checkModifiedCol.get_active()
+		self.zoomAll = self.checkZoomAll.get_active()
 		if self.downloadfolder == None:
 			self.downloadfolder = os.path.expanduser("~")
 		self.defaultcommand = self.combo.get_active()
@@ -217,6 +233,9 @@ class ConfigBox:
 		config.set(sec,"alwaysHTML-URLs", "\n".join(self.alwaysHTML))
 		config.set(sec,"throbber",self.throbber)
 		config.set(sec,"Home",self.home)
+		config.set(sec,"releasedCol",self.releasedCol)
+		config.set(sec,"modifiedCol",self.modifiedCol)
+		config.set(sec,"zoomAll",self.zoomAll)
 		config.write(open(os.path.expanduser("~/.tunesviewerprefs"),"w"))
 		self.setVisibility()
 
@@ -251,6 +270,9 @@ class ConfigBox:
 				self.alwaysHTML = config.get(sec,"alwaysHTML-URLs").split("\n")
 				self.throbber = (config.get(sec,"Throbber")=="True")
 				self.home = config.get(sec,"Home")
+				self.releasedCol = (config.get(sec,"releasedCol")=="True")
+				self.modifiedCol = (config.get(sec,"modifiedCol")=="True")
+				self.zoomAll = (config.get(sec,"zoomAll")=="True")
 			except Exception,e:
 				print "Load-settings error:",e
 		else:
@@ -276,6 +298,9 @@ class ConfigBox:
 		self.iconsize.set_text(str(self.iconsizeN))
 		self.alwaysHTMLText.get_buffer().set_text("\n".join(self.alwaysHTML))
 		self.homeEntry.set_text(self.home)
+		self.checkReleasedCol.set_active(self.releasedCol)
+		self.checkModifiedCol.set_active(self.modifiedCol)
+		self.checkZoomAll.set_active(self.zoomAll)
 		#print self.defaultcommand
 		if first:
 			self.first_setup()
@@ -291,6 +316,9 @@ class ConfigBox:
 			self.mainwin.statusbar.show()
 		else:
 			self.mainwin.statusbar.hide()
+		self.mainwin.treeview.get_column(6).set_property('visible',self.releasedCol)
+		self.mainwin.treeview.get_column(7).set_property('visible',self.modifiedCol)
+		self.mainwin.descView.set_full_content_zoom(self.zoomAll) #Not just text zoom
 	
 	def delete_event(self, widget, event, data=None):
 		""" Cancels close, only hides window. """

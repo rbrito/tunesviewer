@@ -51,7 +51,7 @@ class ItemDetails:
 			if selection[9]:
 				self.text += "This file is at:\n"+selection[9]+"\n\n"
 			if selection[10]:
-				self.text += "The image is from:\n"+selection[10]+"\n\n"
+				self.text += "Price:\n"+selection[10]+"\n\n"
 			if selection[11]:
 				self.text += "id:"+selection[11]
 			gtk.gdk.threads_enter();
