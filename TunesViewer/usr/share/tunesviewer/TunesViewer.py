@@ -57,7 +57,7 @@ def resource_cb(view, frame, resource, request, response):
 		#if (uri.endswith("htm")):
 		import urllib2
 		opener = urllib2.build_opener();
-		opener.addheaders = [('User-agent', 'iTunes/10.2'),("X-Apple-Store-Front","143441-1,12"),("X-Apple-Tz:","-21600")]
+		opener.addheaders = [('User-agent', 'iTunes/10.3'),("X-Apple-Store-Front","143441-1,12"),("X-Apple-Tz:","-21600")]
 		page = opener.open(uri);
 		if page.info().gettype().count("text/html"):
 			data = page.read();
@@ -652,7 +652,7 @@ class TunesViewer:
 		# Set up the main url handler with downloading and cookies:
 		self.cj = cookielib.CookieJar()
 		self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
-		self.opener.addheaders = [('User-agent', 'iTunes/10.2')]
+		self.opener.addheaders = [('User-agent', 'iTunes/10.3')]
 		#Load in background...
 		t = Thread(target=self.getDirectory, args=())
 		t.start()
@@ -1143,7 +1143,10 @@ class TunesViewer:
 		oldurl = self.url # previous url, to add to back stack.
 		if self.downloading:
 			return
-		#elif url.startswith("download://"):
+		elif url.startswith("web://"):
+			print url
+			openDefault(url[6:])
+			return
 			#label = url[11:].split(" ")
 			#print "download://"+label[0];
 			#if len(label)==2:
@@ -1173,7 +1176,7 @@ class TunesViewer:
 			self.downloading = False
 			self.tbStop.set_sensitive(False)
 			return
-		self.opener.addheaders = [('User-agent', 'iTunes/10.2')]
+		self.opener.addheaders = [('User-agent', 'iTunes/10.3')]
 		htmMode = self.htmlmode.get_active() #the checkbox
 		for line in self.config.alwaysHTML:
 			if line!="" and url.find(line)>-1:
@@ -1181,7 +1184,7 @@ class TunesViewer:
 				# based on http://willnorris.com/2009/09/itunes-9-now-with-more-webkit
 				htmMode = True
 		if htmMode:
-			self.opener.addheaders = [('User-agent', 'iTunes/10.2'),("X-Apple-Store-Front","143441-1,12"),("X-Apple-Tz:","-21600")]
+			self.opener.addheaders = [('User-agent', 'iTunes/10.3'),("X-Apple-Store-Front","143441-1,12"),("X-Apple-Tz:","-21600")]
 		#Show that it's loading:
 		#self.throbber.show()
 		#self.window.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
@@ -1721,6 +1724,8 @@ class TunesViewer:
 						print "blank element:",element,element.text
 			elif element.tag == "OpenURL":
 				urllink = element.get("url")
+				#if urllink and urllink[0:4]!="itms":
+					#urllink = "WEB://"+urllink
 				name = textContent(element).strip()
 				if element.get("draggingName"):
 					author = element.get("draggingName")

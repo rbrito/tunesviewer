@@ -50,6 +50,24 @@ function iTSVideoPreviewWithObject (obj) {
 	alert(obj);
 }
 
+function fixTransparent(objects) {
+	for (i=0; i<objects.length; i++) {
+		// If the heading is transparent, show it.
+		if (window.getComputedStyle(objects[i]).color=="rgba(0, 0, 0, 0)") {
+			objects[i].style.color = "inherit";
+		}
+		
+		//Fix odd background box on iTunesU main page
+		if (objects[i].parentNode.getAttribute("class")=="title") {
+			objects[i].style.background="transparent"
+		}
+		/*if (window.getComputedStyle(headings[i]).backgroundImage
+			.indexOf("-webkit-gradient(linear,") > -1) {
+			headings[i].style.background = "transparent";
+		}*/
+	}
+}
+
 document.onpageshow= new function() {
 	iTunes = new player();
 	
@@ -57,10 +75,20 @@ document.onpageshow= new function() {
 	as = document.getElementsByTagName("a");
 	for (a in as) {as[a].target=""};
 	
+	/* This fixes the color=transparent style on some headings.
+	 * Unfortunately, you can't use document.styleSheets' CSSRules/rules property, since it's cross-domain:
+	 * http://stackoverflow.com/questions/5678040/cssrules-rules-are-null-in-chrome
+	 * So, it manually checks for elements with the style:
+	 */
+	fixTransparent(document.getElementsByTagName("h1"))
+	fixTransparent(document.getElementsByTagName("h2"))
+	fixTransparent(as)
+	
 	buttons = document.getElementsByTagName('button');
 	for (i=0; i<buttons.length; i++) {
 		if (buttons[i].getAttribute('subscribe-podcast-url')!=null) {
 			buttons[i].addEventListener('click',function () {location.href=this.getAttribute('subscribe-podcast-url')},true);
 		}
 	}
+	console.log("JS OnPageShow Ran Successfully.")
 }
