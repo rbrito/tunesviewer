@@ -330,6 +330,8 @@ class TunesViewer:
 		
 		self.htmlmode = gtk.CheckMenuItem("Request _HTML Mode")
 		viewmenu.append(self.htmlmode)
+		self.mobilemode = gtk.CheckMenuItem("Mobile Mode")
+		viewmenu.append(self.mobilemode)
 		viewmenu.append(gtk.SeparatorMenuItem())
 		viewdownloads = gtk.ImageMenuItem(gtk.STOCK_GO_DOWN)
 		viewdownloads.set_label("Show _Downloads")
@@ -656,9 +658,16 @@ class TunesViewer:
 		#Load in background...
 		t = Thread(target=self.getDirectory, args=())
 		t.start()
+		#Check for crashed downloads:
+		try:
+			dlines = open(os.path.expanduser("~/.tunesviewerDownloads"),'r').read().split("\n")
+			os.remove(os.path.expanduser("~/.tunesviewerDownloads"))
+			for i in range(len(dlines)):
+				if dlines[i].startswith("####"):
+					self.downloadbox.newDownload(None,dlines[i+1],dlines[i+2],self.opener)
+		except IOError, e:
+			print "no downloads crashed."
 		
-		#self.treeview.get_column(6).set_property('visible',False)
-		#self.treeview.get_column(7).set_property('visible',False)
 	def webkitZI(self,obj):
 		self.descView.zoom_in()
 		
@@ -738,7 +747,7 @@ class TunesViewer:
 	
 	def progUpdate(self,obj):
 		"Checks for update to the program."
-		openDefault("http://tunesviewer.sourceforge.net/checkversion.php?version=1.1.1")
+		openDefault("http://tunesviewer.sourceforge.net/checkversion.php?version=1.2")
 	
 	def treesel(self,selection, model):
 		"Called when selection changes, changes the enabled toolbar buttons."
@@ -857,7 +866,7 @@ class TunesViewer:
 		openDefault("/usr/share/tunesviewer/help.txt")
 
 	def showAbout(self,obj):
-		msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "TunesViewer - Easy iTunesU access in Linux\nVersion 1.1.1 by Luke Bryan\nThis is open source software, distributed 'as is'")
+		msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "TunesViewer - Easy iTunesU access in Linux\nVersion 1.2 by Luke Bryan\nThis is open source software, distributed 'as is'")
 		msg.run()
 		msg.destroy()
 
@@ -1116,6 +1125,11 @@ class TunesViewer:
 			answer = msg.run()
 			msg.destroy()
 			if (answer == gtk.RESPONSE_YES):
+				#Clear crash recovery
+				try:
+					os.remove(os.path.expanduser("~/.tunesviewerDownloads"))
+				except OSError, e:
+					pass
 				self.downloadbox.cancelAll()
 				self.downloadbox.window.destroy()
 				gtk.main_quit()
@@ -1124,6 +1138,8 @@ class TunesViewer:
 			else:
 				return True
 		else:
+			#Clear crash recovery
+			os.remove(os.path.expanduser("~/.tunesviewerDownloads"))
 			self.downloadbox.window.destroy()
 			gtk.main_quit()
 			#sys.exit()
@@ -1185,6 +1201,9 @@ class TunesViewer:
 				htmMode = True
 		if htmMode:
 			self.opener.addheaders = [('User-agent', 'iTunes/10.3'),("X-Apple-Store-Front","143441-1,12"),("X-Apple-Tz:","-21600")]
+		if self.mobilemode.get_active():
+			#as described here http://blogs.oreilly.com/iphone/2008/03/tmi-apples-appstore-protocol-g.html
+			self.opener.addheaders = [('User-agent', 'iTunes-iPhone/1.2.0'),('X-Apple-Store-Front:','143441-1,2')]
 		#Show that it's loading:
 		#self.throbber.show()
 		#self.window.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
@@ -1931,7 +1950,7 @@ elif len(args) > 0:
 	url = args[0]
 
 # Create the TunesViewer instance and run it:
-print "TunesViewer 1.1.1"
+print "TunesViewer 1.2"
 prog = TunesViewer()
 prog.url = url
 prog.main()

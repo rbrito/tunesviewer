@@ -1,5 +1,6 @@
 import gobject
 import gtk
+import os
 from downloader import Downloader
 from common import *
 
@@ -118,3 +119,5 @@ class DownloadBox:
 			#this won't make cpu work too much.
 			gobject.timeout_add(250,self.updateLoop)
 		d.start()
+		f = open(os.path.expanduser("~/.tunesviewerDownloads"),'a');
+		f.write("#### url and localfile name: ####\n"+url+"\n"+localfile+"\n");
