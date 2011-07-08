@@ -1139,7 +1139,10 @@ class TunesViewer:
 				return True
 		else:
 			#Clear crash recovery
-			os.remove(os.path.expanduser("~/.tunesviewerDownloads"))
+			try:
+				os.remove(os.path.expanduser("~/.tunesviewerDownloads"))
+			except OSError, e:
+				pass
 			self.downloadbox.window.destroy()
 			gtk.main_quit()
 			#sys.exit()
@@ -1843,7 +1846,7 @@ class TunesViewer:
 				if element.get("preview-duration"):
 					duration = timeFind(element.get("preview-duration"))
 				self.liststore.append([None,markup(title,False),author,duration,typeof(url),"","","","",url,"",""])
-			elif element.tag=="button" and element.get("anonymous-download-url"):#Added for epub feature
+			elif element.tag=="button" and element.get("anonymous-download-url") and element.get("title"):#Added for epub feature
 				self.liststore.append([None,markup(element.get("title"),False),element.get("item-name"),"",typeof(element.get("anonymous-download-url")),"","","",element.get("anonymous-download-url"),"","",""])#Special 
 			else: # go through the childnodes.
 				for i in element:

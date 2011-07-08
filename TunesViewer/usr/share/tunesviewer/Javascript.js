@@ -32,7 +32,18 @@ function player () {
 	};
 	this.doPodcastDownload = function(obj, number) {
 		alert("podcastdownload");
-		alert(obj.getAttribute("episode-url"))
+		//alert(obj.innerHTML)//getAttribute("episode-url"))
+		keys = obj.getElementsByTagName('key');
+		//alert(keys)
+		/*name = ''; url='';
+		for (i=0; i<keys.length; i++) {
+			if (keys[i].textContent=="longDescription") {
+				name = keys[i].nextSibling.textContent;
+			} else if (keys[i].textContent = "episodeUrl") {
+				url = keys[i].nextSibling.textContent;
+			}
+		}
+		alert(name+"\n"+url);*/
 	};
 	this.doAnonymousDownload = function(obj) {
 		//alert(obj.itemName + "\n"+obj.url);
@@ -89,6 +100,9 @@ document.onpageshow= new function() {
 		if (buttons[i].getAttribute('subscribe-podcast-url')!=null) {
 			buttons[i].addEventListener('click',function () {location.href=this.getAttribute('subscribe-podcast-url')},true);
 		}
+		/*if (buttons[i].getAttribute('episode-url')!=null) {
+			buttons[i].addEventListener('click',function () {alert(this.getAttribute('episode-url'))},true);
+		}*/
 	}
 	console.log("JS OnPageShow Ran Successfully.")
 }
