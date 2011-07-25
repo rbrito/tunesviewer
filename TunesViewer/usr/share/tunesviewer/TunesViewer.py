@@ -331,7 +331,7 @@ class TunesViewer:
 		self.htmlmode = gtk.CheckMenuItem("Request _HTML Mode")
 		viewmenu.append(self.htmlmode)
 		self.mobilemode = gtk.CheckMenuItem("Mobile Mode")
-		viewmenu.append(self.mobilemode)
+		#viewmenu.append(self.mobilemode)
 		viewmenu.append(gtk.SeparatorMenuItem())
 		viewdownloads = gtk.ImageMenuItem(gtk.STOCK_GO_DOWN)
 		viewdownloads.set_label("Show _Downloads")
