@@ -37,14 +37,23 @@ class DownloadBox:
 		#Get downloaded/total
 		self.downloaded = 0
 		self.total = 0
+		#Also get bytes/bytes total, for overall download percentage:
+		totalbytes = 0
+		dlbytes = 0
 		for i in self.downloaders:
 			i.update()
 			if i.success:
 				self.downloaded += 1
 				self.total += 1
-			elif i.downloading:
+			else:#elif i.downloading:
 				self.total += 1
-		self.updateTitle(self.downloaded,self.total)
+			totalbytes += i.filesize
+			dlbytes += i.count
+		percent = ""
+		if (totalbytes != 0):
+			percent = str(round(dlbytes/totalbytes*100,1)) + "%, "
+		self.window.set_title("Downloads (%s%s/%s downloaded)" % 
+		  ( percent,str(self.downloaded), str(self.total) ))
 		if self.downloaded == self.total:
 			self.downloadrunning = False
 			self.downloadNotify()
@@ -63,10 +72,6 @@ class DownloadBox:
 		while len(self.downloaders):
 			#print "c",self.downloaders
 			self.downloaders[0].cancel(0)
-
-	def updateTitle(self,downloaded,total):
-		"""Updates the download window title"""
-		self.window.set_title("Downloads (%s/%s downloaded)" % (str(downloaded), str(total)))
 	
 	def downloadNotify(self):
 		if self.Wopener.config.notifyseconds != 0 and self.lastCompleteDownloads!=self.downloaded:
@@ -91,10 +96,10 @@ class DownloadBox:
 		"""
 		#Check if already downloading/downloaded:
 		for i in self.downloaders:
-			if localfile == i.localfile and (i.downloading or i.success): #already in download-box.
+			if localfile == i.localfile: # and (i.downloading or i.success): #already in download-box.
 				if (i.downloading):
 					message = "File is already downloading."
-				elif (i.success):
+				else:#if (i.success):
 					message = "File already downloaded."
 				msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE,
 				message)

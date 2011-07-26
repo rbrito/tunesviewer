@@ -1148,6 +1148,7 @@ class TunesViewer:
 			#sys.exit()
 	
 	def setLoadDisplay(self,load):
+		""" Shows that page is loading """
 		if load:
 			if self.config.throbber:
 				self.throbber.show()
@@ -1644,7 +1645,7 @@ class TunesViewer:
 			print "Exception:",e;
 			
 		pics = dom.xpath("//PictureView")
-		if len(pics)>0: #get main picture for this page:
+		if len(pics)>0: #get main picture for this page... Messy code, need a better way to do this, the Java Android-Tunesviewer parser is much better.
 				num = 0
 				while (num<len(pics) and (( pics[num].get("height")=="550") or ( (pics[num].get("alt")=="Explicit" or pics[num].get("alt")=="Clean")))):
 					num+=1 # skip this one
