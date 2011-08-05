@@ -1,8 +1,8 @@
 Package: tunesviewer
-Version: 1.2
+Version: 1.3
 Section: net
 Priority: optional
-Installed-Size: 240
+Installed-Size: 166
 Depends: python (>= 2.6), python-gtk2 (>= 2.16), python-lxml (>= 2.0), python-webkit (>=1.1)
 Suggests: vlc (>=1.0), soundconverter (>=1.0)
 Maintainer: Luke <lb1programmer@users.sourceforge.net>

@@ -1,7 +1,4 @@
-import os
-import time
-import urllib2
-import httplib
+import os, time, urllib2, httplib
 from threading import Thread
 
 import gobject
@@ -184,6 +181,7 @@ class Downloader:
 				
 				if (os.path.exists(self.localfile) and os.path.isfile(self.localfile)):
 					#File already exists, start where it left off:
+					#This seems to corrupt the file sometimes?
 					self._netfile.close()
 					req = urllib2.Request(self.url)
 					print "file downloading at byte: ",self.count
@@ -201,7 +199,7 @@ class Downloader:
 						self.count += len(next)
 					self.success = True
 			except httplib.InvalidURL, e:
-				self._progress.set_text("Invalid url. "+str(e))
+				self.Err=("Invalid url. "+str(e))
 				print "Error:",e
 				if str(e).count("nonnumeric port"):
 					#Workaround for bug: http://bugs.python.org/issue979407

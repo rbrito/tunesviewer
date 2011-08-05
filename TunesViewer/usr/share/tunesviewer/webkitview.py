@@ -13,7 +13,7 @@ class WebKitView(webkit.WebView):
 		self.set_highlight_text_matches(True)
 		#Set user-agent of this webkit view (based on code from http://nullege.com/codes/show/src%40p%40r%40PrisPy-HEAD%40PrisPy.py/33/webkit.WebView/python)
 		settings=webkit.WebSettings()
-		settings.set_property('user-agent', 'iTunes/10.2')
+		settings.set_property('user-agent', 'iTunes/10.4')
 		#Enable inspector:
 		settings.set_property("enable-developer-extras",True)
 		self._inspector = Inspector(self.get_web_inspector())

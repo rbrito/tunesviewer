@@ -95,6 +95,17 @@ document.onpageshow= new function() {
 	fixTransparent(document.getElementsByTagName("h2"))
 	fixTransparent(as)
 	
+	//Mouse-over tooltip for ellipsized title...
+	//Unfortunately it seems this may cause X window error!
+	titles = document.getElementsByClassName('name')
+	for (i=0; i<titles.length; i++) {
+		titles[i].title = titles[i].textContent
+	}
+	titles = document.getElementsByClassName('artist')
+	for (i=0; i<titles.length; i++) {
+		titles[i].title = titles[i].textContent
+	}
+	
 	buttons = document.getElementsByTagName('button');
 	for (i=0; i<buttons.length; i++) {
 		if (buttons[i].getAttribute('subscribe-podcast-url')!=null) {

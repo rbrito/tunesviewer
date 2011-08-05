@@ -8,7 +8,8 @@ class FindInPageBox(gtk.Dialog):
 							(gobject.TYPE_STRING,))}
 
 	def __init__(self):
-		gtk.Dialog.__init__(self,"Find in Current Page",None,gtk.DIALOG_DESTROY_WITH_PARENT,(gtk.STOCK_FIND,1,gtk.STOCK_CLOSE,0))
+		gtk.Dialog.__init__(self,"Find in Current Page",None,
+		    gtk.DIALOG_DESTROY_WITH_PARENT,(gtk.STOCK_FIND,1,gtk.STOCK_CLOSE,0))
 		self.currentFound = -1
 		self.set_size_request(250,-1)#change width
 		self.set_default_response(1)

@@ -11,14 +11,14 @@ class ConfigBox:
 	statusbar = False
 	throbber = True
 	downloadfile = "%n - %a %l%t"
-	openers = {".mp3" : "/usr/bin/vlc --http-user-agent=iTunes/10.2 --http-caching=10000", ".m4a" : "/usr/bin/vlc --http-user-agent=iTunes/10.2 --http-caching=10000", ".mov" : "/usr/bin/vlc --http-user-agent=iTunes/10.2 --http-caching=10000", ".mp4" : "/usr/bin/vlc --http-user-agent=iTunes/10.2 --http-caching=10000", ".m4v" : "/usr/bin/vlc --http-user-agent=iTunes/10.2 --http-caching=10000", ".m4p" : "/usr/bin/vlc --http-user-agent=iTunes/10.2 --http-caching=10000", ".aiff" : "/usr/bin/vlc --http-user-agent=iTunes/10.2 --http-caching=10000", ".aif" : "/usr/bin/vlc --http-user-agent=iTunes/10.2 --http-caching=10000", ".aifc" : "/usr/bin/vlc --http-user-agent=iTunes/10.2 --http-caching=10000" }
+	openers = {".mp3" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".m4a" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".mov" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".mp4" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".m4v" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".m4p" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".aiff" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".aif" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".aifc" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000" }
 	podcastprog = "rhythmbox %i"
 	defaultcommand=2
 	notifyseconds = 7
 	iconsizeN = 16
 	imagesizeN = 48
 	# new for 0.9:
-	scaleImage = True
+	#scaleImage = True - deprecated
 	autoRedirect = True
 	# new for 1.0:
 	alwaysHTML = ["/artist/","/institution/","/wa/viewGenre","/wa/viewRoom","/wa/viewSeeAll","/wa/viewArtist","/wa/viewTagged","/wa/viewGrouping","://c.itunes.apple.com","://t.co/"]
@@ -99,7 +99,6 @@ class ConfigBox:
 		self.checkZoomAll = gtk.CheckButton("Zoom text and images")
 		
 		self.throbberCheck = gtk.CheckButton("Show Loading icon")
-		self.scaleImageCheck = gtk.CheckButton("Scale main image to recommended size")
 		self.autoRedirectCheck = gtk.CheckButton("Automatically redirect")
 		vtab.pack_start(gtk.Label("Home page:"),False,False,0)
 		vtab.pack_start(self.homeEntry,False,False,0)
@@ -109,7 +108,6 @@ class ConfigBox:
 		vtab.pack_start(self.checkModifiedCol,False,False,0)
 		vtab.pack_start(self.checkZoomAll,False,False,0)
 		vtab.pack_start(self.throbberCheck,False, False, 0)
-		vtab.pack_start(self.scaleImageCheck,False,False,0)
 		vtab.pack_start(self.autoRedirectCheck,False,False,0)
 		
 		hbox = gtk.HBox()
@@ -193,7 +191,6 @@ class ConfigBox:
 		self.toolbar = self.toolbarCheck.get_active()
 		self.statusbar = self.statusbarCheck.get_active()
 		self.autoRedirect = self.autoRedirectCheck.get_active()
-		self.scaleImage = self.scaleImageCheck.get_active()
 		self.throbber = self.throbberCheck.get_active()
 		self.downloadfolder = self.downloadsel.get_current_folder()
 		self.home = self.homeEntry.get_text()
@@ -229,7 +226,6 @@ class ConfigBox:
 		config.set(sec,"ImageSize",self.imagesizeN)
 		config.set(sec,"IconSize",self.iconsizeN)
 		config.set(sec,"AutoRedirect",self.autoRedirect)
-		config.set(sec,"ScaleImage",self.scaleImage)
 		config.set(sec,"alwaysHTML-URLs", "\n".join(self.alwaysHTML))
 		config.set(sec,"throbber",self.throbber)
 		config.set(sec,"Home",self.home)
@@ -265,7 +261,6 @@ class ConfigBox:
 				self.iconsizeN = int(config.get(sec,"IconSize"))
 				self.toolbar = (config.get(sec,"Toolbar")=="True")
 				self.statusbar = (config.get(sec,"Statusbar")=="True")
-				self.scaleImage = (config.get(sec,"ScaleImage")=="True")
 				self.autoRedirect = (config.get(sec,"AutoRedirect")=="True")
 				self.alwaysHTML = config.get(sec,"alwaysHTML-URLs").split("\n")
 				self.throbber = (config.get(sec,"Throbber")=="True")
@@ -287,7 +282,6 @@ class ConfigBox:
 		self.downloadsafeCheck.set_active(self.downloadsafe)
 		self.toolbarCheck.set_active(self.toolbar)
 		self.statusbarCheck.set_active(self.statusbar)
-		self.scaleImageCheck.set_active(self.scaleImage)
 		self.autoRedirectCheck.set_active(self.autoRedirect)
 		self.throbberCheck.set_active(self.throbber)
 		self.filenamesel.set_text(self.downloadfile)
