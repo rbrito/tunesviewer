@@ -1,6 +1,4 @@
-import gobject
-import gtk
-import os
+import gobject, gtk, os
 from downloader import Downloader
 from common import *
 
@@ -10,7 +8,6 @@ class DownloadBox:
 	downloaded = 0
 	total = 0
 	lastCompleteDownloads = 0
-	
 	devicedir = None #last selected mp3-player directory:
 	
 	##
@@ -96,7 +93,7 @@ class DownloadBox:
 		"""
 		#Check if already downloading/downloaded:
 		for i in self.downloaders:
-			if localfile == i.localfile: # and (i.downloading or i.success): #already in download-box.
+			if url == i.url or localfile == i.localfile: # already in download-box.
 				if (i.downloading):
 					message = "File is already downloading."
 				else:#if (i.success):

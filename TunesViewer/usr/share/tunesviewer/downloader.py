@@ -1,10 +1,8 @@
 import os, time, urllib2, httplib
 from threading import Thread
 
-import gobject
+import pango, gobject, gtk
 gobject.threads_init()
-import pango
-import gtk
 from common import *
 
 class Downloader:
@@ -211,6 +209,7 @@ class Downloader:
 				print e
 				self.Err=("Download error, retrying in a few seconds: "+str(e))
 				try:
+					self._outfile.close()
 					self._netfile.close()
 				except Exception:
 					pass
