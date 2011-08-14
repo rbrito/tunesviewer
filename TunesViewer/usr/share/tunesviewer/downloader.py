@@ -216,8 +216,11 @@ class Downloader:
 				time.sleep(8) #Then repeat
 		
 		print "finished one"
-		self._outfile.close()
-		self._netfile.close()
+		try:
+			self._outfile.close()
+			self._netfile.close()
+		except:
+			pass
 		if self.downloading: #Not cancelled.
 			self.success = True #completed.
 			self._progress.set_fraction(1.0)

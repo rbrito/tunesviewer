@@ -3,18 +3,21 @@ from common import *
 from lxml import etree
 
 class Parser:
-	Redirect = "" # URL to redirect to.
-	Description = "" # The description-html, top panel.
-	itemId = "" # The specific item selected.
-	NormalPage = False
-	podcast = ""
-	NormalPage = False
+	
 	def __init__(self,mainwin,url,source):
+		#Initialized each time...
+		self.Redirect = "" # URL to redirect to.
+		self.Title = ""
+		self.HTML = "" # The description-html, top panel.
+		self.itemId = "" # The specific item selected.
+		self.NormalPage = False
+		self.podcast = ""
+		self.mediaItems = [] #List of items to place in Liststore.
+		#If only one item and no page description, this is a download link, download it.
+		
 		self.mainwin = mainwin
 		self.source = source
 		self.url = url
-		HTMLSet = False
-		HTMLImage = ""
 		sttime = time.time()
 		try:
 			#remove bad xml (see http://stackoverflow.com/questions/1016910/how-can-i-strip-invalid-xml-characters-from-strings-in-perl)
@@ -27,23 +30,23 @@ class Parser:
 				raise Exception
 		except Exception, e:
 			print "Not XML - ERR", e
-			if (self.source.lower().find('<html xmlns="http://www.apple.com/itms/"')>-1):
+			if (self.source.lower().find('<html')>-1):
 				print "Parsing HTML"
-				self.mainwin.descView.loadHTML(self.source,self.url);
-				HTMLSet = True
+				self.HTML = self.source;
 				import lxml.html
 				dom = lxml.html.document_fromstring(self.source.replace('<html xmlns="http://www.apple.com/itms/"','<html'))
-			elif (self.source != ""): # There is data, but invalid data.
-				self.NormalPage = True
+			#elif (self.source != ""): # There is data, but invalid data.
+				#self.NormalPage = True
+				# This breaks some pages, endless redirects.
 				
 				#msg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_WARNING, gtk.BUTTONS_YES_NO,
 				#		"This seems to be a page that should open with a web browser:\n%s\nDo you want to view it?" % self.url)
 				#if msg.run()==gtk.RESPONSE_YES:
 				#	openDefault(self.url)
 				#self.descView.loadHTML("(This page should be opened in a web browser)","about:")
-				HTMLSet = True
+				#HTMLSet = True
 				#msg.destroy()
-				return
+				#return
 			else:
 				print "unknown source:",self.source
 				return
@@ -98,7 +101,7 @@ class Parser:
 				
 		print "tag",dom.tag
 		if dom.tag=="rss": #rss files are added
-			self.Description += "<p>This is a podcast feed, click Add to Podcast manager button on the toolbar to subscribe.</p>"
+			self.HTML += "<p>This is a podcast feed, click Add to Podcast manager button on the toolbar to subscribe.</p>"
 			items = dom.xpath("//item")
 			print "rss:",len(items)
 			for item in items:
@@ -124,30 +127,21 @@ class Parser:
 						url=i.get("url")
 					elif i.tag.endswith("duration"):
 						duration = i.text
-				self.mainwin.addItem(title,author,duration,typeof(url),description,pubdate,"",linkurl,url,"","")
+				self.addItem(title,author,duration,typeof(url),description,pubdate,"",linkurl,url,"","")
 		
 		if arr == None: #No tracklisting.
 			hasmedia=False
-			if len(self.mainwin.liststore)==0: #blank.
+			if len(self.mediaItems)==0: #blank.
 				print "nothing here!"
 				for i in keys:
 					if i.text == "url" or i.text == "feedURL":
 						el = i.getnext()
 						url = el.text
 						#Redirect page, add link:
-						self.Description += "<br><a href=\"%s\">(%s redirect)</a>" % (url,i.text)
-						if self.mainwin.config.autoRedirect:
-							if self.mainwin.redirectPages.count(url):
-								print "redirect loop :(" #already redirected here.
-							else:
-								self.mainwin.redirectPages.append(url)
-								self.mainwin.gotoURL(url,False)
-								return
-							self.mainwin.redirectPages = []
+						self.HTML += "<br><a href=\"%s\">(%s redirect)</a>" % (url,i.text)
+						self.Redirect = url
 					elif i.text=="explanation" or i.text=="message":
-						self.Description += self.textContent(i.getnext())+"\n"
-			if self.source.find("<key>message</key><string>Your request could not be completed.</string>")>-1:
-				HTMLImage = "(Try selecting View menu - Request HTML Mode, then refresh this page.)"
+						self.HTML += self.textContent(i.getnext())+"\n"
 		else: # add the tracks:
 			hasmedia=True
 			# for each item...
@@ -211,7 +205,7 @@ class Parser:
 									id = t
 							elif (j.text=="metadata"):#for the special case end page after html link
 								i.extend(j.getnext().getchildren())# look inside this <dict><key></key><string></string>... also.
-					self.mainwin.addItem(name,artist,timeFind(duration), typeof(directurl),rtype+comments,self.formatTime(releaseDate),self.formatTime(modifiedDate), url,directurl,"",id)
+					self.addItem(name,artist,timeFind(duration), typeof(directurl),rtype+comments,self.formatTime(releaseDate),self.formatTime(modifiedDate), url,directurl,"",id)
 		#Now put page details in the detail-box on top.
 		if dom.tag=="rss":
 			out = ""
@@ -224,7 +218,7 @@ class Parser:
 					h = dom.xpath("/rss/channel/image/height")[0].text
 				except:
 					pass
-				HTMLImage = self.imgText(image[0].text, h, w)
+				self.HTML += self.imgText(image[0].text, h, w)
 			#else: #TODO: fix this namespace problem
 				#image = dom.xpath("/rss/channel/itunes:image",namespaces={'itunes': 'http://www.itunes.com/DTDs/Podcast-1.0.dtd'})[0]
 				#if len(image)>0...
@@ -237,18 +231,18 @@ class Parser:
 						thisname = "".join(i.tag.replace("{","}").split("}")[::2])# remove {....dtd} from tag
 						out+= "<b>%s:</b> %s\n" % (thisname, i.text)
 				try:
-					self.window.set_title(dom.xpath("/rss/channel/title")[0].text+" - TunesViewer")
+					self.Title = (dom.xpath("/rss/channel/title")[0].text)
 				except IndexError,e:
-					self.window.set_title("TunesViewer")
+					pass
 		else:
 			out = " > ".join(location)+"\n"
-			self.mainwin.window.set_title(out[:-1]+" - TunesViewer")
+			self.Title = (out[:-1])
 			out = ""
 			for i in range(len(location)):
 				out += "<a href=\""+locationLinks[i]+"\">"+location[i]+"</a> &gt; "
 			out = out [:-6]
 			if dom.tag == "html":
-				self.mainwin.window.set_title(dom.xpath("/html/head/title")[0].text_content()+" - TunesViewer")
+				self.Title = dom.xpath("/html/head/title")[0].text_content()
 		
 		#Get Podcast url
 		# already have keys = dom.xpath("//key")
@@ -323,11 +317,9 @@ class Parser:
 		#while True:
 		#		print eval(raw_input(">"))
 		
-		#Got a page, so clear the redirect list
-		self.mainwin.redirectPages = []
 		print "update took:",(time.time() - sttime),"seconds"
-		if not(HTMLSet):
-			self.mainwin.descView.loadHTML("<html><style>img {float:left; margin-right:6px; -webkit-box-shadow: 0 3px 5px #999999;}</style><body bgcolor=\""+self.bgcolor+"\">"+HTMLImage+out.replace("\n","<br>")+"<p>"+self.Description.replace("\n","<br>")+"</body></html>","about:");
+		#if not(HTMLSet):
+		#	self.mainwin.descView.loadHTML("<html><style>img {float:left; margin-right:6px; -webkit-box-shadow: 0 3px 5px #999999;}</style><body bgcolor=\""+self.bgcolor+"\">"+HTMLImage+out.replace("\n","<br>")+"<p>"+self.Description.replace("\n","<br>")+"</body></html>","about:");
 
 	def seeXMLElement(self,element,isheading):
 		""" Recursively looks at xml elements. """
@@ -481,7 +473,7 @@ class Parser:
 							comment = val
 						if cl.find("price")>-1:
 							price = val
-				self.mainwin.liststore.append([None,markup(title,False),artist,time,type,exp+comment,releaseDate,"",gotou,url,price,itemid])
+				self.mediaItems.append([None,markup(title,False),artist,time,type,exp+comment,releaseDate,"",gotou,url,price,itemid])
 			elif element.get("audio-preview-url") or element.get("video-preview-url"): #Ping audio/vid.
 				if element.get("video-preview-url"):
 					url = element.get("video-preview-url")
@@ -496,9 +488,9 @@ class Parser:
 				duration = ""
 				if element.get("preview-duration"):
 					duration = timeFind(element.get("preview-duration"))
-				self.mainwin.liststore.append([None,markup(title,False),author,duration,typeof(url),"","","","",url,"",""])
+				self.mediaItems.append([None,markup(title,False),author,duration,typeof(url),"","","","",url,"",""])
 			elif element.tag=="button" and element.get("anonymous-download-url") and element.get("title"):#Added for epub feature
-				self.mainwin.liststore.append([None,markup(element.get("title"),False),element.get("item-name"),"",typeof(element.get("anonymous-download-url")),"","","",element.get("anonymous-download-url"),"","",""])#Special 
+				self.mediaItems.append([None,markup(element.get("title"),False),element.get("item-name"),"",typeof(element.get("anonymous-download-url")),"","","",element.get("anonymous-download-url"),"","",""])#Special 
 			else: # go through the childnodes.
 				for i in element:
 					self.seeHTMLElement(i)
@@ -515,11 +507,18 @@ class Parser:
 	def removeOldData(self,dom):
 		"""
 		Removes xml nodes like <Test comparison="lt" value="7.1" property="iTunes version">
-		Including these would make many duplicates."""
+		Including these would make many duplicates.
+		
+		This function is unnecessary, we'll just ignore during recursive parsing, in the future."""
 		tests = dom.xpath("//Test") # get all <test> elements
 		for i in tests:
 			if (i.get("comparison")=="lt" or (i.get("comparison") and i.get("comparison").find("less")>-1)):
 				i.getparent().remove(i)
+	
+	def addItem(self,title,author,duration,type,comment,releasedate,datemodified, gotourl, previewurl, price, itemid):
+		"Adds item to list."
+		self.mediaItems.append([None,markup(title,False),author,duration,type,comment,releasedate,datemodified,gotourl,previewurl,price,itemid])
+	
 	
 	def getTextByClass(self,element,classtext):
 		if element.get("class") == classtext:
@@ -580,6 +579,10 @@ class Parser:
 					if self.hasAlink(i):
 						return True
 				return False
+	
+	def formatTime(self,text):
+		""" Changes the weird DateTTimeZ format found in the xml date-time. """
+		return text.replace("T"," ").replace("Z"," ")
 	
 	def getImgUrl(self,element): # find the image
 		if isinstance(element.tag,str) and element.tag == "img":

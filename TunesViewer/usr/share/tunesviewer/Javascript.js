@@ -51,6 +51,9 @@ function player () {
 		location.href=obj.url
 		//It has the url... just needs a way to tell the main program to download it (webkit transaction?)
 	}
+	this.getUserDSID = function() {//no user id.
+		return 0
+	}
 }
 
 function defined(something) {
@@ -79,8 +82,12 @@ function fixTransparent(objects) {
 	}
 }
 
-document.onpageshow= new function() {
+
+document.onpageshow =  new function() {
 	iTunes = new player();
+	its.webkitVersion = function webkitVersion() {
+		return "AppleWebKit/531.1"
+	}
 	
 	//Fix <a target="external" etc.
 	as = document.getElementsByTagName("a");
@@ -106,6 +113,16 @@ document.onpageshow= new function() {
 		titles[i].title = titles[i].textContent
 	}
 	
+	//Fix non-working preview buttons:
+	previews = document.getElementsByClassName('podcast-episode');
+	console.log(previews.length)
+	for (i=0; i<previews.length; i++) {
+		if (previews[i].tagName=='tr') {
+			console.log(previews[i].tagName)
+			previews[i].childNodes[0].addEventListener('click',previewClick)
+		}
+	}
+	
 	buttons = document.getElementsByTagName('button');
 	for (i=0; i<buttons.length; i++) {
 		if (buttons[i].getAttribute('subscribe-podcast-url')!=null) {
@@ -116,4 +133,16 @@ document.onpageshow= new function() {
 		}*/
 	}
 	console.log("JS OnPageShow Ran Successfully.")
+}
+
+function previewClick(el) {
+	console.log('previewclick')
+	tr = el.parentNode
+	if (tr.hasAttribute('video-preview-url')) {
+		preview = tr.getAttribute('video-preview-url')
+	} else if (tr.hasAttribute('audio-preview-url')) {
+		preview = tr.getAttribute('audio-preview-url')
+	}
+	a = new function() {this.url=preview}//this.url="http://deimos3.apple.com/WebObjects/Core.woa/DownloadTrackPreview/matcmadison.edu-dz.5408889333.05408889335.5408889393/enclosure.mp4"}
+	new player().playURL(a)
 }

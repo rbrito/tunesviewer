@@ -21,7 +21,7 @@ class ConfigBox:
 	#scaleImage = True - deprecated
 	autoRedirect = True
 	# new for 1.0:
-	alwaysHTML = ["/artist/","/institution/","/wa/viewGenre","/wa/viewRoom","/wa/viewSeeAll","/wa/viewArtist","/wa/viewTagged","/wa/viewGrouping","://c.itunes.apple.com","://t.co/"]
+	#(redundant now) alwaysHTML = ["/artist/","/institution/","/wa/viewGenre","/wa/viewRoom","/wa/viewSeeAll","/wa/viewArtist","/wa/viewTagged","/wa/viewGrouping","://c.itunes.apple.com","://t.co/"]
 	# new in 1.1:
 	home = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewGrouping?id=27753"
 	# new in 1.1.1:
@@ -128,11 +128,6 @@ class ConfigBox:
 		vtab.pack_start(hbox,True,False,0)
 		#vtab.pack_start(gtk.Label("\n"))
 		
-		sw = gtk.ScrolledWindow()
-		sw.set_policy(gtk.POLICY_AUTOMATIC,gtk.POLICY_AUTOMATIC)
-		vtab.pack_start(gtk.Label("Always request HTML when url includes..."),False,False,0)
-		self.alwaysHTMLText = gtk.TextView()
-		sw.add(self.alwaysHTMLText)
 		vtab.pack_start(sw)
 		
 		# default program frame:
@@ -207,8 +202,6 @@ class ConfigBox:
 			self.imagesizeN = int(self.imagesize.get_text())
 		except Exception,e:
 			print "Couldn't convert icon size:",e
-		buf = self.alwaysHTMLText.get_buffer()
-		self.alwaysHTML = buf.get_slice(buf.get_start_iter(),buf.get_end_iter()).split("\n")
 		
 		#Then write config file:
 		config = ConfigParser.ConfigParser()
@@ -226,7 +219,6 @@ class ConfigBox:
 		config.set(sec,"ImageSize",self.imagesizeN)
 		config.set(sec,"IconSize",self.iconsizeN)
 		config.set(sec,"AutoRedirect",self.autoRedirect)
-		config.set(sec,"alwaysHTML-URLs", "\n".join(self.alwaysHTML))
 		config.set(sec,"throbber",self.throbber)
 		config.set(sec,"Home",self.home)
 		config.set(sec,"releasedCol",self.releasedCol)
@@ -262,7 +254,6 @@ class ConfigBox:
 				self.toolbar = (config.get(sec,"Toolbar")=="True")
 				self.statusbar = (config.get(sec,"Statusbar")=="True")
 				self.autoRedirect = (config.get(sec,"AutoRedirect")=="True")
-				self.alwaysHTML = config.get(sec,"alwaysHTML-URLs").split("\n")
 				self.throbber = (config.get(sec,"Throbber")=="True")
 				self.home = config.get(sec,"Home")
 				self.releasedCol = (config.get(sec,"releasedCol")=="True")
@@ -290,7 +281,6 @@ class ConfigBox:
 		self.podcastprogbox.child.set_text(self.podcastprog)
 		self.imagesize.set_text(str(self.imagesizeN))
 		self.iconsize.set_text(str(self.iconsizeN))
-		self.alwaysHTMLText.get_buffer().set_text("\n".join(self.alwaysHTML))
 		self.homeEntry.set_text(self.home)
 		self.checkReleasedCol.set_active(self.releasedCol)
 		self.checkModifiedCol.set_active(self.modifiedCol)

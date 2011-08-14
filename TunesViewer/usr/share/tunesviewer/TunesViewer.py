@@ -48,21 +48,7 @@ except ImportError, e:
 import socket
 socket.setdefaulttimeout(20)
 
-def resource_cb(view, frame, resource, request, response):
-	#print dir(request)
-	#if request.get_property('message'): 
-	# request.get_property('message').set_data('User-agent','iTunes/10.1')
-	import urllib2
-	uri = request.get_uri()
-	if not(uri.startswith("data:")) and not(uri.endswith('jsz')):
-		#if (uri.endswith("htm")):
-		import urllib2
-		opener = urllib2.build_opener();
-		opener.addheaders = [('User-agent', 'iTunes/10.4'),("Accept-Encoding","gzip"),("X-Apple-Store-Front","143441-1,12"),("X-Apple-Tz:","-21600")]
-		page = opener.open(uri);
-		if page.info().gettype().count("text/html"):
-			data = page.read();
-			request.set_uri("data:"+page.info().gettype()+","+data)
+
 
 class TunesViewer:
 	source= "" # full html/xml source
@@ -80,6 +66,7 @@ class TunesViewer:
 
 	#Initializes the main window
 	def __init__(self, dname = None):
+		
 		self.downloadbox = DownloadBox(self)# Only one downloadbox is constructed
 		self.findbox = FindBox(self)
 		self.findInPage = FindInPageBox()
@@ -296,6 +283,7 @@ class TunesViewer:
 		viewm.set_submenu(viewmenu)
 		
 		self.htmlmode = gtk.CheckMenuItem("Request _HTML Mode")
+		self.htmlmode.set_active(True)
 		viewmenu.append(self.htmlmode)
 		self.mobilemode = gtk.CheckMenuItem("Mobile Mode")
 		#viewmenu.append(self.mobilemode)
@@ -621,7 +609,7 @@ class TunesViewer:
 		# Set up the main url handler with downloading and cookies:
 		self.cj = cookielib.CookieJar()
 		self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
-		self.opener.addheaders = [('User-agent', 'iTunes/10.4'),('Accept-Encoding','gzip'),('Accept-Language','en-US')]
+		self.opener.addheaders = [('User-agent', self.descView.ua),('Accept-Encoding','gzip'),('Accept-Language','en-US')]
 
 		#Check for crashed downloads:
 		try:
@@ -712,9 +700,6 @@ class TunesViewer:
 		self.tbGoto.set_sensitive(False)
 		self.tbDownload.set_sensitive(False)
 	
-	def addItem(title,author,duration,type,comment,releasedate,datemodified, gotourl, previewurl, price, itemid):
-		"Adds item to list."
-		self.liststore.append([None,markup(title,False),author,duration,type,comment,releasedate,datemodified,gotourl,previewurl,price,itemid])
 	
 	def progUpdate(self,obj):
 		"Checks for update to the program."
@@ -1045,6 +1030,9 @@ class TunesViewer:
 		if self.selected() == None:
 			return
 		properties = self.selected()
+		startDownload(properties)
+		
+	def startDownload(self, properties):
 		name = htmlentitydecode(properties[1])
 		artist = properties[2]
 		duration = properties[3]
@@ -1154,6 +1142,7 @@ class TunesViewer:
 		print url
 		self.downloading = True
 		self.tbStop.set_sensitive(True)
+		
 		#Fix page-link:
 		if url.startswith("http://www.apple.com/itunes/affiliates/download/"):
 			if url.find("Url=")>-1:
@@ -1167,15 +1156,13 @@ class TunesViewer:
 			self.downloading = False
 			self.tbStop.set_sensitive(False)
 			return
-		self.opener.addheaders = [('User-agent', 'iTunes/10.4'),('Accept-Encoding','gzip')]
+		
+		#Apparently the x-apple-tz header is UTC offset *60 *60.
+		self.tz = str(-time.altzone)
+		self.opener.addheaders = [('User-agent', self.descView.ua),('Accept-Encoding','gzip'),('X-Apple-Tz',self.tz)]
 		htmMode = self.htmlmode.get_active() #the checkbox
-		for line in self.config.alwaysHTML:
-			if line!="" and url.find(line)>-1:
-				print "Requesting-HTM mode, preference for %s" % (line)
-				# based on http://willnorris.com/2009/09/itunes-9-now-with-more-webkit
-				htmMode = True
 		if htmMode:
-			self.opener.addheaders = [('User-agent', 'iTunes/10.4'),('Accept-Encoding','gzip'),("X-Apple-Store-Front","143441-1,12"),("X-Apple-Tz:","-21600")]
+			self.opener.addheaders = [('User-agent', self.descView.ua),('Accept-Encoding','gzip'),("X-Apple-Tz:",self.tz),("X-Apple-Store-Front","143441-1,12")]
 		if self.mobilemode.get_active():
 			#as described here http://blogs.oreilly.com/iphone/2008/03/tmi-apples-appstore-protocol-g.html
 			self.opener.addheaders = [('User-agent', 'iTunes-iPhone/1.2.0'),('Accept-Encoding','gzip'),('X-Apple-Store-Front:','143441-1,2')]
@@ -1189,7 +1176,7 @@ class TunesViewer:
 		self.tbStop.set_sensitive(True)
 		t.start()
 		while (self.downloading):
-			#Just wait...
+			#Just wait... there's got to be a better way to do this?
 			while gtk.events_pending():
 				gtk.main_iteration_do(False)
 			time.sleep(0.02)
@@ -1264,10 +1251,6 @@ class TunesViewer:
 		self.downloading = False
 		self.tbStop.set_sensitive(False)
 	
-	def formatTime(self,text):
-		""" Changes the weird DateTTimeZ format found in the xml date-time. """
-		return text.replace("T"," ").replace("Z"," ")
-	
 	def update(self):
 		""" Updates display based on the current html or xml in self.source """
 		print "startupdate",self.url
@@ -1284,69 +1267,87 @@ class TunesViewer:
 			self.tbAuth.set_tooltip_text(tip)
 		else:
 			self.tbAuth.hide()
-		#Reset data:
-		self.taburls = [] #reset tab-urls until finished to keep it from going to other tabs.
-		while self.notebook.get_n_pages():
-			self.notebook.remove_page(self.notebook.get_n_pages()-1)
-		self.liststore.clear()
 		
-		# fix performance problem. The treeview shouldn't be connected to 
-		# the treeview while updating! see http://eccentric.cx/misc/pygtk/pygtkfaq.html
-		self.treeview.set_model(None)
-		
-		#Reset sorting:
-		self.liststore.set_sort_column_id(-2,gtk.SORT_DESCENDING)
 		#Parse the page and display:
+		print "PARSING"
 		parser = Parser(self,self.url,self.source)
-		#Get the icons for all the rows:
-		self.updateListIcons()
-		#specific item
-		for i in self.liststore:
-				if i[11]==parser.itemId:
-					print "selecting item",parser.itemId
-					self.treeview.get_selection().select_iter(i.iter)
-					self.treeview.scroll_to_cell(i.path,None,False,0,0)
-					#self.treeview.grab_focus()
-		#Enable podcast-buttons if this is podcast:
-		self.tbCopy.set_sensitive(parser.podcast!="")
-		self.tbAddPod.set_sensitive(parser.podcast!="")
-		self.addpodmenu.set_sensitive(parser.podcast!="")
-		
-		#None selected now, disable item buttons.
-		self.noneSelected()
-		self.treeview.set_model(self.liststore)
-		print "rows:",len(self.liststore)
-		mediacount = 0
-		linkscount = 0
-		for row in self.liststore:
-			if len(row) > 10 and row[9]:
-				mediacount += 1
-			elif row[8]:
-				linkscount += 1
-		rs = ""
-		ls = ""
-		ms = ""
-		if len(self.liststore)!=1:
-			rs = "s"
-		if linkscount !=1:
-			ls = "s"
-		if mediacount != 1:
-			ms = "s"
-		self.statusbar.set_text("%s row%s, %s link%s, %s file%s" % \
-		(len(self.liststore), rs, linkscount, ls, mediacount, ms))
-		
-		self.icon_audio=None
-		self.icon_video=None
-		self.icon_other=None
-		self.icon_link=None
-		try:
-			icon_theme = gtk.icon_theme_get_default() #Access theme's icons:
-			self.icon_audio = icon_theme.load_icon("sound",self.config.iconsizeN,0)
-			self.icon_video = icon_theme.load_icon("video",self.config.iconsizeN,0)
-			self.icon_other = icon_theme.load_icon("gnome-fs-regular",self.config.iconsizeN,0)
-			self.icon_link = icon_theme.load_icon("gtk-jump-to-ltr",self.config.iconsizeN,0)
-		except Exception, e:
-			print "Exception:",e;
+		print "Read page,",len(parser.mediaItems),"items, source=",parser.HTML[0:20],"..."
+		if (parser.Redirect != ""):
+			self.gotoURL(parser.Redirect, True)
+		elif len(parser.mediaItems)==1 and parser.HTML=="":
+			#Single item description page.
+			self.startDownload(parser.mediaItems[0])
+		else: #normal page, show it:
+			#Reset data:
+			self.taburls = [] #reset tab-urls until finished to keep it from going to other tabs.
+			while self.notebook.get_n_pages():
+				self.notebook.remove_page(self.notebook.get_n_pages()-1)
+			self.liststore.clear()
+			
+			# fix performance problem. The treeview shouldn't be connected to 
+			# the treeview while updating! see http://eccentric.cx/misc/pygtk/pygtkfaq.html
+			self.treeview.set_model(None)
+			
+			#Reset sorting:
+			self.liststore.set_sort_column_id(-2,gtk.SORT_DESCENDING)
+			
+			#Load data:
+			self.descView.loadHTML(parser.HTML,self.url)
+			print "ITEMS:",len(parser.mediaItems)
+			for item in parser.mediaItems:
+				self.liststore.append(item)
+			self.window.set_title(parser.Title)
+			
+			#Get the icons for all the rows:
+			self.updateListIcons()
+			
+			#specific item should be selected?
+			for i in self.liststore:
+					if i[11]==parser.itemId:
+						print "selecting item",parser.itemId
+						self.treeview.get_selection().select_iter(i.iter)
+						self.treeview.scroll_to_cell(i.path,None,False,0,0)
+						#self.treeview.grab_focus()
+			#Enable podcast-buttons if this is podcast:
+			self.tbCopy.set_sensitive(parser.podcast!="")
+			self.tbAddPod.set_sensitive(parser.podcast!="")
+			self.addpodmenu.set_sensitive(parser.podcast!="")
+			
+			#No item selected now, disable item buttons.
+			self.noneSelected()
+			self.treeview.set_model(self.liststore)
+			print "rows:",len(self.liststore)
+			mediacount = 0
+			linkscount = 0
+			for row in self.liststore:
+				if len(row) > 10 and row[9]:
+					mediacount += 1
+				elif row[8]:
+					linkscount += 1
+			rs = ""
+			ls = ""
+			ms = ""
+			if len(self.liststore)!=1:
+				rs = "s"
+			if linkscount !=1:
+				ls = "s"
+			if mediacount != 1:
+				ms = "s"
+			self.statusbar.set_text("%s row%s, %s link%s, %s file%s" % \
+			(len(self.liststore), rs, linkscount, ls, mediacount, ms))
+			
+			self.icon_audio=None
+			self.icon_video=None
+			self.icon_other=None
+			self.icon_link=None
+			try:
+				icon_theme = gtk.icon_theme_get_default() #Access theme's icons:
+				self.icon_audio = icon_theme.load_icon("sound",self.config.iconsizeN,0)
+				self.icon_video = icon_theme.load_icon("video",self.config.iconsizeN,0)
+				self.icon_other = icon_theme.load_icon("gnome-fs-regular",self.config.iconsizeN,0)
+				self.icon_link = icon_theme.load_icon("gtk-jump-to-ltr",self.config.iconsizeN,0)
+			except Exception, e:
+				print "Exception:",e;
 		
 	def updateListIcons(self):
 		""" Sets the icons in the liststore based on the media type. """
