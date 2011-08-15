@@ -37,5 +37,8 @@ class SingleWindowSocket:
 		s.bind(SOCKET)
 		while True:
 			url = s.recv(65536) #Wait for a url to load.
+			if url=='EXIT':
+				os.remove(SOCKET)
+				return #End this thread to let program exit normally.
 			gobject.idle_add(self.caller.gotoURL, url, True)
 			gobject.idle_add(self.caller.window.present)

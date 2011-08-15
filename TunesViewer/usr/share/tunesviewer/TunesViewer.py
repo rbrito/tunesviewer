@@ -1031,7 +1031,7 @@ class TunesViewer:
 		if self.selected() == None:
 			return
 		properties = self.selected()
-		startDownload(properties)
+		self.startDownload(properties)
 		
 	def startDownload(self, properties):
 		name = htmlentitydecode(properties[1])
@@ -1090,6 +1090,7 @@ class TunesViewer:
 					os.remove(os.path.expanduser("~/.tunesviewerDownloads"))
 				except OSError, e:
 					pass
+				self.sock.sendUrl("EXIT")
 				self.downloadbox.cancelAll()
 				self.downloadbox.window.destroy()
 				gtk.main_quit()
@@ -1103,6 +1104,7 @@ class TunesViewer:
 				os.remove(os.path.expanduser("~/.tunesviewerDownloads"))
 			except OSError, e:
 				pass
+			self.sock.sendUrl("EXIT")
 			self.downloadbox.window.destroy()
 			gtk.main_quit()
 			#sys.exit()
