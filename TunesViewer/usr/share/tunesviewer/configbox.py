@@ -126,9 +126,6 @@ class ConfigBox:
 		self.imagesize = gtk.Entry(); self.imagesize.set_width_chars(3)
 		hbox.pack_start(self.imagesize,False,False,0)
 		vtab.pack_start(hbox,True,False,0)
-		#vtab.pack_start(gtk.Label("\n"))
-		
-		vtab.pack_start(sw)
 		
 		# default program frame:
 		defFrame = gtk.Frame(label="Default handler for itms,itmss,itpc protocols:")

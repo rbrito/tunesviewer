@@ -33,6 +33,7 @@ from findbox import FindBox
 from itemdetails import ItemDetails
 from webkitview import WebKitView
 from Parser import Parser
+from SingleWindowSocket import SingleWindowSocket
 from common import *
 
 try:
@@ -45,8 +46,9 @@ except ImportError, e:
 	sys.exit(1)
 
 #Set download timeout to wait a while before quitting:
-import socket
-socket.setdefaulttimeout(20)
+#This will break SingleWindowSocket
+#import socket
+#socket.setdefaulttimeout(20)
 
 
 
@@ -699,7 +701,6 @@ class TunesViewer:
 		self.tbPlay.set_sensitive(False)
 		self.tbGoto.set_sensitive(False)
 		self.tbDownload.set_sensitive(False)
-	
 	
 	def progUpdate(self,obj):
 		"Checks for update to the program."
@@ -1392,5 +1393,10 @@ elif len(args) > 0:
 # Create the TunesViewer instance and run it:
 print "TunesViewer 1.3"
 prog = TunesViewer()
-prog.url = url
-prog.main()
+prog.sock = SingleWindowSocket(url,prog)
+#Only run if it isn't already running:
+if prog.sock.RUN:
+	prog.url = url
+	prog.main()
+else:
+	print "Sending url to already-running window."
