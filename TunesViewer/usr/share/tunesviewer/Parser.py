@@ -3,7 +3,6 @@ from common import *
 from lxml import etree
 
 class Parser:
-	
 	def __init__(self,mainwin,url,source):
 		#Initialized each time...
 		self.Redirect = "" # URL to redirect to.
@@ -50,7 +49,7 @@ class Parser:
 			else:
 				print "unknown source:",self.source
 				return
-		self.removeOldData(dom)
+		#XML handler
 		
 		items = []
 		arr = self.getItemsArray(dom) # get the tracks list element
@@ -85,7 +84,6 @@ class Parser:
 		self.last_el_link = ""
 		self.last_el_pic = ""
 		self.last_text = ""
-		self.addingD = False
 		self.bgcolor = ""
 		if dom.tag=="html":
 			self.seeHTMLElement(dom)
@@ -366,8 +364,8 @@ class Parser:
 						if self.last_el_link == urllink:
 							arturl = self.last_el_pic
 							#(last pic was the icon for this, it will be added:)
-							self.Description += "<img src=\"%s\" width=%s height=%s>" % (self.last_el_pic, self.config.imagesizeN, self.config.imagesizeN)
-						self.Description += "<a href=\"%s\">%s</a><br>" % (urllink, HTmarkup(name,isheading));
+							self.HTML += "<img src=\"%s\" width=%s height=%s>" % (self.last_el_pic, self.config.imagesizeN, self.config.imagesizeN)
+						self.HTML += "<a href=\"%s\">%s</a><br>" % (urllink, HTmarkup(name,isheading));
 					elif len(element): #No name, this must be the picture-link that comes before the text-link. 
 						picurl = "" # We'll try to find picture url in the <PictureView> inside the <View> inside this <GotoURL>.
 						el = element[0] # first childnode
@@ -401,7 +399,7 @@ class Parser:
 				# If there's a TextView-node right after, it should be the author-text or college name.
 				if nexttext != None and isinstance(nexttext.tag,str) and nexttext.tag == "TextView":
 					author = self.textContent(nexttext).strip()
-				self.Description += "<a href=\"%s\">%s" % (urllink, HTmarkup(name,isheading))
+				self.HTML += "<a href=\"%s\">%s" % (urllink, HTmarkup(name,isheading))
 				#if urllink and urllink[0:4]=="itms":
 					#lnk = "(Link)"
 				#else:
@@ -412,8 +410,7 @@ class Parser:
 					isheading = True
 				text, goto = self.searchLink(element)
 				if text.strip() != self.last_text: # don't repeat (without this some text will show twice).
-					#if True:# self.addingD: # put in description (top box)
-					self.Description += "\n%s\n<br>" % text.strip()
+					self.HTML += "\n%s\n<br>" % text.strip()
 					self.last_text = text.strip()
 				if goto != None:
 					for i in element:
@@ -427,15 +424,11 @@ class Parser:
 				# Recursively do this to all elements:
 				for node in element:
 					self.seeXMLElement(node,isheading)
-		elif type(element).__name__=='_Comment': #element.nodeType == element.COMMENT_NODE:
-			# Set it to add the description to self.Description when it is between these comment nodes:
-			if element.text.find("BEGIN description")>-1:
-				self.addingD = True
-			elif element.text.find("END description")>-1:
-				self.addingD = False
 	
 	def seeHTMLElement(self,element):
 		if isinstance(element.tag,str): # normal element
+			if element.get("comparison")=="lt" or (element.get("comparison") and element.get("comparison").find("less")>-1):
+				return #Ignore child nodes.
 			if element.tag=="tr" and element.get("class") and (element.get("class").find("track-preview")>-1 or element.get("class").find("podcast-episode")>-1 or element.get("class").find("song")>-1 or element.get("class").find("video")>-1):
 				#You'll find the info in the rows using the inspector (right click, inspect).
 				title=""; exp=""; itemid=""; artist = ""; time=""; url = ""; comment = ""; releaseDate=""; gotou = ""; price=""

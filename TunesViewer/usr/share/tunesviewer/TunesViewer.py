@@ -13,10 +13,9 @@
 #limitations under the License.
 
 #Import the standard python libraries needed:
-import urllib, urllib2, cookielib
+import urllib, urllib2, cookielib, gzip
 import sys, os, subprocess, time
 from threading import Thread
-import  gzip
 from StringIO import StringIO
 
 #Import GTK for gui.
@@ -44,13 +43,6 @@ except ImportError, e:
 	msg.run()
 	msg.destroy()
 	sys.exit(1)
-
-#Set download timeout to wait a while before quitting:
-#This will break SingleWindowSocket
-#import socket
-#socket.setdefaulttimeout(20)
-
-
 
 class TunesViewer:
 	source= "" # full html/xml source
