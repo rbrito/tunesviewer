@@ -2,8 +2,15 @@ import re, gc, time
 from common import *
 from lxml import etree
 
+def safe(obj):
+	""" Makes an object safe to add to string, even if it is NoneType. """
+	if obj:
+		return obj
+	else:
+		return ""
+
 class Parser:
-	def __init__(self,mainwin,url,source):
+	def __init__(self,mainwin,url,contentType,source):
 		#Initialized each time...
 		self.Redirect = "" # URL to redirect to.
 		self.Title = ""
@@ -11,53 +18,62 @@ class Parser:
 		self.itemId = "" # The specific item selected.
 		self.NormalPage = False
 		self.podcast = ""
+		self.bgcolor = ""
 		self.mediaItems = [] #List of items to place in Liststore.
-		#If only one item and no page description, this is a download link, download it.
-		
-		self.mainwin = mainwin
-		self.source = source
-		self.url = url
-		sttime = time.time()
-		try:
-			#remove bad xml (see http://stackoverflow.com/questions/1016910/how-can-i-strip-invalid-xml-characters-from-strings-in-perl)
-			bad = "[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD]"#\x10000-\x10FFFF]"
-			self.source = re.sub(bad," ",self.source) # now it should be valid xml.
-			dom = etree.fromstring(self.source.replace('xmlns="http://www.apple.com/itms/"',''))#(this xmlns causes problems with xpath)
-			#Some pages may have root element {http://www.w3.org/1999/xhtml}html
-			if dom.tag.find("html")>-1 or dom.tag=="{http://www.w3.org/2005/Atom}feed":
-				#Don't want normal pages/atom pages, those are for the web browser!
-				raise Exception
-		except Exception, e:
-			print "Not XML - ERR", e
-			if (self.source.lower().find('<html')>-1):
-				print "Parsing HTML"
-				self.HTML = self.source;
-				import lxml.html
-				dom = lxml.html.document_fromstring(self.source.replace('<html xmlns="http://www.apple.com/itms/"','<html'))
-			#elif (self.source != ""): # There is data, but invalid data.
-				#self.NormalPage = True
-				# This breaks some pages, endless redirects.
+		#If only one item and no page description, this is a download link, download it
+		self.last_el_link = ""
+		self.last_el_pic = ""
 				
-				#msg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_WARNING, gtk.BUTTONS_YES_NO,
-				#		"This seems to be a page that should open with a web browser:\n%s\nDo you want to view it?" % self.url)
-				#if msg.run()==gtk.RESPONSE_YES:
-				#	openDefault(self.url)
-				#self.descView.loadHTML("(This page should be opened in a web browser)","about:")
-				#HTMLSet = True
-				#msg.destroy()
+		self.mainwin = mainwin
+		self.url = url
+		self.contentType = contentType
+		self.source = source
+		sttime = time.time()
+		if contentType.startswith("text/xml"):
+			#try:
+				#remove bad xml (see http://stackoverflow.com/questions/1016910/how-can-i-strip-invalid-xml-characters-from-strings-in-perl)
+				bad = "[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD]"#\x10000-\x10FFFF]"
+				self.source = re.sub(bad," ",self.source) # now it should be valid xml.
+				dom = etree.fromstring(self.source.replace('xmlns="http://www.apple.com/itms/"',''))#(this xmlns causes problems with xpath)
+				#Some pages may have root element {http://www.w3.org/1999/xhtml}html
+				#if dom.tag.find("html")>-1 or dom.tag=="{http://www.w3.org/2005/Atom}feed":
+				#	#Don't want normal pages/atom pages, those are for the web browser!
+				#	raise Exception
+				self.seeXMLElement(dom,False)
+			#except Exception, e:
+				#print "Not XML - ERR", e
+				#self.HTML = "Not valid xml, error."
 				#return
-			else:
-				print "unknown source:",self.source
-				return
-		#XML handler
+		elif contentType.startswith("text/html"):
+			print "Parsing HTML"
+			self.HTML = self.source;
+			import lxml.html
+			dom = lxml.html.document_fromstring(self.source.replace('<html xmlns="http://www.apple.com/itms/"','<html'))
+		#elif (self.source != ""): # There is data, but invalid data.
+			#self.NormalPage = True
+			# This breaks some pages, endless redirects.
+			
+			#msg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_WARNING, gtk.BUTTONS_YES_NO,
+			#		"This seems to be a page that should open with a web browser:\n%s\nDo you want to view it?" % self.url)
+			#if msg.run()==gtk.RESPONSE_YES:
+			#	openDefault(self.url)
+			#self.descView.loadHTML("(This page should be opened in a web browser)","about:")
+			#HTMLSet = True
+			#msg.destroy()
+			#return
+		else:
+			print "unknown content:",self.source
+			return
+		self.HTML = "<html><style>img {float:left; margin-right:6px; -webkit-box-shadow: 0 3px 5px #999999;}</style><body bgcolor=\""+self.bgcolor+"\">"+self.HTML+"<p>"+"</body></html>"
 		
+		return
 		items = []
 		arr = self.getItemsArray(dom) # get the tracks list element
 		
 		keys = dom.xpath("//key") #important parts of document! this is only calculated once to save time
 		#Now get location path:
-		location = []; locationLinks=[]; lastloc = "" # location description and links and last location in location bar.
-		locationelements = dom.xpath("//Path")
+		#location = []; locationLinks=[]; lastloc = "" # location description and links and last location in location bar.
+		#locationelements = dom.xpath("//Path")
 
 		if len(locationelements) > 0:
 			for i in locationelements[0]:
@@ -317,7 +333,7 @@ class Parser:
 		
 		print "update took:",(time.time() - sttime),"seconds"
 		#if not(HTMLSet):
-		#	self.mainwin.descView.loadHTML("<html><style>img {float:left; margin-right:6px; -webkit-box-shadow: 0 3px 5px #999999;}</style><body bgcolor=\""+self.bgcolor+"\">"+HTMLImage+out.replace("\n","<br>")+"<p>"+self.Description.replace("\n","<br>")+"</body></html>","about:");
+		#	self.mainwin.descView.loadHTML(,"about:");
 
 	def seeXMLElement(self,element,isheading):
 		""" Recursively looks at xml elements. """
@@ -326,6 +342,7 @@ class Parser:
 			if element.get("backColor") and self.bgcolor == "":
 				self.bgcolor = element.get("backColor")
 			if element.tag == "GotoURL":
+				print element.tag, element.text, element.tail
 				urllink = element.get("url")
 				name = self.textContent(element).strip()
 				if element.get("draggingName"):
@@ -335,7 +352,7 @@ class Parser:
 				#See if there is text right after it for author.
 				nexttext = element.getparent().getparent().getnext()
 				match = re.match("Tab [0-9][0-9]* of [0-9][0-9]*",author)
-				if match: # Tab handler:
+				if match: # Tab handler needs to be moved to main code.
 					match = author[match.end():]
 					#print author,"TAB!", match
 					label = gtk.Label(); label.show()
@@ -355,36 +372,82 @@ class Parser:
 					self.taburls.append(urllink)
 					self.notebook.show_all()
 				else:
+					self.HTML += "<a href=\"%s\">" % element.get("url")
+					for i in element:
+						self.seeXMLElement(i,False);
+					self.HTML += safe(element.text)+"</a>"+safe(element.tail)
 					# If there's a TextView-node right after, it should be the author-text or college name.
-					if nexttext != None and isinstance(nexttext.tag,str) and nexttext.tag == "TextView":
-						author = self.textContent(nexttext).strip()
-					if name != "":
-						#text link. Does it have picture?
-						arturl = ""
-						if self.last_el_link == urllink:
-							arturl = self.last_el_pic
-							#(last pic was the icon for this, it will be added:)
-							self.HTML += "<img src=\"%s\" width=%s height=%s>" % (self.last_el_pic, self.config.imagesizeN, self.config.imagesizeN)
-						self.HTML += "<a href=\"%s\">%s</a><br>" % (urllink, HTmarkup(name,isheading));
-					elif len(element): #No name, this must be the picture-link that comes before the text-link. 
-						picurl = "" # We'll try to find picture url in the <PictureView> inside the <View> inside this <GotoURL>.
-						el = element[0] # first childnode
-						if el != None and isinstance(el.tag,str) and (el.tag == "PictureView" or el.tag == "PictureButtonView"):
-							picurl = el.get("url")
-							#print "PIC",urllink, picurl, el.get("alt")
-							self.last_el_link = urllink
-							self.last_el_pic = picurl
-							if el.get("alt")=="next page" or el.get("alt")=="previous page":
-								self.Description += "<a href=\"%s\">%s</a>" % (urllink, HTmarkup(el.get("alt"),isheading))
-						elif el != None and isinstance(el.tag,str) and el.tag == "View":
-							el = el[0]
-							if el != None and isinstance(el.tag,str) and el.tag == "PictureView":
-								picurl = el.get("url")
-								#print "pic",urllink, picurl
-								self.last_el_link = urllink
-								self.last_el_pic = picurl
-					else:
-						print "blank element:",element,element.text
+					
+					#if nexttext != None and isinstance(nexttext.tag,str) and nexttext.tag == "TextView":
+						#author = self.textContent(nexttext).strip()
+					#if name != "":
+						##text link. Does it have picture?
+						#arturl = ""
+						#if self.last_el_link == urllink:
+							#arturl = self.last_el_pic
+							##(last pic was the icon for this, it will be added:)
+							#self.HTML += "<img src=\"%s\">" % (self.last_el_pic)
+						#self.HTML += "<a href=\"%s\">%s</a><br>" % (urllink, HTmarkup(name,isheading));
+					#elif len(element): #No name, this must be the picture-link that comes before the text-link. 
+						#picurl = "" # We'll try to find picture url in the <PictureView> inside the <View> inside this <GotoURL>.
+						#el = element[0] # first childnode
+						#if el != None and isinstance(el.tag,str) and (el.tag == "PictureView" or el.tag == "PictureButtonView"):
+							#picurl = el.get("url")
+							##print "PIC",urllink, picurl, el.get("alt")
+							#self.last_el_link = urllink
+							#self.last_el_pic = picurl
+							#if el.get("alt")=="next page" or el.get("alt")=="previous page":
+								#self.Description += "<a href=\"%s\">%s</a>" % (urllink, HTmarkup(el.get("alt"),isheading))
+						#elif el != None and isinstance(el.tag,str) and el.tag == "View":
+							#el = el[0]
+							#if el != None and isinstance(el.tag,str) and el.tag == "PictureView":
+								#picurl = el.get("url")
+								##print "pic",urllink, picurl
+								#self.last_el_link = urllink
+								#self.last_el_pic = picurl
+					#else:
+						#print "blank element:",element,element.text
+			elif element.tag == "FontStyle":
+				if element.get("styleName")=="default":
+					self.HTML += "<style> * {color: "
+					if element.get("color"):
+						self.HTML += element.get("color")
+					self.HTML += "; font-family: "
+					if element.get("font"):
+						self.HTML += element.get("font")
+					self.HTML += "; font-size: "
+					if element.get("size"):
+						self.HTML += element.get("size")
+					self.HTML += ";} </style>"
+			elif element.tag == "HBoxView":
+				self.HTML += "<!--HBox--><table><tr>"
+				for node in element:
+					self.HTML += "<td>"
+					self.seeXMLElement(node,False)
+					self.HTML += "</td>"
+				self.HTML += "</tr></table>"
+			elif element.tag == "VBoxView":
+				self.HTML += "<!--VBox--><table width='100%'>"
+				for node in element:
+					self.HTML += "<tr><td>"
+					self.seeXMLElement(node,False)
+					self.HTML += "</td></tr>"
+				self.HTML += "</table>"
+			elif element.tag == "PictureView":
+				self.HTML += "<img src=\""
+				if element.get("url"):
+					self.HTML += element.get("url")
+				else:
+					self.HTML += safe(element.get("src"))
+				self.HTML += "\" "
+				if element.get("height"):
+					self.HTML += "height=\""+element.get("height")+"\" "
+				if element.get("width"):
+					self.HTML += "width=\""+element.get("width")+"\" "
+				self.HTML += ">"
+				for node in element:
+					self.seeXMLElement(node,False)
+				self.HTML += "</img>"
 			elif element.tag == "OpenURL":
 				urllink = element.get("url")
 				#if urllink and urllink[0:4]!="itms":
@@ -409,17 +472,17 @@ class Parser:
 				if element.get("headingLevel")=="2" or (element.get("topInset")=="1" and element.get("leftInset")=="1"):
 					isheading = True
 				text, goto = self.searchLink(element)
-				if text.strip() != self.last_text: # don't repeat (without this some text will show twice).
+				if True:#text.strip() != self.last_text: # don't repeat (without this some text will show twice).
 					self.HTML += "\n%s\n<br>" % text.strip()
 					self.last_text = text.strip()
 				if goto != None:
 					for i in element:
 						if isinstance(i.tag,str):
 							self.seeXMLElement(i,isheading)
-			else:
+			elif not(element.tag=="Test" and (element.get("comparison").startswith("lt") or element.get("comparison")=="less")):
 				#sometimes podcast ratings are in hboxview alt, get the text alts.
-				if element.tag == "HBoxView" and element.get("alt"): #and element.getAttribute("alt").lower()!=element.getAttribute("alt").upper():
-					self.Description += HTmarkup(element.get("alt"),False)
+				#if element.tag == "HBoxView" and element.get("alt"): #and element.getAttribute("alt").lower()!=element.getAttribute("alt").upper():
+				#	self.Description += HTmarkup(element.get("alt"),False)
 				
 				# Recursively do this to all elements:
 				for node in element:

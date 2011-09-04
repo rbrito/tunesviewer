@@ -1218,25 +1218,29 @@ class TunesViewer:
 		try:
 			#Downloader:
 			response = opener.open(url)
-			text = ""
-			next = response.read(100)
-			while (next != "" and self.downloading):
-				text += next
+			self.pageType = response.info().getheader('Content-Type','noheader?')
+			if self.pageType.startswith("text"):
+				text = ""
 				next = response.read(100)
-			if next == "": #Finished successfully.
-				self.downloadError = ""
-				self.url = url
-				if (response.info().get('Content-Encoding') == 'gzip'):
-					orig = len(text)
-					f = gzip.GzipFile(fileobj=StringIO(text))
-					try:
-						text = f.read()
-						print "Gzipped response: ",orig,"->",len(text)
-					except IOError, e:#bad file
-						print e
-				self.source = text
+				while (next != "" and self.downloading):
+					text += next
+					next = response.read(100)
+				if next == "": #Finished successfully.
+					self.downloadError = ""
+					self.url = url
+					if (response.info().get('Content-Encoding') == 'gzip'):
+						orig = len(text)
+						f = gzip.GzipFile(fileobj=StringIO(text))
+						try:
+							text = f.read()
+							print "Gzipped response: ",orig,"->",len(text)
+						except IOError, e:#bad file
+							print e
+					self.source = text
+				else:
+					self.downloadError = "stopped."
 			else:
-				self.downloadError = "stopped."
+				pass #TODO: Download it
 			
 			response.close()
 			
@@ -1265,7 +1269,7 @@ class TunesViewer:
 		
 		#Parse the page and display:
 		print "PARSING"
-		parser = Parser(self,self.url,self.source)
+		parser = Parser(self, self.url, self.pageType, self.source)
 		print "Read page,",len(parser.mediaItems),"items, source=",parser.HTML[0:20],"..."
 		if (parser.Redirect != ""):
 			self.gotoURL(parser.Redirect, True)
@@ -1330,22 +1334,21 @@ class TunesViewer:
 				ms = "s"
 			self.statusbar.set_text("%s row%s, %s link%s, %s file%s" % \
 			(len(self.liststore), rs, linkscount, ls, mediacount, ms))
-			
-			self.icon_audio=None
-			self.icon_video=None
-			self.icon_other=None
-			self.icon_link=None
-			try:
-				icon_theme = gtk.icon_theme_get_default() #Access theme's icons:
-				self.icon_audio = icon_theme.load_icon("sound",self.config.iconsizeN,0)
-				self.icon_video = icon_theme.load_icon("video",self.config.iconsizeN,0)
-				self.icon_other = icon_theme.load_icon("gnome-fs-regular",self.config.iconsizeN,0)
-				self.icon_link = icon_theme.load_icon("gtk-jump-to-ltr",self.config.iconsizeN,0)
-			except Exception, e:
-				print "Exception:",e;
 		
 	def updateListIcons(self):
 		""" Sets the icons in the liststore based on the media type. """
+		self.icon_audio=None
+		self.icon_video=None
+		self.icon_other=None
+		self.icon_link=None
+		try:
+			icon_theme = gtk.icon_theme_get_default() #Access theme's icons:
+			self.icon_audio = icon_theme.load_icon("sound",self.config.iconsizeN,0)
+			self.icon_video = icon_theme.load_icon("video",self.config.iconsizeN,0)
+			self.icon_other = icon_theme.load_icon("gnome-fs-regular",self.config.iconsizeN,0)
+			self.icon_link = icon_theme.load_icon("gtk-jump-to-ltr",self.config.iconsizeN,0)
+		except Exception, e:
+			print "Exception:",e;
 		for row in self.liststore:
 			type = row[4].lower()
 			if type:
