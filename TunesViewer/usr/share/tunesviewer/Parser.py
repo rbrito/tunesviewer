@@ -20,9 +20,9 @@ class Parser:
 		self.podcast = ""
 		self.bgcolor = ""
 		self.mediaItems = [] #List of items to place in Liststore.
-		#If only one item and no page description, this is a download link, download it
-		self.last_el_link = ""
-		self.last_el_pic = ""
+		self.tabMatches = []
+		self.tabLinks = []
+		self.last_text = "" # prevent duplicates from shadow-text.
 				
 		self.mainwin = mainwin
 		self.url = url
@@ -39,7 +39,7 @@ class Parser:
 				#if dom.tag.find("html")>-1 or dom.tag=="{http://www.w3.org/2005/Atom}feed":
 				#	#Don't want normal pages/atom pages, those are for the web browser!
 				#	raise Exception
-				self.seeXMLElement(dom,False)
+				self.seeXMLElement(dom)
 			#except Exception, e:
 				#print "Not XML - ERR", e
 				#self.HTML = "Not valid xml, error."
@@ -49,6 +49,7 @@ class Parser:
 			self.HTML = self.source;
 			import lxml.html
 			dom = lxml.html.document_fromstring(self.source.replace('<html xmlns="http://www.apple.com/itms/"','<html'))
+			self.seeHTMLElement(dom)
 		#elif (self.source != ""): # There is data, but invalid data.
 			#self.NormalPage = True
 			# This breaks some pages, endless redirects.
@@ -62,19 +63,17 @@ class Parser:
 			#msg.destroy()
 			#return
 		else:
-			print "unknown content:",self.source
+			print "unknown content type:",contentType
 			return
-		self.HTML = "<html><style>img {float:left; margin-right:6px; -webkit-box-shadow: 0 3px 5px #999999;}</style><body bgcolor=\""+self.bgcolor+"\">"+self.HTML+"<p>"+"</body></html>"
+		self.HTML = "<html><body bgcolor=\""+self.bgcolor+"\">"+self.HTML+"<p>"+"</body></html>"
 		
-		return
 		items = []
 		arr = self.getItemsArray(dom) # get the tracks list element
 		
 		keys = dom.xpath("//key") #important parts of document! this is only calculated once to save time
 		#Now get location path:
-		#location = []; locationLinks=[]; lastloc = "" # location description and links and last location in location bar.
-		#locationelements = dom.xpath("//Path")
-
+		location = []; locationLinks=[]; lastloc = "" # location description and links and last location in location bar.
+		locationelements = dom.xpath("//Path")
 		if len(locationelements) > 0:
 			for i in locationelements[0]:
 				if (type(i).__name__=='_Element' and i.tag=="PathElement"):
@@ -97,15 +96,8 @@ class Parser:
 					section.getparent().remove(section) # redundant section > section ... info is removed.
 		
 		#initialize last-seen variables to nothing, then recursively look at every element, starting with documentElement:
-		self.last_el_link = ""
-		self.last_el_pic = ""
 		self.last_text = ""
 		self.bgcolor = ""
-		if dom.tag=="html":
-			self.seeHTMLElement(dom)
-		else:
-			#XML parsing still needs work
-			self.seeXMLElement(dom,False)
 		
 		if arr == None:
 			ks = dom.xpath("/Document/Protocol/plist/dict/array/dict")
@@ -147,15 +139,15 @@ class Parser:
 			hasmedia=False
 			if len(self.mediaItems)==0: #blank.
 				print "nothing here!"
-				for i in keys:
-					if i.text == "url" or i.text == "feedURL":
-						el = i.getnext()
-						url = el.text
-						#Redirect page, add link:
-						self.HTML += "<br><a href=\"%s\">(%s redirect)</a>" % (url,i.text)
-						self.Redirect = url
-					elif i.text=="explanation" or i.text=="message":
-						self.HTML += self.textContent(i.getnext())+"\n"
+				#for i in keys:
+					#if i.text == "url" or i.text == "feedURL":
+						#el = i.getnext()
+						#url = el.text
+						##Redirect page, add link:
+						#self.HTML += "<br><a href=\"%s\">(%s redirect)</a>" % (url,i.text)
+						#self.Redirect = url
+					#elif i.text=="explanation" or i.text=="message":
+						#self.HTML += self.textContent(i.getnext())+"\n"
 		else: # add the tracks:
 			hasmedia=True
 			# for each item...
@@ -306,18 +298,6 @@ class Parser:
 		
 		print "Parse took",time.time()-sttime,"s."
 		
-		#pics = dom.xpath("//PictureView")
-		#if len(pics)>0: #get main picture for this page... Messy code, need a better way to do this, the Java Android-Tunesviewer parser is much better.
-				#num = 0
-				#while (num<len(pics) and (( pics[num].get("height")=="550") or ( (pics[num].get("alt")=="Explicit" or pics[num].get("alt")=="Clean")))):
-					#num+=1 # skip this one
-				#if num<len(pics): # didn't go off end of list
-					#h = pics[num].get("height")
-					#w = pics[num].get("width")
-					#pic = pics[num].get("url")
-					#HTMLImage = self.imgText(pic, h, w)
-		
-		
 		#Done with this:
 		del dom
 		# avoid possible memory leak: http://faq.pygtk.org/index.py?req=show&file=faq08.004.htp
@@ -332,17 +312,14 @@ class Parser:
 		#		print eval(raw_input(">"))
 		
 		print "update took:",(time.time() - sttime),"seconds"
-		#if not(HTMLSet):
-		#	self.mainwin.descView.loadHTML(,"about:");
 
-	def seeXMLElement(self,element,isheading):
+	def seeXMLElement(self,element):
 		""" Recursively looks at xml elements. """
 		if isinstance(element.tag,str):
 			# Good element, check this element:
 			if element.get("backColor") and self.bgcolor == "":
 				self.bgcolor = element.get("backColor")
 			if element.tag == "GotoURL":
-				print element.tag, element.text, element.tail
 				urllink = element.get("url")
 				name = self.textContent(element).strip()
 				if element.get("draggingName"):
@@ -353,28 +330,15 @@ class Parser:
 				nexttext = element.getparent().getparent().getnext()
 				match = re.match("Tab [0-9][0-9]* of [0-9][0-9]*",author)
 				if match: # Tab handler needs to be moved to main code.
+					print "ADDTAB",match, urllink
 					match = author[match.end():]
-					#print author,"TAB!", match
-					label = gtk.Label(); label.show()
-					contents = gtk.Label(); contents.show()
-					contents.set_size_request(0, 0) # No tab contents
-					if match[0:12]==", Selected. ":
-						match = match[12:]
-						print "sel:",match
-						label.set_markup("<i><b>"+glib.markup_escape_text(match)+"</b></i>")
-						self.notebook.append_page(contents,label)
-						self.notebook.set_current_page(-1) #select this one
-						self.notebook.queue_draw_area(0,0,-1,-1)
-					else:
-						match = match[2:]
-						label.set_markup(glib.markup_escape_text(match))
-						self.notebook.append_page(contents,label)
-					self.taburls.append(urllink)
-					self.notebook.show_all()
+					self.tabMatches.append(match)
+					self.tabLinks.append(urllink)
+					#self.mainwin.addTab(match, urllink)
 				else:
 					self.HTML += "<a href=\"%s\">" % element.get("url")
 					for i in element:
-						self.seeXMLElement(i,False);
+						self.seeXMLElement(i);
 					self.HTML += safe(element.text)+"</a>"+safe(element.tail)
 					# If there's a TextView-node right after, it should be the author-text or college name.
 					
@@ -423,30 +387,27 @@ class Parser:
 				self.HTML += "<!--HBox--><table><tr>"
 				for node in element:
 					self.HTML += "<td>"
-					self.seeXMLElement(node,False)
+					self.seeXMLElement(node)
 					self.HTML += "</td>"
 				self.HTML += "</tr></table>"
 			elif element.tag == "VBoxView":
 				self.HTML += "<!--VBox--><table width='100%'>"
 				for node in element:
 					self.HTML += "<tr><td>"
-					self.seeXMLElement(node,False)
-					self.HTML += "</td></tr>"
+					previousLen = len(self.HTML)
+					self.seeXMLElement(node)
+					if (len(self.HTML)==previousLen):
+						self.HTML = self.HTML[:-8] #no empty row.
+					else:
+						self.HTML += "</td></tr>"
 				self.HTML += "</table>"
 			elif element.tag == "PictureView":
-				self.HTML += "<img src=\""
 				if element.get("url"):
-					self.HTML += element.get("url")
+					self.HTML += self.imgText(element.get("url"),element.get("height"),element.get("width"))
 				else:
-					self.HTML += safe(element.get("src"))
-				self.HTML += "\" "
-				if element.get("height"):
-					self.HTML += "height=\""+element.get("height")+"\" "
-				if element.get("width"):
-					self.HTML += "width=\""+element.get("width")+"\" "
-				self.HTML += ">"
+					self.HTML += self.imgText(element.get("src"),element.get("height"),element.get("width"))
 				for node in element:
-					self.seeXMLElement(node,False)
+					self.seeXMLElement(node)
 				self.HTML += "</img>"
 			elif element.tag == "OpenURL":
 				urllink = element.get("url")
@@ -462,31 +423,37 @@ class Parser:
 				# If there's a TextView-node right after, it should be the author-text or college name.
 				if nexttext != None and isinstance(nexttext.tag,str) and nexttext.tag == "TextView":
 					author = self.textContent(nexttext).strip()
-				self.HTML += "<a href=\"%s\">%s" % (urllink, HTmarkup(name,isheading))
+				self.HTML += "<a href=\"%s\">%s" % (urllink, HTmarkup(name,False))
 				#if urllink and urllink[0:4]=="itms":
 					#lnk = "(Link)"
 				#else:
 					#lnk = "(Web Link)"
-				#self.liststore.append([None, markup(name.strip(),isheading), author.strip(), "","",lnk,"","",urllink,"","",""])
-			elif element.tag == "TextView":
-				if element.get("headingLevel")=="2" or (element.get("topInset")=="1" and element.get("leftInset")=="1"):
-					isheading = True
-				text, goto = self.searchLink(element)
-				if True:#text.strip() != self.last_text: # don't repeat (without this some text will show twice).
-					self.HTML += "\n%s\n<br>" % text.strip()
-					self.last_text = text.strip()
-				if goto != None:
-					for i in element:
-						if isinstance(i.tag,str):
-							self.seeXMLElement(i,isheading)
-			elif not(element.tag=="Test" and (element.get("comparison").startswith("lt") or element.get("comparison")=="less")):
-				#sometimes podcast ratings are in hboxview alt, get the text alts.
-				#if element.tag == "HBoxView" and element.get("alt"): #and element.getAttribute("alt").lower()!=element.getAttribute("alt").upper():
-				#	self.Description += HTmarkup(element.get("alt"),False)
-				
-				# Recursively do this to all elements:
+			#elif element.tag == "TextView":
+				#if element.get("headingLevel")=="2" or (element.get("topInset")=="1" and element.get("leftInset")=="1"):
+					#isheading = True
+				#text, goto = self.searchLink(element)
+				#if True:#text.strip() != self.last_text: # don't repeat (without this some text will show twice).
+					#self.HTML += "\n%s\n<br>" % text.strip()
+					#self.last_text = text.strip()
+				#if goto != None:
+					#for i in element:
+						#if isinstance(i.tag,str):
+							#self.seeXMLElement(i,isheading)
+			elif element.tag=="Test" and (element.get("comparison").startswith("lt") or element.get("comparison")=="less"):
+				pass #older version info would cause duplicates.
+			elif element.tag=="string" or (element.getprevious() is not None and element.getprevious().tag=="key") or element.tag=="key" or element.tag=="MenuItem" or element.tag=="iTunes" or element.tag=="PathElement":
+				pass
+			else:
+				print element.tag
+				self.HTML += "<%s>" % element.tag
+				if element.text and element.text.strip()!="" and self.last_text.strip()!=element.text.strip():
+					#print "last:",self.last_text.strip(),"current:",element.text.strip()
+					self.HTML += element.text
+					self.last_text = element.text
+				# Recursively see all elements:
 				for node in element:
-					self.seeXMLElement(node,isheading)
+					self.seeXMLElement(node)
+				self.HTML += "</%s>" % element.tail
 	
 	def seeHTMLElement(self,element):
 		if isinstance(element.tag,str): # normal element
@@ -560,30 +527,9 @@ class Parser:
 				array = i.getnext()
 		return array
 	
-	def removeOldData(self,dom):
-		"""
-		Removes xml nodes like <Test comparison="lt" value="7.1" property="iTunes version">
-		Including these would make many duplicates.
-		
-		This function is unnecessary, we'll just ignore during recursive parsing, in the future."""
-		tests = dom.xpath("//Test") # get all <test> elements
-		for i in tests:
-			if (i.get("comparison")=="lt" or (i.get("comparison") and i.get("comparison").find("less")>-1)):
-				i.getparent().remove(i)
-	
 	def addItem(self,title,author,duration,type,comment,releasedate,datemodified, gotourl, previewurl, price, itemid):
-		"Adds item to list."
+		"Adds item to media list."
 		self.mediaItems.append([None,markup(title,False),author,duration,type,comment,releasedate,datemodified,gotourl,previewurl,price,itemid])
-	
-	
-	def getTextByClass(self,element,classtext):
-		if element.get("class") == classtext:
-			return element.text_content()
-		else:
-			out = ""
-			for i in element:
-				out += self.getTextByClass(i,classtext)
-			return out
 	
 	def textContent(self,element):
 		""" Gets all text content of the node. """
@@ -600,57 +546,13 @@ class Parser:
 				if i.tail:
 					out.append(i.tail)
 		return "".join(out)
-		
-	def searchLink(self,element):
-		""" Given an element, finds all text in it and the link in it (if any). """
-		text, goto = "", None
-		if isinstance(element.tag,str):#element.nodeType == element.ELEMENT_NODE:
-			if element.tag == "OpenURL" or element.tag == "GotoURL" or element.tag == "a": # for both xml and html <a.
-				goto = element
-			elif element.tag == "PictureView" and element.get("url").find("/stars/rating_star_")>-1:
-				text += "*"
-			else:
-				try:
-					int(element.text)
-					isInt = True
-				except:
-					isInt = False
-				if element.text and not(isInt and element.get("normalStyle")=="descriptionTextColor"): #To ignore repeated numbers like <SetFontStyle normalStyle="descriptionTextColor">8</SetFontStyle>
-					text += element.text
-				for i in element:
-					t,g = self.searchLink(i)
-					text += t
-					if i.tail:
-						text += i.tail # tailing text
-					if g!=None:
-						goto = g
-		return text, goto
-	
-	def hasAlink(self,element):
-		if isinstance(element.tag,str):
-			if element.tag=="a":
-				return True
-			else:
-				for i in element:
-					if self.hasAlink(i):
-						return True
-				return False
 	
 	def formatTime(self,text):
 		""" Changes the weird DateTTimeZ format found in the xml date-time. """
 		return text.replace("T"," ").replace("Z"," ")
 	
-	def getImgUrl(self,element): # find the image
-		if isinstance(element.tag,str) and element.tag == "img":
-			return element.get("src")
-		else:
-			for i in element:
-				out = self.getImgUrl(i)
-				if out:
-					return out
-			return ""
-	
 	def imgText(self,picurl,height,width):
+		""" Returns html for an image, given url, height, width."""
 		if height and width:
 			return '<img src="%s" height="%s" width="%s">' % (picurl, height, width)
 		else:

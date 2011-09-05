@@ -694,6 +694,24 @@ class TunesViewer:
 		self.tbGoto.set_sensitive(False)
 		self.tbDownload.set_sensitive(False)
 	
+	def addTab(self,match, urllink):
+		label = gtk.Label(); label.show()
+		contents = gtk.Label(); contents.show()
+		contents.set_size_request(0, 0) # No tab contents
+		if match[0:12]==", Selected. ":
+			match = match[12:]
+			print "sel:",match
+			label.set_markup("<i><b>"+glib.markup_escape_text(match)+"</b></i>")
+			self.notebook.append_page(contents,label)
+			self.notebook.set_current_page(-1) #select this one
+			self.notebook.queue_draw_area(0,0,-1,-1)
+		else:
+			match = match[2:]
+			label.set_markup(glib.markup_escape_text(match))
+			self.notebook.append_page(contents,label)
+		self.taburls.append(urllink)
+		self.notebook.show_all()
+	
 	def progUpdate(self,obj):
 		"Checks for update to the program."
 		openDefault("http://tunesviewer.sourceforge.net/checkversion.php?version=1.3")
@@ -1281,8 +1299,9 @@ class TunesViewer:
 			self.taburls = [] #reset tab-urls until finished to keep it from going to other tabs.
 			while self.notebook.get_n_pages():
 				self.notebook.remove_page(self.notebook.get_n_pages()-1)
+			for i in range(len(parser.tabMatches)):
+				self.addTab(parser.tabMatches[i], parser.tabLinks[i])
 			self.liststore.clear()
-			
 			# fix performance problem. The treeview shouldn't be connected to 
 			# the treeview while updating! see http://eccentric.cx/misc/pygtk/pygtkfaq.html
 			self.treeview.set_model(None)
@@ -1300,13 +1319,6 @@ class TunesViewer:
 			#Get the icons for all the rows:
 			self.updateListIcons()
 			
-			#specific item should be selected?
-			for i in self.liststore:
-					if i[11]==parser.itemId:
-						print "selecting item",parser.itemId
-						self.treeview.get_selection().select_iter(i.iter)
-						self.treeview.scroll_to_cell(i.path,None,False,0,0)
-						#self.treeview.grab_focus()
 			#Enable podcast-buttons if this is podcast:
 			self.tbCopy.set_sensitive(parser.podcast!="")
 			self.tbAddPod.set_sensitive(parser.podcast!="")
@@ -1323,6 +1335,14 @@ class TunesViewer:
 					mediacount += 1
 				elif row[8]:
 					linkscount += 1
+			
+			#specific item should be selected?
+			for i in self.liststore:
+					if i[11]==parser.itemId:
+						print "selecting item",parser.itemId
+						self.treeview.get_selection().select_iter(i.iter)
+						self.treeview.scroll_to_cell(i.path,None,False,0,0)
+						#self.treeview.grab_focus()
 			rs = ""
 			ls = ""
 			ms = ""
