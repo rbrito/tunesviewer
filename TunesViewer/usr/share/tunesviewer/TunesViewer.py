@@ -48,6 +48,7 @@ class TunesViewer:
 	source= "" # full html/xml source
 	url= "" # page url
 	podcast= "" #podcast url
+	pageType = "" #text/xml or text/html
 	downloading=False #when true, don't download again, freezing prog. (Enforces having ONE gotoURL)
 	downloadError=""
 	infoboxes = []

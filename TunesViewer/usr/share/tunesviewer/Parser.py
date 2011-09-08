@@ -340,37 +340,6 @@ class Parser:
 					for i in element:
 						self.seeXMLElement(i);
 					self.HTML += safe(element.text)+"</a>"+safe(element.tail)
-					# If there's a TextView-node right after, it should be the author-text or college name.
-					
-					#if nexttext != None and isinstance(nexttext.tag,str) and nexttext.tag == "TextView":
-						#author = self.textContent(nexttext).strip()
-					#if name != "":
-						##text link. Does it have picture?
-						#arturl = ""
-						#if self.last_el_link == urllink:
-							#arturl = self.last_el_pic
-							##(last pic was the icon for this, it will be added:)
-							#self.HTML += "<img src=\"%s\">" % (self.last_el_pic)
-						#self.HTML += "<a href=\"%s\">%s</a><br>" % (urllink, HTmarkup(name,isheading));
-					#elif len(element): #No name, this must be the picture-link that comes before the text-link. 
-						#picurl = "" # We'll try to find picture url in the <PictureView> inside the <View> inside this <GotoURL>.
-						#el = element[0] # first childnode
-						#if el != None and isinstance(el.tag,str) and (el.tag == "PictureView" or el.tag == "PictureButtonView"):
-							#picurl = el.get("url")
-							##print "PIC",urllink, picurl, el.get("alt")
-							#self.last_el_link = urllink
-							#self.last_el_pic = picurl
-							#if el.get("alt")=="next page" or el.get("alt")=="previous page":
-								#self.Description += "<a href=\"%s\">%s</a>" % (urllink, HTmarkup(el.get("alt"),isheading))
-						#elif el != None and isinstance(el.tag,str) and el.tag == "View":
-							#el = el[0]
-							#if el != None and isinstance(el.tag,str) and el.tag == "PictureView":
-								#picurl = el.get("url")
-								##print "pic",urllink, picurl
-								#self.last_el_link = urllink
-								#self.last_el_pic = picurl
-					#else:
-						#print "blank element:",element,element.text
 			elif element.tag == "FontStyle":
 				if element.get("styleName")=="default":
 					self.HTML += "<style> * {color: "
@@ -439,17 +408,32 @@ class Parser:
 					#for i in element:
 						#if isinstance(i.tag,str):
 							#self.seeXMLElement(i,isheading)
+			elif element.tag=="key" and element.text=="action" and element.getnext() is not None:
+				#Page action for redirect.
+				#Key-val map is stored in <key>name</key><tag>value(s)</tag>
+				keymap = {}
+				for node in element.getnext():
+					if node.tag=="key" and node.getnext() is not None:
+						keymap[node.text] = node.getnext().text
+				print keymap
+				if keymap.has_key("kind") and keymap["kind"]=="Goto" or keymap["kind"]=="OpenURL" or keymap.has_key("url"):
+					self.Redirect = keymap["url"]
 			elif element.tag=="Test" and (element.get("comparison").startswith("lt") or element.get("comparison")=="less"):
 				pass #older version info would cause duplicates.
-			elif element.tag=="string" or (element.getprevious() is not None and element.getprevious().tag=="key") or element.tag=="key" or element.tag=="MenuItem" or element.tag=="iTunes" or element.tag=="PathElement":
+			elif element.tag=="string" or (element.getprevious() is not None and element.getprevious().tag=="key") or element.tag=="key" or element.tag=="MenuItem" or element.tag=="iTunes" or element.tag=="PathElement" or element.tag=="FontStyleSet":
 				pass
 			else:
-				print element.tag
+				#print element.tag
 				self.HTML += "<%s>" % element.tag
-				if element.text and element.text.strip()!="" and self.last_text.strip()!=element.text.strip():
-					#print "last:",self.last_text.strip(),"current:",element.text.strip()
-					self.HTML += element.text
-					self.last_text = element.text
+				if element.text and element.text.strip()!="":
+					#Workaround for double text that is supposed to be shadow.
+					#There is probably a better way to do this?
+					if self.last_text.strip()!=element.text.strip():
+						#print "last:",self.last_text.strip(),"current:",element.text.strip()
+						self.HTML += element.text
+						self.last_text = element.text
+					else: #same, ignore one.
+						self.last_text = ""
 				# Recursively see all elements:
 				for node in element:
 					self.seeXMLElement(node)
@@ -496,6 +480,7 @@ class Parser:
 							comment = val
 						if cl.find("price")>-1:
 							price = val
+				print "tr row adding"
 				self.mediaItems.append([None,markup(title,False),artist,time,type,exp+comment,releaseDate,"",gotou,url,price,itemid])
 			elif element.get("audio-preview-url") or element.get("video-preview-url"): #Ping audio/vid.
 				if element.get("video-preview-url"):
@@ -511,8 +496,10 @@ class Parser:
 				duration = ""
 				if element.get("preview-duration"):
 					duration = timeFind(element.get("preview-duration"))
+				print "preview-url adding row"
 				self.mediaItems.append([None,markup(title,False),author,duration,typeof(url),"","","","",url,"",""])
 			elif element.tag=="button" and element.get("anonymous-download-url") and element.get("title"):#Added for epub feature
+				print "button row adding"
 				self.mediaItems.append([None,markup(element.get("title"),False),element.get("item-name"),"",typeof(element.get("anonymous-download-url")),"","","",element.get("anonymous-download-url"),"","",""])#Special 
 			else: # go through the childnodes.
 				for i in element:
