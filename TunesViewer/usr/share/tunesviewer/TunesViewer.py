@@ -1207,15 +1207,6 @@ class TunesViewer:
 			msg.destroy()
 			self.downloading = False
 			return
-		#No error... continue
-		ustart = self.source.find("<body onload=\"return open('")
-		if ustart >-1:#This is a redirect-page.
-			newU = self.source[ustart+27:self.source.find("'",ustart+27)]
-			print "redirect to",newU
-			self.downloading = False
-			self.tbStop.set_sensitive(False)
-			self.gotoURL(newU,False)
-			return
 		
 		if newurl:
 			self.forwardStack = []
@@ -1231,7 +1222,7 @@ class TunesViewer:
 		print "downloaded."
 		self.downloading = False
 		self.tbStop.set_sensitive(False)
-		self.update()
+		self.update(self.url, self.pageType, self.source)
 		
 	def loadPageThread(self,opener,url):
 		try:
@@ -1269,7 +1260,7 @@ class TunesViewer:
 		self.downloading = False
 		self.tbStop.set_sensitive(False)
 	
-	def update(self):
+	def update(self, url, pageType, source):
 		""" Updates display based on the current html or xml in self.source """
 		print "startupdate",self.url
 		if self.url.startswith("https://"):
@@ -1288,11 +1279,11 @@ class TunesViewer:
 		
 		#Parse the page and display:
 		print "PARSING"
-		parser = Parser(self, self.url, self.pageType, self.source)
-		print "Read page,",len(parser.mediaItems),"items, source=",parser.HTML[0:20],"..."
+		parser = Parser(self, url, pageType, source)
+		#print "Read page,",len(parser.mediaItems),"items, source=",parser.HTML
 		if (parser.Redirect != ""):
 			self.gotoURL(parser.Redirect, True)
-		elif len(parser.mediaItems)==1 and parser.HTML=="":
+		elif len(parser.mediaItems)==1 and parser.singleItem:
 			#Single item description page.
 			self.startDownload(parser.mediaItems[0])
 		else: #normal page, show it:

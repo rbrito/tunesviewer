@@ -1,6 +1,7 @@
 import re, gc, time
 from common import *
 from lxml import etree
+import lxml.html
 
 def safe(obj):
 	""" Makes an object safe to add to string, even if it is NoneType. """
@@ -16,6 +17,7 @@ class Parser:
 		self.Title = ""
 		self.HTML = "" # The description-html, top panel.
 		self.itemId = "" # The specific item selected.
+		self.singleItem = False
 		self.NormalPage = False
 		self.podcast = ""
 		self.bgcolor = ""
@@ -23,7 +25,7 @@ class Parser:
 		self.tabMatches = []
 		self.tabLinks = []
 		self.last_text = "" # prevent duplicates from shadow-text.
-				
+		
 		self.mainwin = mainwin
 		self.url = url
 		self.contentType = contentType
@@ -45,9 +47,12 @@ class Parser:
 				#self.HTML = "Not valid xml, error."
 				#return
 		elif contentType.startswith("text/html"):
+			ustart = self.source.find("<body onload=\"return open('")
+			if ustart >-1:#This is a redirect-page.
+				newU = self.source[ustart+27:self.source.find("'",ustart+27)]
+				self.Redirect = newU
 			print "Parsing HTML"
 			self.HTML = self.source;
-			import lxml.html
 			dom = lxml.html.document_fromstring(self.source.replace('<html xmlns="http://www.apple.com/itms/"','<html'))
 			self.seeHTMLElement(dom)
 		#elif (self.source != ""): # There is data, but invalid data.
@@ -65,7 +70,9 @@ class Parser:
 		else:
 			print "unknown content type:",contentType
 			return
-		self.HTML = "<html><body bgcolor=\""+self.bgcolor+"\">"+self.HTML+"<p>"+"</body></html>"
+		self.HTML = "<html><body bgcolor=\""+self.bgcolor+"\">"+self.HTML+"</body></html>"
+		#print self.HTML
+		print "content:", self.textContent(lxml.html.document_fromstring(self.HTML))
 		
 		items = []
 		arr = self.getItemsArray(dom) # get the tracks list element
@@ -94,7 +101,6 @@ class Parser:
 				#print textContent(section)
 				if self.textContent(section).find(">")>-1:
 					section.getparent().remove(section) # redundant section > section ... info is removed.
-		
 		#initialize last-seen variables to nothing, then recursively look at every element, starting with documentElement:
 		self.last_text = ""
 		self.bgcolor = ""
@@ -103,8 +109,9 @@ class Parser:
 			ks = dom.xpath("/Document/Protocol/plist/dict/array/dict")
 			if len(ks):
 				arr = ks
-				print "Special end page after html link?"
-				
+				print "Special end page after html link?",len(ks)
+				if len(ks)==1 and dom.get("disableNavigation")=="true" and dom.get("disableHistory")=="true":
+					self.singleItem = True
 		print "tag",dom.tag
 		if dom.tag=="rss": #rss files are added
 			self.HTML += "<p>This is a podcast feed, click Add to Podcast manager button on the toolbar to subscribe.</p>"
@@ -329,12 +336,11 @@ class Parser:
 				#See if there is text right after it for author.
 				nexttext = element.getparent().getparent().getnext()
 				match = re.match("Tab [0-9][0-9]* of [0-9][0-9]*",author)
-				if match: # Tab handler needs to be moved to main code.
+				if match: # Tab handler
 					print "ADDTAB",match, urllink
 					match = author[match.end():]
 					self.tabMatches.append(match)
 					self.tabLinks.append(urllink)
-					#self.mainwin.addTab(match, urllink)
 				else:
 					self.HTML += "<a href=\"%s\">" % element.get("url")
 					for i in element:
@@ -342,16 +348,8 @@ class Parser:
 					self.HTML += safe(element.text)+"</a>"+safe(element.tail)
 			elif element.tag == "FontStyle":
 				if element.get("styleName")=="default":
-					self.HTML += "<style> * {color: "
-					if element.get("color"):
-						self.HTML += element.get("color")
-					self.HTML += "; font-family: "
-					if element.get("font"):
-						self.HTML += element.get("font")
-					self.HTML += "; font-size: "
-					if element.get("size"):
-						self.HTML += element.get("size")
-					self.HTML += ";} </style>"
+					self.HTML += "<style> * {color: %s; font-family: %s; font-size: %s;}</style>" % \
+					(safe(element.get("color")), safe(element.get("font")),safe(element.get("size")))
 			elif element.tag == "HBoxView":
 				self.HTML += "<!--HBox--><table><tr>"
 				for node in element:
@@ -416,10 +414,10 @@ class Parser:
 					if node.tag=="key" and node.getnext() is not None:
 						keymap[node.text] = node.getnext().text
 				print keymap
-				if keymap.has_key("kind") and keymap["kind"]=="Goto" or keymap["kind"]=="OpenURL" or keymap.has_key("url"):
+				if keymap.has_key("kind") and (keymap["kind"]=="Goto" or keymap["kind"]=="OpenURL") and keymap.has_key("url"):
 					self.Redirect = keymap["url"]
 			elif element.tag=="Test" and (element.get("comparison").startswith("lt") or element.get("comparison")=="less"):
-				pass #older version info would cause duplicates.
+				pass #Ignore older version info, it would cause duplicates.
 			elif element.tag=="string" or (element.getprevious() is not None and element.getprevious().tag=="key") or element.tag=="key" or element.tag=="MenuItem" or element.tag=="iTunes" or element.tag=="PathElement" or element.tag=="FontStyleSet":
 				pass
 			else:
@@ -437,7 +435,7 @@ class Parser:
 				# Recursively see all elements:
 				for node in element:
 					self.seeXMLElement(node)
-				self.HTML += "</%s>" % element.tail
+				self.HTML += "</%s>%s" % (element.tag, safe(element.tail))
 	
 	def seeHTMLElement(self,element):
 		if isinstance(element.tag,str): # normal element
