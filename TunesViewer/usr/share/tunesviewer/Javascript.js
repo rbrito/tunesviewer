@@ -91,7 +91,12 @@ document.onpageshow =  new function() {
 	
 	//Fix <a target="external" etc.
 	as = document.getElementsByTagName("a");
-	for (a in as) {as[a].target=""};
+	for (a in as) {
+		if (as[a].target=="_blank") {
+			as[a].target="";
+			as[a].href = "web"+as[a].href;
+		}
+	};
 	
 	/* This fixes the color=transparent style on some headings.
 	 * Unfortunately, you can't use document.styleSheets' CSSRules/rules property, since it's cross-domain:

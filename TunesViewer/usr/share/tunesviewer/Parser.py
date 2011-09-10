@@ -31,13 +31,47 @@ class Parser:
 		self.contentType = contentType
 		self.source = source
 		sttime = time.time()
-		if contentType.startswith("text/xml"):
+		try:#parse as xml
 			#remove bad xml (see http://stackoverflow.com/questions/1016910/how-can-i-strip-invalid-xml-characters-from-strings-in-perl)
 			bad = "[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD]"#\x10000-\x10FFFF]"
 			self.source = re.sub(bad," ",self.source) # now it should be valid xml.
 			dom = etree.fromstring(self.source.replace('xmlns="http://www.apple.com/itms/"',''))#(this xmlns causes problems with xpath)
-			self.seeXMLElement(dom)
-		elif contentType.startswith("text/html"):
+			if dom.tag.find("html")>-1 or dom.tag=="{http://www.w3.org/2005/Atom}feed":
+				#Don't want normal pages/atom pages, those are for the web browser!
+				raise Exception
+			elif dom.tag=="rss": #rss files are added
+				self.HTML += "<p>This is a podcast feed, click Add to Podcast manager button on the toolbar to subscribe.</p>"
+				items = dom.xpath("//item")
+				print "rss:",len(items)
+				for item in items:
+					title=""
+					author=""
+					linkurl=""
+					duration=""
+					url=""
+					description=""
+					pubdate=""
+					for i in item:
+						if i.tag=="title":
+							title=i.text
+						elif i.tag=="author" or i.tag.endswith("author"):
+							author=i.text
+						elif i.tag=="link":
+							linkurl=i.text
+						elif i.tag=="description":
+							description=i.text
+						elif i.tag=="pubDate":
+							pubdate=i.text
+						elif i.tag=="enclosure":
+							url=i.get("url")
+						elif i.tag.endswith("duration"):
+							duration = i.text
+					self.addItem(title,author,duration,typeof(url),description,pubdate,"",linkurl,url,"","")
+			else:
+				self.seeXMLElement(dom)
+		except Exception, e:
+			print "ERR", e
+			print "parsing as html not xml."
 			ustart = self.source.find("<body onload=\"return open('")
 			if ustart >-1:#This is a redirect-page.
 				newU = self.source[ustart+27:self.source.find("'",ustart+27)]
@@ -46,24 +80,7 @@ class Parser:
 			self.HTML = self.source;
 			dom = lxml.html.document_fromstring(self.source.replace('<html xmlns="http://www.apple.com/itms/"','<html'))
 			self.seeHTMLElement(dom)
-		#elif (self.source != ""): # There is data, but invalid data.
-			#self.NormalPage = True
-			# This breaks some pages, endless redirects.
-			
-			#msg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_WARNING, gtk.BUTTONS_YES_NO,
-			#		"This seems to be a page that should open with a web browser:\n%s\nDo you want to view it?" % self.url)
-			#if msg.run()==gtk.RESPONSE_YES:
-			#	openDefault(self.url)
-			#self.descView.loadHTML("(This page should be opened in a web browser)","about:")
-			#HTMLSet = True
-			#msg.destroy()
-			#return
-		else:
-			print "unknown content type:",contentType
-			return
-		self.HTML = "<html><body bgcolor=\""+self.bgcolor+"\">"+self.HTML+"</body></html>"
-		#print self.HTML
-		print "content:", self.textContent(lxml.html.document_fromstring(self.HTML))
+		#print "content:", self.textContent(lxml.html.document_fromstring(self.HTML))
 		
 		items = []
 		arr = self.getItemsArray(dom) # get the tracks list element
@@ -92,9 +109,6 @@ class Parser:
 				#print textContent(section)
 				if self.textContent(section).find(">")>-1:
 					section.getparent().remove(section) # redundant section > section ... info is removed.
-		#initialize last-seen variables to nothing, then recursively look at every element, starting with documentElement:
-		self.last_text = ""
-		self.bgcolor = ""
 		
 		if arr == None:
 			ks = dom.xpath("/Document/Protocol/plist/dict/array/dict")
@@ -104,34 +118,6 @@ class Parser:
 				if len(ks)==1 and dom.get("disableNavigation")=="true" and dom.get("disableHistory")=="true":
 					self.singleItem = True
 		print "tag",dom.tag
-		if dom.tag=="rss": #rss files are added
-			self.HTML += "<p>This is a podcast feed, click Add to Podcast manager button on the toolbar to subscribe.</p>"
-			items = dom.xpath("//item")
-			print "rss:",len(items)
-			for item in items:
-				title=""
-				author=""
-				linkurl=""
-				duration=""
-				url=""
-				description=""
-				pubdate=""
-				for i in item:
-					if i.tag=="title":
-						title=i.text
-					elif i.tag=="author" or i.tag.endswith("author"):
-						author=i.text
-					elif i.tag=="link":
-						linkurl=i.text
-					elif i.tag=="description":
-						description=i.text
-					elif i.tag=="pubDate":
-						pubdate=i.text
-					elif i.tag=="enclosure":
-						url=i.get("url")
-					elif i.tag.endswith("duration"):
-						duration = i.text
-				self.addItem(title,author,duration,typeof(url),description,pubdate,"",linkurl,url,"","")
 		
 		if arr == None: #No tracklisting.
 			hasmedia=False
@@ -230,10 +216,11 @@ class Parser:
 			if len(channel):
 				for i in channel[0]:
 					if not(image) and i.tag=="{http://www.itunes.com/dtds/podcast-1.0.dtd}image":
-						HTMLImage = self.imgText(i.get("href"),None,None)
+						self.HTML += self.imgText(i.get("href"),None,None)
+				for i in channel[0]:
 					if i.text and i.text.strip()!="" and isinstance(i.tag,str):
 						thisname = "".join(i.tag.replace("{","}").split("}")[::2])# remove {....dtd} from tag
-						out+= "<b>%s:</b> %s\n" % (thisname, i.text)
+						self.HTML += "<b>%s:</b> %s\n<br>" % (thisname, i.text)
 				try:
 					self.Title = (dom.xpath("/rss/channel/title")[0].text)
 				except IndexError,e:
@@ -243,10 +230,14 @@ class Parser:
 			self.Title = (out[:-1])
 			out = ""
 			for i in range(len(location)):
-				out += "<a href=\""+locationLinks[i]+"\">"+location[i]+"</a> &gt; "
+				out += "<a href=\""+safe(locationLinks[i])+"\">"+safe(location[i])+"</a> &gt; "
 			out = out [:-6]
 			if dom.tag == "html":
-				self.Title = dom.xpath("/html/head/title")[0].text_content()
+				try:
+					self.Title = dom.xpath("/html/head/title")[0].text_content()
+				except IndexError, e:
+					self.Title = "TunesViewer"
+		self.HTML = "<html><body bgcolor=\""+self.bgcolor+"\">"+self.HTML+"</body></html>"
 		
 		#Get Podcast url
 		# already have keys = dom.xpath("//key")
@@ -369,8 +360,8 @@ class Parser:
 				self.HTML += "</img>"
 			elif element.tag == "OpenURL":
 				urllink = element.get("url")
-				#if urllink and urllink[0:4]!="itms":
-					#urllink = "WEB://"+urllink
+				if urllink and urllink[0:4]!="itms":
+					urllink = "WEB"+urllink
 				name = self.textContent(element).strip()
 				if element.get("draggingName"):
 					author = element.get("draggingName")
@@ -386,17 +377,6 @@ class Parser:
 					#lnk = "(Link)"
 				#else:
 					#lnk = "(Web Link)"
-			#elif element.tag == "TextView":
-				#if element.get("headingLevel")=="2" or (element.get("topInset")=="1" and element.get("leftInset")=="1"):
-					#isheading = True
-				#text, goto = self.searchLink(element)
-				#if True:#text.strip() != self.last_text: # don't repeat (without this some text will show twice).
-					#self.HTML += "\n%s\n<br>" % text.strip()
-					#self.last_text = text.strip()
-				#if goto != None:
-					#for i in element:
-						#if isinstance(i.tag,str):
-							#self.seeXMLElement(i,isheading)
 			elif element.tag=="key" and element.text=="action" and element.getnext() is not None:
 				#Page action for redirect.
 				#Key-val map is stored in <key>name</key><tag>value(s)</tag>
@@ -407,9 +387,18 @@ class Parser:
 				print keymap
 				if keymap.has_key("kind") and (keymap["kind"]=="Goto" or keymap["kind"]=="OpenURL") and keymap.has_key("url"):
 					self.Redirect = keymap["url"]
+			elif element.tag=="key" and element.getnext() is not None and (element.text=="message" or element.text=="explanation" or element.text=="customerMessage"):
+				self.HTML += "<p>%s</p>" % element.getnext().text
+			elif element.tag=="key" and element.getnext() is not None and (element.text=="subscribe-podcast") and (element.getnext().tag=="dict"):
+				for node in element.getnext():
+					if node.tag=="key" and node.getnext() is not None and node.text=="feedURL":
+						self.Redirect = node.getnext().text
+			elif element.tag=="key" and element.getnext() is not None and element.text=="kind" and element.getnext().text=="Perform" and element.getnext().getnext() is not None and element.getnext().getnext().text=="url" and element.getnext().getnext().getnext() is not None:
+				self.Redirect = element.getnext().getnext().getnext().text
+				print "REDIR",self.Redirect
 			elif element.tag=="Test" and (element.get("comparison").startswith("lt") or element.get("comparison")=="less"):
 				pass #Ignore older version info, it would cause duplicates.
-			elif element.tag=="string" or (element.getprevious() is not None and element.getprevious().tag=="key") or element.tag=="key" or element.tag=="MenuItem" or element.tag=="iTunes" or element.tag=="PathElement" or element.tag=="FontStyleSet":
+			elif element.tag=="string" or (element.getprevious() is not None and element.getprevious().tag=="key" and element.tag!="dict") or element.tag=="key" or element.tag=="MenuItem" or element.tag=="iTunes" or element.tag=="PathElement" or element.tag=="FontStyleSet":
 				pass
 			else:
 				#print element.tag

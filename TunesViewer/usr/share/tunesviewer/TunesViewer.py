@@ -636,57 +636,7 @@ class TunesViewer:
 		"""Sets up quick links in the Go menu.
 		This info appears to have been moved to <script id="protocol" type="text/x-apple-plist">
 		sections, so this code no longer works correctly."""
-		#done = False
-		#tried = 0
-		#while (tried < 3):
-			#try:
-				#opener = urllib2.build_opener()
-				#opener.addheaders = [('User-agent', 'iTunes/8.2')] # Get old xml format.
-				#mainpage = opener.open("http://phobos.apple.com/WebObjects/MZStore.woa/wa/viewGrouping?id=38").read()
-				#mainpage = etree.fromstring(mainpage)
-				#els = mainpage.xpath("/a:Document/a:Protocol/a:plist/a:dict/a:dict/a:array/a:dict", namespaces={'a':'http://www.apple.com/itms/'})
-				#for i in els:
-					#for j in i:
-						##print j.tag,j.text
-						#if j.text=="title" and j.getnext().text=="Podcasts":
-							#urlel = j.getnext().getnext().getnext()
-							#item = gtk.MenuItem("_Podcasts")
-							#item.connect("activate",self.buttonGoto,urlel.text)
-							#item.show(); self.podcastDir.append(item)
-							##print urlel.tag
-							#while not(urlel.tag.endswith("array")):
-								#urlel = urlel.getnext()
-							#for d in urlel:#each section in podcasts
-								#if len(d)==6:
-									#label = d[1].text
-									#url = d[3].text
-									##print label,url
-									#item = gtk.MenuItem("_"+label)
-									#item.connect("activate",self.buttonGoto,url)
-									#item.show(); self.podcastDir.append(item)
-						#elif j.text=="title" and j.getnext().text=="iTunes U":
-							#urlel = j.getnext().getnext().getnext()
-							#item = gtk.MenuItem("_iTunesU")
-							#item.connect("activate",self.buttonGoto,urlel.text)
-							#item.show(); self.itunesuDir.append(item)
-							##print urlel.tag
-							#while not(urlel.tag.endswith("array")):
-								#urlel = urlel.getnext()
-							#for d in urlel: #each section in podcasts
-								#if len(d)==6:
-									#label = d[1].text
-									#url = d[3].text
-									#item = gtk.MenuItem("_"+label)
-									#item.connect("activate",self.buttonGoto,url)
-									#item.show(); self.itunesuDir.append(item)
-				#done = True
-				#tried = 4 #exit
-			#except Exception,e:
-				#print self.downloadbox.window
-				#print "Directory error:",e
-				#import random
-				#time.sleep(random.randint(1,10))
-				#tried+=1
+		pass
 	
 	def noneSelected(self):
 		"When no row is selected, buttons are greyed out."
@@ -1136,9 +1086,9 @@ class TunesViewer:
 		oldurl = self.url # previous url, to add to back stack.
 		if self.downloading:
 			return
-		elif url.startswith("web://"):
+		elif url.startswith("web"):
 			print url
-			openDefault(url[6:])
+			openDefault(url[3:])
 			return
 			#label = url[11:].split(" ")
 			#print "download://"+label[0];
@@ -1256,7 +1206,7 @@ class TunesViewer:
 		self.tbStop.set_sensitive(False)
 		
 		
-		print "startupdate",self.url
+		print "startupdate",url
 		if url.startswith("https://"):
 			tip = "Secure page."
 			self.tbAuth.show()
@@ -1276,6 +1226,7 @@ class TunesViewer:
 		parser = Parser(self, url, pageType, source)
 		#print "Read page,",len(parser.mediaItems),"items, source=",parser.HTML
 		if (parser.Redirect != ""):
+			print "REDIRECT:", parser.Redirect
 			self.gotoURL(parser.Redirect, True)
 			return False
 		elif len(parser.mediaItems)==1 and parser.singleItem:
@@ -1299,7 +1250,7 @@ class TunesViewer:
 			self.liststore.set_sort_column_id(-2,gtk.SORT_DESCENDING)
 			
 			#Load data:
-			self.descView.loadHTML(parser.HTML,self.url)
+			self.descView.loadHTML(parser.HTML,url)
 			print "ITEMS:",len(parser.mediaItems)
 			for item in parser.mediaItems:
 				self.liststore.append(item)
@@ -1331,7 +1282,6 @@ class TunesViewer:
 						self.treeview.get_selection().select_iter(i.iter)
 						self.treeview.scroll_to_cell(i.path,None,False,0,0)
 						#self.treeview.grab_focus()
-			#if self.update(self.url, self.pageType, self.source):
 			#Only change the stack if this is an actual page, not redirect/download.
 			if newurl:
 				self.forwardStack = []
@@ -1339,10 +1289,10 @@ class TunesViewer:
 					self.backStack.append(self.url)
 			self.url = url
 			self.source = source
+			self.podcast = parser.podcast
 			#Update the back, forward buttons:
 			self.updateBackForward()
-			#print self.backStack
-						
+			
 			rs = ""
 			ls = ""
 			ms = ""
