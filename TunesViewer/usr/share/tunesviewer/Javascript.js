@@ -104,14 +104,14 @@ document.onpageshow =  new function() {
 	
 	//Mouse-over tooltip for ellipsized title...
 	//Unfortunately it seems this may cause X window error!
-	titles = document.getElementsByClassName('name')
+	/*titles = document.getElementsByClassName('name')
 	for (i=0; i<titles.length; i++) {
 		titles[i].title = titles[i].textContent
 	}
 	titles = document.getElementsByClassName('artist')
 	for (i=0; i<titles.length; i++) {
 		titles[i].title = titles[i].textContent
-	}
+	}*/
 	
 	//Fix non-working preview buttons:
 	previews = document.getElementsByClassName('podcast-episode');

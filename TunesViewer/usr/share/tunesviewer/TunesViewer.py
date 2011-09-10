@@ -1185,15 +1185,57 @@ class TunesViewer:
 		#self.window.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
 		self.setLoadDisplay(True)
 		
-		t = Thread(target=self.loadPageThread, args=(self.opener,url))
+		t = Thread(target=self.loadPageThread, args=(self.opener,url,newurl))
 		self.downloading = True
 		self.tbStop.set_sensitive(True)
 		t.start()
-		while (self.downloading):
-			#Just wait... there's got to be a better way to do this?
-			while gtk.events_pending():
-				gtk.main_iteration_do(False)
-			time.sleep(0.02)
+		#while (self.downloading):
+			##Just wait... there's got to be a better way to do this?
+			#while gtk.events_pending():
+				#gtk.main_iteration_do(False)
+			#time.sleep(0.02)
+		
+		
+	def loadPageThread(self,opener,url,newurl):
+		try:
+			#Downloader:
+			response = opener.open(url)
+			pageType = response.info().getheader('Content-Type','noheader?')
+			if pageType.startswith("text"):
+				text = ""
+				next = response.read(100)
+				while (next != "" and self.downloading):
+					text += next
+					next = response.read(100)
+				if next == "": #Finished successfully.
+					self.downloadError = ""
+					#self.url = url
+					if (response.info().get('Content-Encoding') == 'gzip'):
+						orig = len(text)
+						f = gzip.GzipFile(fileobj=StringIO(text))
+						try:
+							text = f.read()
+							print "Gzipped response: ",orig,"->",len(text)
+						except IOError, e:#bad file
+							print e
+					#self.source = text
+				else:
+					self.downloadError = "stopped."
+			else:
+				self.downloadbox.newDownload(None,url,os.path.join(self.config.downloadfolder,url[url.rfind("/")+1:]),opener)
+				return
+			
+			response.close()
+			
+		except Exception, e:
+			self.downloadError = "Download Error:\n"+str(e)
+			print e
+		gobject.idle_add(self.update, url, pageType, text, newurl)
+	
+	def update(self, url, pageType, source, newurl):
+		""" Updates display given url, content-type, and source. This does all the gui work after loadPageThread. """
+		self.downloading = False
+		self.tbStop.set_sensitive(False)
 		try:
 			self.setLoadDisplay(False)
 			#self.window.window.set_cursor(None)
@@ -1206,64 +1248,16 @@ class TunesViewer:
 			msg.run()
 			msg.destroy()
 			self.downloading = False
-			return
-		
-		if newurl:
-			self.forwardStack = []
-			if oldurl != "":
-				self.backStack.append(oldurl)
-		
-		#Update the back, forward buttons:
-		self.updateBackForward()
-			#print self.backStack
-		
+			return False
 		if self.modecombo.get_active() == 0:
 			self.locationentry.set_text(url)
 		print "downloaded."
 		self.downloading = False
 		self.tbStop.set_sensitive(False)
-		self.update(self.url, self.pageType, self.source)
 		
-	def loadPageThread(self,opener,url):
-		try:
-			#Downloader:
-			response = opener.open(url)
-			self.pageType = response.info().getheader('Content-Type','noheader?')
-			if self.pageType.startswith("text"):
-				text = ""
-				next = response.read(100)
-				while (next != "" and self.downloading):
-					text += next
-					next = response.read(100)
-				if next == "": #Finished successfully.
-					self.downloadError = ""
-					self.url = url
-					if (response.info().get('Content-Encoding') == 'gzip'):
-						orig = len(text)
-						f = gzip.GzipFile(fileobj=StringIO(text))
-						try:
-							text = f.read()
-							print "Gzipped response: ",orig,"->",len(text)
-						except IOError, e:#bad file
-							print e
-					self.source = text
-				else:
-					self.downloadError = "stopped."
-			else:
-				self.downloadbox.newDownload(None,url,os.path.join(self.config.downloadfolder,url[url.rfind("/")+1:]),opener)
-			
-			response.close()
-			
-		except Exception, e:
-			self.downloadError = "Download Error:\n"+str(e)
-			print e
-		self.downloading = False
-		self.tbStop.set_sensitive(False)
-	
-	def update(self, url, pageType, source):
-		""" Updates display based on the current html or xml in self.source """
+		
 		print "startupdate",self.url
-		if self.url.startswith("https://"):
+		if url.startswith("https://"):
 			tip = "Secure page."
 			self.tbAuth.show()
 			try:#urllib.unquote?
@@ -1278,15 +1272,18 @@ class TunesViewer:
 			self.tbAuth.hide()
 		
 		#Parse the page and display:
-		print "PARSING"
+		print "PARSING",url,pageType
 		parser = Parser(self, url, pageType, source)
 		#print "Read page,",len(parser.mediaItems),"items, source=",parser.HTML
 		if (parser.Redirect != ""):
 			self.gotoURL(parser.Redirect, True)
+			return False
 		elif len(parser.mediaItems)==1 and parser.singleItem:
 			#Single item description page.
 			self.startDownload(parser.mediaItems[0])
+			return False
 		else: #normal page, show it:
+			print "normal page",url
 			#Reset data:
 			self.taburls = [] #reset tab-urls until finished to keep it from going to other tabs.
 			while self.notebook.get_n_pages():
@@ -1311,7 +1308,7 @@ class TunesViewer:
 			#Get the icons for all the rows:
 			self.updateListIcons()
 			
-			#Enable podcast-buttons if this is podcast:
+			#Enable podcast-buttons if this is a podcast:
 			self.tbCopy.set_sensitive(parser.podcast!="")
 			self.tbAddPod.set_sensitive(parser.podcast!="")
 			self.addpodmenu.set_sensitive(parser.podcast!="")
@@ -1327,7 +1324,6 @@ class TunesViewer:
 					mediacount += 1
 				elif row[8]:
 					linkscount += 1
-			
 			#specific item should be selected?
 			for i in self.liststore:
 					if i[11]==parser.itemId:
@@ -1335,6 +1331,18 @@ class TunesViewer:
 						self.treeview.get_selection().select_iter(i.iter)
 						self.treeview.scroll_to_cell(i.path,None,False,0,0)
 						#self.treeview.grab_focus()
+			#if self.update(self.url, self.pageType, self.source):
+			#Only change the stack if this is an actual page, not redirect/download.
+			if newurl:
+				self.forwardStack = []
+				if self.url != "":
+					self.backStack.append(self.url)
+			self.url = url
+			self.source = source
+			#Update the back, forward buttons:
+			self.updateBackForward()
+			#print self.backStack
+						
 			rs = ""
 			ls = ""
 			ms = ""
@@ -1346,7 +1354,8 @@ class TunesViewer:
 				ms = "s"
 			self.statusbar.set_text("%s row%s, %s link%s, %s file%s" % \
 			(len(self.liststore), rs, linkscount, ls, mediacount, ms))
-		
+			return False
+	
 	def updateListIcons(self):
 		""" Sets the icons in the liststore based on the media type. """
 		self.icon_audio=None
