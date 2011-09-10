@@ -1090,12 +1090,6 @@ class TunesViewer:
 			print url
 			openDefault(url[3:])
 			return
-			#label = url[11:].split(" ")
-			#print "download://"+label[0];
-			#if len(label)==2:
-				#name=label[0]
-				#url=label[1]
-				#self.downloadbox.newDownload(None,url,os.path.join(self.config.downloadfolder,name),self.opener)
 		# Fix url based on http://bugs.python.org/issue918368
 		try:
 			url = urllib.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
@@ -1131,28 +1125,20 @@ class TunesViewer:
 			#as described here http://blogs.oreilly.com/iphone/2008/03/tmi-apples-appstore-protocol-g.html
 			self.opener.addheaders = [('User-agent', 'iTunes-iPhone/1.2.0'),('Accept-Encoding','gzip'),('X-Apple-Store-Front:','143441-1,2')]
 		#Show that it's loading:
-		#self.throbber.show()
-		#self.window.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
 		self.setLoadDisplay(True)
 		
 		t = Thread(target=self.loadPageThread, args=(self.opener,url,newurl))
 		self.downloading = True
 		self.tbStop.set_sensitive(True)
 		t.start()
-		#while (self.downloading):
-			##Just wait... there's got to be a better way to do this?
-			#while gtk.events_pending():
-				#gtk.main_iteration_do(False)
-			#time.sleep(0.02)
-		
 		
 	def loadPageThread(self,opener,url,newurl):
+		pageType=""; text="";
 		try:
 			#Downloader:
 			response = opener.open(url)
 			pageType = response.info().getheader('Content-Type','noheader?')
 			if pageType.startswith("text"):
-				text = ""
 				next = response.read(100)
 				while (next != "" and self.downloading):
 					text += next
@@ -1174,9 +1160,7 @@ class TunesViewer:
 			else:
 				self.downloadbox.newDownload(None,url,os.path.join(self.config.downloadfolder,url[url.rfind("/")+1:]),opener)
 				return
-			
 			response.close()
-			
 		except Exception, e:
 			self.downloadError = "Download Error:\n"+str(e)
 			print e
@@ -1187,9 +1171,8 @@ class TunesViewer:
 		self.downloading = False
 		self.tbStop.set_sensitive(False)
 		try:
+			#Show it finished:
 			self.setLoadDisplay(False)
-			#self.window.window.set_cursor(None)
-			#self.throbber.hide()
 		except AttributeError:
 			pass #just exited, don't crash.
 		if self.downloadError != "": #Warn if there is an error:
@@ -1201,13 +1184,10 @@ class TunesViewer:
 			return False
 		if self.modecombo.get_active() == 0:
 			self.locationentry.set_text(url)
-		print "downloaded."
 		self.downloading = False
 		self.tbStop.set_sensitive(False)
 		
-		
-		print "startupdate",url
-		if url.startswith("https://"):
+		if url.startswith("https://"): #security icon
 			tip = "Secure page."
 			self.tbAuth.show()
 			try:#urllib.unquote?
@@ -1259,11 +1239,6 @@ class TunesViewer:
 			#Get the icons for all the rows:
 			self.updateListIcons()
 			
-			#Enable podcast-buttons if this is a podcast:
-			self.tbCopy.set_sensitive(parser.podcast!="")
-			self.tbAddPod.set_sensitive(parser.podcast!="")
-			self.addpodmenu.set_sensitive(parser.podcast!="")
-			
 			#No item selected now, disable item buttons.
 			self.noneSelected()
 			self.treeview.set_model(self.liststore)
@@ -1292,6 +1267,10 @@ class TunesViewer:
 			self.podcast = parser.podcast
 			#Update the back, forward buttons:
 			self.updateBackForward()
+			#Enable podcast-buttons if this is a podcast:
+			self.tbCopy.set_sensitive(parser.podcast!="")
+			self.tbAddPod.set_sensitive(parser.podcast!="")
+			self.addpodmenu.set_sensitive(parser.podcast!="")
 			
 			rs = ""
 			ls = ""
