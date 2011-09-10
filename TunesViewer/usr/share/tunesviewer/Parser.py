@@ -32,20 +32,11 @@ class Parser:
 		self.source = source
 		sttime = time.time()
 		if contentType.startswith("text/xml"):
-			#try:
-				#remove bad xml (see http://stackoverflow.com/questions/1016910/how-can-i-strip-invalid-xml-characters-from-strings-in-perl)
-				bad = "[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD]"#\x10000-\x10FFFF]"
-				self.source = re.sub(bad," ",self.source) # now it should be valid xml.
-				dom = etree.fromstring(self.source.replace('xmlns="http://www.apple.com/itms/"',''))#(this xmlns causes problems with xpath)
-				#Some pages may have root element {http://www.w3.org/1999/xhtml}html
-				#if dom.tag.find("html")>-1 or dom.tag=="{http://www.w3.org/2005/Atom}feed":
-				#	#Don't want normal pages/atom pages, those are for the web browser!
-				#	raise Exception
-				self.seeXMLElement(dom)
-			#except Exception, e:
-				#print "Not XML - ERR", e
-				#self.HTML = "Not valid xml, error."
-				#return
+			#remove bad xml (see http://stackoverflow.com/questions/1016910/how-can-i-strip-invalid-xml-characters-from-strings-in-perl)
+			bad = "[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD]"#\x10000-\x10FFFF]"
+			self.source = re.sub(bad," ",self.source) # now it should be valid xml.
+			dom = etree.fromstring(self.source.replace('xmlns="http://www.apple.com/itms/"',''))#(this xmlns causes problems with xpath)
+			self.seeXMLElement(dom)
 		elif contentType.startswith("text/html"):
 			ustart = self.source.find("<body onload=\"return open('")
 			if ustart >-1:#This is a redirect-page.

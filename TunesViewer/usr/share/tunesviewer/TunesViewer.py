@@ -1250,7 +1250,7 @@ class TunesViewer:
 				else:
 					self.downloadError = "stopped."
 			else:
-				pass #TODO: Download it
+				self.downloadbox.newDownload(None,url,os.path.join(self.config.downloadfolder,url[url.rfind("/")+1:]),opener)
 			
 			response.close()
 			
