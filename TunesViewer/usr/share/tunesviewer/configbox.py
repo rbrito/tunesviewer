@@ -19,7 +19,7 @@ class ConfigBox:
 	imagesizeN = 48
 	# new for 0.9:
 	#scaleImage = True - deprecated
-	autoRedirect = True
+	#autoRedirect = True - deprecated
 	# new for 1.0:
 	#(redundant now) alwaysHTML = ["/artist/","/institution/","/wa/viewGenre","/wa/viewRoom","/wa/viewSeeAll","/wa/viewArtist","/wa/viewTagged","/wa/viewGrouping","://c.itunes.apple.com","://t.co/"]
 	# new in 1.1:
@@ -99,7 +99,6 @@ class ConfigBox:
 		self.checkZoomAll = gtk.CheckButton("Zoom text and images")
 		
 		self.throbberCheck = gtk.CheckButton("Show Loading icon")
-		self.autoRedirectCheck = gtk.CheckButton("Automatically redirect")
 		vtab.pack_start(gtk.Label("Home page:"),False,False,0)
 		vtab.pack_start(self.homeEntry,False,False,0)
 		vtab.pack_start(self.toolbarCheck,False,False,0)
@@ -108,7 +107,6 @@ class ConfigBox:
 		vtab.pack_start(self.checkModifiedCol,False,False,0)
 		vtab.pack_start(self.checkZoomAll,False,False,0)
 		vtab.pack_start(self.throbberCheck,False, False, 0)
-		vtab.pack_start(self.autoRedirectCheck,False,False,0)
 		
 		hbox = gtk.HBox()
 		hbox.pack_start(gtk.Label("Show download notification for "),False,False,0)
@@ -182,7 +180,6 @@ class ConfigBox:
 		self.downloadsafe = self.downloadsafeCheck.get_active()
 		self.toolbar = self.toolbarCheck.get_active()
 		self.statusbar = self.statusbarCheck.get_active()
-		self.autoRedirect = self.autoRedirectCheck.get_active()
 		self.throbber = self.throbberCheck.get_active()
 		self.downloadfolder = self.downloadsel.get_current_folder()
 		self.home = self.homeEntry.get_text()
@@ -215,12 +212,12 @@ class ConfigBox:
 		config.set(sec,"PodcastProg",self.podcastprog)
 		config.set(sec,"ImageSize",self.imagesizeN)
 		config.set(sec,"IconSize",self.iconsizeN)
-		config.set(sec,"AutoRedirect",self.autoRedirect)
 		config.set(sec,"throbber",self.throbber)
 		config.set(sec,"Home",self.home)
 		config.set(sec,"releasedCol",self.releasedCol)
 		config.set(sec,"modifiedCol",self.modifiedCol)
 		config.set(sec,"zoomAll",self.zoomAll)
+		config.set(sec,"zoom",self.mainwin.descView.get_zoom_level())
 		config.write(open(os.path.expanduser("~/.tunesviewerprefs"),"w"))
 		self.setVisibility()
 
@@ -250,12 +247,12 @@ class ConfigBox:
 				self.iconsizeN = int(config.get(sec,"IconSize"))
 				self.toolbar = (config.get(sec,"Toolbar")=="True")
 				self.statusbar = (config.get(sec,"Statusbar")=="True")
-				self.autoRedirect = (config.get(sec,"AutoRedirect")=="True")
 				self.throbber = (config.get(sec,"Throbber")=="True")
 				self.home = config.get(sec,"Home")
 				self.releasedCol = (config.get(sec,"releasedCol")=="True")
 				self.modifiedCol = (config.get(sec,"modifiedCol")=="True")
 				self.zoomAll = (config.get(sec,"zoomAll")=="True")
+				self.mainwin.descView.set_zoom_level(float(config.get(sec,"zoom")))
 			except Exception,e:
 				print "Load-settings error:",e
 		else:
@@ -270,7 +267,6 @@ class ConfigBox:
 		self.downloadsafeCheck.set_active(self.downloadsafe)
 		self.toolbarCheck.set_active(self.toolbar)
 		self.statusbarCheck.set_active(self.statusbar)
-		self.autoRedirectCheck.set_active(self.autoRedirect)
 		self.throbberCheck.set_active(self.throbber)
 		self.filenamesel.set_text(self.downloadfile)
 		self.combo.set_active(int(self.defaultcommand))

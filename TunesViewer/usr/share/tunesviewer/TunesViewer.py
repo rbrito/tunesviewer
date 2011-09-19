@@ -1038,8 +1038,7 @@ class TunesViewer:
 	
 	def delete_event(self, widget, event, data=None):
 		""" Called when exiting, checks if downloads should be cancelled. """
-		#print self.downloadbox.downloadrunning, self.downloadbox.total
-		import shutil
+		self.config.save_settings()
 		if self.downloadbox.downloadrunning:
 			msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO,
 					"Are you sure you want to exit? This will cancel all active downloads.")
