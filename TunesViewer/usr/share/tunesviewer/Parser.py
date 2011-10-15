@@ -421,46 +421,67 @@ class Parser:
 		if isinstance(element.tag,str): # normal element
 			if element.get("comparison")=="lt" or (element.get("comparison") and element.get("comparison").find("less")>-1):
 				return #Ignore child nodes.
-			if element.tag=="tr" and element.get("class") and (element.get("class").find("track-preview")>-1 or element.get("class").find("podcast-episode")>-1 or element.get("class").find("song")>-1 or element.get("class").find("video")>-1):
-				#You'll find the info in the rows using the inspector (right click, inspect).
-				title=""; exp=""; itemid=""; artist = ""; time=""; url = ""; comment = ""; releaseDate=""; gotou = ""; price=""
-				if element.get("adam-id"):
-					itemid=element.get("adam-id")
-				if element.get("preview-title"):
-					title = element.get("preview-title")
-				if element.get("preview-artist"):
-					artist = element.get("preview-artist")
-				if element.get("duration"):
-					time = timeFind(element.get("duration"))
-				if element.get("rating-riaa") and element.get("rating-riaa")!="0":
-					exp = "[Explicit] "
-				if element.get("audio-preview-url"):
-					url = element.get("audio-preview-url")
-				elif element.get("video-preview-url"):
-					url = element.get("video-preview-url")
-				type = typeof(url)
-				for sub in element:
-					cl = sub.get("class")
-					val = sub.get("sort-value")
-					if cl and val: #has class and value, check them:
-						if cl.find("name")>-1:
-							title=val
-						if cl.find("album")>-1:
-							artist=val
-							if len(sub) and sub[0].get("href"):
-								gotou = sub[0].get("href") # the <a href in this cell
-						if cl.find("time")>-1:
-							#print "time",val
-							time = timeFind(val)
-						if cl.find("release-date")>-1:
-							releaseDate=val
-						if cl.find("description")>-1:
-							comment = val
-						if cl.find("price")>-1:
-							price = val
-				print "tr row adding"
-				self.mediaItems.append([None,markup(title,False),artist,time,type,exp+comment,releaseDate,"",gotou,url,price,itemid])
-			elif element.get("audio-preview-url") or element.get("video-preview-url"): #Ping audio/vid.
+			if element.tag=="tr" and element.get("dnd-clipboard-data"):
+				import json
+				data = json.loads(element.get("dnd-clipboard-data"))
+				itemid=""; title=""; artist=""; duration=""; url=""; gotou=""; price="0"; comment=""
+				if (data.has_key('itemName')):
+					title=data['itemName']
+				if (data.has_key('artistName')):
+					artist=data['artistName']
+				if (data.has_key('duration')):
+					duration=timeFind(data['duration'])
+				if (data.has_key('preview-url')):
+					url=data['preview-url']
+				if (data.has_key('playlistName')):
+					comment=data['playlistName']
+				if (data.has_key('url')):
+					gotou=data['url']
+				if (data.has_key('price')):
+					price=data['price']
+				if (data.has_key('itemId')):
+					itemid=data['itemId']
+				self.addItem(title,artist,duration,typeof(url),comment,"","",gotou,url,price,itemid)
+			#elif False and element.tag=="tr" and element.get("class") and (element.get("class").find("track-preview")>-1 or element.get("class").find("podcast-episode")>-1 or element.get("class").find("song")>-1 or element.get("class").find("video")>-1):
+				##You'll find the info in the rows using the inspector (right click, inspect).
+				#title=""; exp=""; itemid=""; artist = ""; time=""; url = ""; comment = ""; releaseDate=""; gotou = ""; price=""
+				#if element.get("adam-id"):
+					#itemid=element.get("adam-id")
+				#if element.get("preview-title"):
+					#title = element.get("preview-title")
+				#if element.get("preview-artist"):
+					#artist = element.get("preview-artist")
+				#if element.get("duration"):
+					#time = timeFind(element.get("duration"))
+				#if element.get("rating-riaa") and element.get("rating-riaa")!="0":
+					#exp = "[Explicit] "
+				#if element.get("audio-preview-url"):
+					#url = element.get("audio-preview-url")
+				#elif element.get("video-preview-url"):
+					#url = element.get("video-preview-url")
+				#type = typeof(url)
+				#for sub in element:
+					#cl = sub.get("class")
+					#val = sub.get("sort-value")
+					#if cl and val: #has class and value, check them:
+						#if cl.find("name")>-1:
+							#title=val
+						#if cl.find("album")>-1:
+							#artist=val
+							#if len(sub) and sub[0].get("href"):
+								#gotou = sub[0].get("href") # the <a href in this cell
+						#if cl.find("time")>-1:
+							##print "time",val
+							#time = timeFind(val)
+						#if cl.find("release-date")>-1:
+							#releaseDate=val
+						#if cl.find("description")>-1:
+							#comment = val
+						#if cl.find("price")>-1:
+							#price = val
+				#print "tr row adding"
+				#self.mediaItems.append([None,markup(title,False),artist,time,type,exp+comment,releaseDate,"",gotou,url,price,itemid])
+			elif (element.get("audio-preview-url") or element.get("video-preview-url")):
 				if element.get("video-preview-url"):
 					url = element.get("video-preview-url")
 				else:
@@ -476,9 +497,17 @@ class Parser:
 					duration = timeFind(element.get("preview-duration"))
 				print "preview-url adding row"
 				self.mediaItems.append([None,markup(title,False),author,duration,typeof(url),"","","","",url,"",""])
-			elif element.tag=="button" and element.get("anonymous-download-url") and element.get("title"):#Added for epub feature
+			elif element.tag=="button" and element.get("anonymous-download-url") and element.get("kind") and (element.get("title") or element.get("item-name")):#Added for epub feature
 				print "button row adding"
-				self.mediaItems.append([None,markup(element.get("title"),False),element.get("item-name"),"",typeof(element.get("anonymous-download-url")),"","","",element.get("anonymous-download-url"),"","",""])#Special 
+				title = ""; artist=""
+				if element.get("title"):
+					title = element.get("title")
+				if element.get("item-name"):
+					title = element.get("item-name")
+				if element.get("preview-artist"):
+					artist = element.get("preview-artist")
+				self.addItem(title,artist,"",typeof(element.get("anonymous-download-url")),"","","",element.get("anonymous-download-url"),"","",element.get("adam-id"))
+				#self.mediaItems.append([None,markup(title,False),element.get("item-name"),"",typeof(element.get("anonymous-download-url")),"","","",element.get("anonymous-download-url"),"","",""])#Special 
 			else: # go through the childnodes.
 				for i in element:
 					self.seeHTMLElement(i)

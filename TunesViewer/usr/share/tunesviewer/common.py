@@ -1,5 +1,5 @@
 #Common functions for tunesviewer
-import glib
+import glib, gtk
 import re
 
 ##

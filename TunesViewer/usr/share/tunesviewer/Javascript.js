@@ -95,6 +95,8 @@ document.onpageshow =  new function() {
 		if (as[a].target=="_blank") {
 			as[a].target="";
 			as[a].href = "web"+as[a].href;
+		} else if (as[a].target) {
+			as[a].target=""
 		}
 	};
 	
@@ -105,6 +107,7 @@ document.onpageshow =  new function() {
 	 */
 	fixTransparent(document.getElementsByTagName("h1"))
 	fixTransparent(document.getElementsByTagName("h2"))
+	fixTransparent(document.getElementsByTagName("div"))
 	fixTransparent(as)
 	
 	//Mouse-over tooltip for ellipsized title...

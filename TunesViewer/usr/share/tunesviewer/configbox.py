@@ -6,12 +6,12 @@ from firstsetup import FirstSetup
 class ConfigBox:
 	#Initialize variable defaults, these variables are directly accessed by the other classes.
 	downloadfolder = os.path.expanduser("~")
-	downloadsafe = False
+	downloadsafe = True
 	toolbar = True
 	statusbar = False
 	throbber = True
 	downloadfile = "%n - %a %l%t"
-	openers = {".mp3" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".m4a" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".mov" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".mp4" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".m4v" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".m4p" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".aiff" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".aif" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000", ".aifc" : "/usr/bin/vlc --http-user-agent=iTunes/10.4 --http-caching=10000" }
+	openers = {".mp3" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000", ".m4a" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000", ".mov" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000", ".mp4" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000", ".m4v" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000", ".m4p" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000", ".aiff" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000", ".aif" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000", ".aifc" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000", ".3gp" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000"}
 	podcastprog = "rhythmbox %i"
 	defaultcommand=2
 	notifyseconds = 7

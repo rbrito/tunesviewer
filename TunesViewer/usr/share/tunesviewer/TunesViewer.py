@@ -1303,7 +1303,7 @@ class TunesViewer:
 			if type:
 				if type==".mp3" or type==".m4a" or type==".amr" or type==".m4p" or type==".aiff" or type==".aif" or type==".aifc":
 					self.liststore.set(row.iter,0, self.icon_audio)
-				elif type==".mp4" or type==".m4v" or type==".mov" or type==".m4b":
+				elif type==".mp4" or type==".m4v" or type==".mov" or type==".m4b" or type==".3gp":
 					self.liststore.set(row.iter,0, self.icon_video)
 				else:
 					self.liststore.set(row.iter,0, self.icon_other)

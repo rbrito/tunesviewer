@@ -16,9 +16,9 @@ class WebKitView(webkit.WebView):
 			# Without this, javascript will give many javascript errors on item mouseover,
 			# TypeError: Result of expression 'a' [null] is not an object.
 			# in its.webkitVersion
-			self.ua = 'iTunes/10.4 '+ self.ua[self.ua.find("AppleWebKit"):]
+			self.ua = 'iTunes/10.5 '+ self.ua[self.ua.find("AppleWebKit"):]
 		else:
-			self.ua = 'iTunes/10.4'
+			self.ua = 'iTunes/10.5'
 		settings.set_property('user-agent', self.ua)
 		#Enable inspector:
 		settings.set_property("enable-developer-extras", True)
