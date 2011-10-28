@@ -133,6 +133,7 @@ class Parser:
 					#elif i.text=="explanation" or i.text=="message":
 						#self.HTML += self.textContent(i.getnext())+"\n"
 		else: # add the tracks:
+			#TODO: Add XML page's elements to the top panel, so the bottom panel isn't necessary.
 			hasmedia=True
 			# for each item...
 			for i in arr:

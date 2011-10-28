@@ -665,7 +665,7 @@ class TunesViewer:
 	
 	def progUpdate(self,obj):
 		"Checks for update to the program."
-		openDefault("http://tunesviewer.sourceforge.net/checkversion.php?version=1.3")
+		openDefault("http://tunesviewer.sourceforge.net/checkversion.php?version=1.4")
 	
 	def treesel(self,selection, model):
 		"Called when selection changes, changes the enabled toolbar buttons."
