@@ -5,12 +5,13 @@ SOCKET = os.path.expanduser("~/.tunesviewerLOCK")
 
 class SingleWindowSocket:
 	"""
+	Called on startup (See last lines of TunesViewer.py).
 	A socket file makes sure there is only one instance of the program.
 	Otherwise, it will mess up downloads when they both download to the same file.
 	"""
 	def __init__(self,url,main):
 		self.caller = main
-		self.RUN = False
+		self.RUN = False #When true, start program.
 		if os.path.exists(SOCKET):
 			try:
 				self.sendUrl(url)

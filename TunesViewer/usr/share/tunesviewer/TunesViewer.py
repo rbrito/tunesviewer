@@ -605,16 +605,6 @@ class TunesViewer:
 		self.cj = cookielib.CookieJar()
 		self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
 		self.opener.addheaders = [('User-agent', self.descView.ua),('Accept-Encoding','gzip'),('Accept-Language','en-US')]
-
-		#Check for crashed downloads:
-		try:
-			dlines = open(os.path.expanduser("~/.tunesviewerDownloads"),'r').read().split("\n")
-			os.remove(os.path.expanduser("~/.tunesviewerDownloads"))
-			for i in range(len(dlines)):
-				if dlines[i].startswith("####"):
-					self.downloadbox.newDownload(None,dlines[i+1],dlines[i+2],self.opener)
-		except IOError, e:
-			print "no downloads crashed."
 		
 	def webkitZI(self,obj):
 		self.descView.zoom_in()
@@ -784,7 +774,7 @@ class TunesViewer:
 		openDefault("/usr/share/tunesviewer/help.txt")
 
 	def showAbout(self,obj):
-		msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "TunesViewer - Easy iTunesU access in Linux\nVersion 1.3 by Luke Bryan\nThis is open source software, distributed 'as is'")
+		msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, "TunesViewer - Easy iTunesU access in Linux\nVersion 1.4 by Luke Bryan\nThis is open source software, distributed 'as is'")
 		msg.run()
 		msg.destroy()
 
@@ -1029,6 +1019,16 @@ class TunesViewer:
 		self.downloadbox.window.show()
 	
 	def main(self): #Startup
+		#Check for crashed downloads, AFTER test for another currently running instance.
+		try:
+			dlines = open(os.path.expanduser("~/.tunesviewerDownloads"),'r').read().split("\n")
+			os.remove(os.path.expanduser("~/.tunesviewerDownloads"))
+			for i in range(len(dlines)):
+				if dlines[i].startswith("####"):
+					self.downloadbox.newDownload(None,dlines[i+1],dlines[i+2],self.opener)
+		except IOError, e:
+			print "no downloads crashed."
+		
 		if (self.url==""):
 			self.gotoURL(self.config.home,False)
 		else:
@@ -1337,7 +1337,7 @@ elif len(args) > 0:
 	url = args[0]
 
 # Create the TunesViewer instance and run it:
-print "TunesViewer 1.3"
+print "TunesViewer 1.4"
 prog = TunesViewer()
 prog.sock = SingleWindowSocket(url,prog)
 #Only run if it isn't already running:

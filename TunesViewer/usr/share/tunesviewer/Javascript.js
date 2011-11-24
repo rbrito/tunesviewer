@@ -130,6 +130,16 @@ document.onpageshow =  new function() {
 			previews[i].childNodes[0].addEventListener('click',previewClick)
 		}
 	}
+	window.setTimeout(function() {
+		previews = document.getElementsByClassName('circular-preview-control');
+		console.log('previews'+previews.length);
+		for (i=0; i<previews.length; i++) {
+			//if (previews[i].tagName=='div') {
+				
+				previews[i].parentNode.parentNode.addEventListener('click',previewClick)
+			//}
+		}
+	},10000);
 	
 	buttons = document.getElementsByTagName('button');
 	for (i=0; i<buttons.length; i++) {
@@ -139,6 +149,10 @@ document.onpageshow =  new function() {
 		/*if (buttons[i].getAttribute('episode-url')!=null) {
 			buttons[i].addEventListener('click',function () {alert(this.getAttribute('episode-url'))},true);
 		}*/
+	}
+	if (document.getElementById('search-itunes-u') != null) {
+		//Fix 100% height
+		document.getElementById('search-itunes-u').style.height=90
 	}
 	console.log("JS OnPageShow Ran Successfully.")
 }
