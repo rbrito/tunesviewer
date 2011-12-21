@@ -154,6 +154,10 @@ document.onpageshow =  new function() {
 		//Fix 100% height
 		document.getElementById('search-itunes-u').style.height=90
 	}
+	if (document.getElementById('search-podcast') != null) {
+		//Fix 100% height
+		document.getElementById('search-podcast').style.height=90
+	}
 	console.log("JS OnPageShow Ran Successfully.")
 }
 

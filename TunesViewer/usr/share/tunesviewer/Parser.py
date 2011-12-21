@@ -11,7 +11,7 @@ def safe(obj):
 		return ""
 
 class Parser:
-	def __init__(self,mainwin,url,contentType,source):
+	def __init__(self,url,contentType,source):
 		#Initialized each time...
 		self.Redirect = "" # URL to redirect to.
 		self.Title = ""
@@ -26,7 +26,6 @@ class Parser:
 		self.tabLinks = []
 		self.last_text = "" # prevent duplicates from shadow-text.
 		
-		self.mainwin = mainwin
 		self.url = url
 		self.contentType = contentType
 		self.source = source

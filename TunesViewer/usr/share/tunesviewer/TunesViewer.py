@@ -14,7 +14,7 @@
 
 #Import the standard python libraries needed:
 import urllib, urllib2, cookielib, gzip
-import sys, os, subprocess, time
+import sys, os, subprocess, time, socket
 from threading import Thread
 from StringIO import StringIO
 
@@ -1020,6 +1020,7 @@ class TunesViewer:
 	
 	def main(self): #Startup
 		#Check for crashed downloads, AFTER test for another currently running instance.
+		socket.setdefaulttimeout(11) # should improve freeze-up when cancelling downloads
 		try:
 			dlines = open(os.path.expanduser("~/.tunesviewerDownloads"),'r').read().split("\n")
 			os.remove(os.path.expanduser("~/.tunesviewerDownloads"))
@@ -1202,7 +1203,7 @@ class TunesViewer:
 		
 		#Parse the page and display:
 		print "PARSING",url,pageType
-		parser = Parser(self, url, pageType, source)
+		parser = Parser(url, pageType, source)
 		#print "Read page,",len(parser.mediaItems),"items, source=",parser.HTML
 		if (parser.Redirect != ""):
 			print "REDIRECT:", parser.Redirect

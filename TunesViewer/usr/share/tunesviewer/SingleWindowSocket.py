@@ -35,6 +35,7 @@ class SingleWindowSocket:
 	def server(self):
 		"Listens for urls and loads in this process."
 		s = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+		s.settimeout(None) #important! Otherwise default timeout will apply.
 		s.bind(SOCKET)
 		while True:
 			url = s.recv(65536) #Wait for a url to load.
