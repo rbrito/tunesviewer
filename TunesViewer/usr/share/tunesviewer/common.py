@@ -2,21 +2,16 @@
 import glib, gtk
 import re
 
-##
-# Given milliseconds, returns time in mm:ss format.
 def timeFind(ms):
+	"""Given milliseconds, returns time in mm:ss format."""
 	try:
 		seconds = int(ms)/1000
 	except ValueError:
-		#print "Invalid number '%s'" % ms
 		return ms
-	min = str(seconds/60)
-	if len(min) == 1:
-		min = "0" + min
-	sec = str(seconds%60)
-	if len(sec) == 1:
-		sec = "0" + sec
-	return min + ":" + sec
+	mins = seconds / 60
+	secs = seconds % 60
+
+	return "%02d:%02d" % (mins, secs)
 
 def htmlentitydecode(s):
 	if s: # based on http://wiki.python.org/moin/EscapingHtml
