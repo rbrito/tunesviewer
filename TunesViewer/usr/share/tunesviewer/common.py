@@ -1,9 +1,14 @@
-#Common functions for tunesviewer
-import glib, gtk
+"""
+Common functions for tunesviewer.
+"""
+import os.path
 import re
 
+import glib
+import gtk
+
 def timeFind(ms):
-	"""Given milliseconds, returns time in mm:ss format."""
+	"""Given time in milliseconds, returns it as a string in mm:ss format."""
 	try:
 		seconds = int(ms)/1000
 	except ValueError:
@@ -13,13 +18,15 @@ def timeFind(ms):
 
 	return "%02d:%02d" % (mins, secs)
 
+
 def htmlentitydecode(s):
 	if s: # based on http://wiki.python.org/moin/EscapingHtml
 		from htmlentitydefs import name2codepoint
-		return (re.sub('&(%s);' % '|'.join(name2codepoint), 
+		return (re.sub('&(%s);' % '|'.join(name2codepoint),
 				lambda m: unichr(name2codepoint[m.group(1)]), s)).replace("&apos;", "'")
 	else:
 		return ""
+
 
 def safeFilename(name):
 	#Turning string into a valid file name for dos/fat filesystem.
@@ -30,10 +37,11 @@ def safeFilename(name):
 		name = name[:240] + typeof(name)
 	return name
 
-##
-# Opens file/url in the system default opener.
+
 def openDefault(filename):
+	"""Opens file/url in the system default opener."""
 	start("xdg-open", filename)
+
 
 def markup(text, isheading):
 	"""Gives markup for name - for liststore"""
@@ -42,6 +50,7 @@ def markup(text, isheading):
 	else:
 		return glib.markup_escape_text(text)
 
+
 def HTmarkup(text, isheading):
 	"""Gives html markup for name - for webkit view."""
 	if isheading:
@@ -49,9 +58,9 @@ def HTmarkup(text, isheading):
 	else:
 		return text + "<br>"
 
-##
-# Describes length in kb or mb, given a number of bytes.
+
 def desc(length):
+	"""Describes length in kb or mb, given a number of bytes."""
 	kb = 1024.0
 	mb = 1048576.0
 	if (length >= mb):
@@ -60,31 +69,28 @@ def desc(length):
 		return str(round(length/kb, 1)) + " KB"
 	else:
 		return str(length) + " B"
-		
 
-##
-# Runs a program in the background.
+
 def start(program, arg):
+	"""Runs a program in the background."""
 	import subprocess
 	try:
-		#Using Popen for security. (os.system(program+something) could have dangerous commands added to end.)
+		# We use Popen for security, as a call to
+		# os.system(program + something) can have dangerous commands
+		# added to end.
 		print program, arg
 		# program may be something like program -a -b, so split spaces to args:
 		subprocess.Popen(program.split(" ") + [arg])
 		print "completed"
 	except Exception, e:
 		print e
-		msg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE,
-				"Error starting %s\n%s" % (program, e))
+		msg = gtk.MessageDialog(None, gtk.DIALOG_MODAL,
+					gtk.MESSAGE_ERROR,
+					gtk.BUTTONS_CLOSE,
+					"Error starting %s\n%s" % (program, e))
 		msg.run()
 		msg.destroy()
 
-##
-# Gets the file type of the url. (.mp3,.pdf, etc)
-def typeof(filename):
-	out = filename[filename.rfind("."):]
-	if (out.find("?") > -1):
-		out = out[:out.find("?")]
-	if (out.find("%") > -1):
-		out = out[:out.find("%")]
-	return out
+
+def typeof(name):
+	return os.path.splitext(name)[1]
