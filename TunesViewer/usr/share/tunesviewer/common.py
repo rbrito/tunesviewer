@@ -29,12 +29,28 @@ def htmlentitydecode(s):
 
 
 def safeFilename(name):
-	#Turning string into a valid file name for dos/fat filesystem.
-	# see: http://stackoverflow.com/questions/295135/turn-a-string-into-a-valid-filename-in-python
-	#http://msdn.microsoft.com/en-us/library/ms810456.aspx
-	name = ''.join(c for c in name if c in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 $%`-_@{}~!#().")
-	if len(name) > 250: # Get the first part of filename, with extension:
-		name = name[:240] + typeof(name)
+	"""Given a string called name, return a 'filtered' version of name
+	(with special characters removed) that is suitable to be used as a
+	file name for a DOS/FAT filesystem.
+
+	This function doesn't take care of corner cases like reserved names
+	(NUL, CON etc.), nor it takes care of filenames that can be empty.
+
+	The resulting filename is truncated to be at most 255 characters
+	long.
+
+	For further information, see:
+	http://stackoverflow.com/questions/295135/turn-a-string-into-a-valid-filename-in-python
+	http://msdn.microsoft.com/en-us/library/ms810456.aspx
+	"""
+	unsafe_fat_chars = r'[^-a-zA-Z0-9 $%`_@{}~!#().]'
+
+	name = os.path.basename(name)
+	name = re.sub(unsafe_fat_chars, '', name)
+	(root, ext) = os.path.splitext(name)
+
+	if len(name) > 255:
+		name = root[:255-len(ext)] + ext
 	return name
 
 
