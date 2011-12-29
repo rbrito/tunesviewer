@@ -7,14 +7,14 @@ from common import *
 
 class Downloader:
 	"""A downloader class to download a file."""
-	downloading=False # True if not cancelled or finished.
-	success=False #Download succeeded.
-	Err="" #Error to show in progress box.
-	copydir=None
-	count = 0 #bytes downloaded
-	filesize = 0 #total bytes
-	readsize = "0" #Human-readable description of size.
-	def __init__(self,icon,url,localfile,opener,downloadWindow):
+	downloading = False # True if not cancelled or finished.
+	success = False #Download succeeded.
+	Err = "" # Error to show in progress box.
+	copydir = None
+	count = 0 # bytes downloaded
+	filesize = 0 # total bytes
+	readsize = "0" # Human-readable description of size.
+	def __init__(self, icon, url, localfile, opener, downloadWindow):
 		self.opener = opener # shared downloader
 		self.url = url
 		self.localfile = localfile
@@ -25,28 +25,28 @@ class Downloader:
 		self._element = gtk.VBox() # main element container
 		upper = gtk.HBox(); upper.show()
 		lower = gtk.HBox(); lower.show()
-		self._element.pack_start(upper,False,False,0)
-		self._element.pack_start(lower,False,False,0)
+		self._element.pack_start(upper, False, False, 0)
+		self._element.pack_start(lower, False, False, 0)
 		self._cancelbutton = gtk.Button("Cancel")
 		self._cancelbutton.show()
-		self._progress = gtk.ProgressBar(adjustment=None)
+		self._progress = gtk.ProgressBar(adjustment = None)
 		self._progress.set_ellipsize(pango.ELLIPSIZE_END)
 		self._progress.show()
 		ic = gtk.Image()
 		ic.set_from_pixbuf(icon)
 		iconhold = gtk.EventBox()
-		iconhold.connect("button-press-event",self.openit)
+		iconhold.connect("button-press-event", self.openit)
 		iconhold.show()
 		iconhold.add(ic)
 		ic.show()
-		upper.pack_start(iconhold,False,False,7)
-		upper.pack_start(self._progress,True,True,0)
-		upper.pack_start(self._cancelbutton,False,False,0)
+		upper.pack_start(iconhold, False, False, 7)
+		upper.pack_start(self._progress, True, True, 0)
+		upper.pack_start(self._cancelbutton, False, False, 0)
 		name = gtk.Label("Downloading to: %s from: %s" % (localfile, url))
 		name.show()
 		name.set_ellipsize(pango.ELLIPSIZE_END)
 		name.set_selectable(True)
-		
+
 		#Add action button
 		self._combo = gtk.combo_box_new_text()
 		self._combo.append_text("Choose Action:")
@@ -55,35 +55,35 @@ class Downloader:
 		self._combo.append_text("Copy to Device")
 		self._combo.append_text("Delete File")
 		self._combo.set_active(0)
-		self._combo.connect("changed",self.actionSelect)
+		self._combo.connect("changed", self.actionSelect)
 		self._combo.show()
-		
+
 		self._mediasel = gtk.FileChooserButton("Choose the folder representing the device")
-		self._mediasel.set_size_request(100,-1)
+		self._mediasel.set_size_request(100, -1)
 		self._mediasel.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
-		self._mediasel.connect("current-folder-changed",self.folderChange)
+		self._mediasel.connect("current-folder-changed", self.folderChange)
 		#self._mediasel.connect("file-set",self.folderChange)
 		self._mediasel.hide()
-		lower.pack_start(self._combo,False,False,2)
-		lower.pack_start(self._mediasel,False,False,2)
-		lower.pack_start(name,True,True,0)
+		lower.pack_start(self._combo, False, False, 2)
+		lower.pack_start(self._mediasel, False, False, 2)
+		lower.pack_start(name, True, True, 0)
 		#self._cancelbutton.show()
 		if self._copyfile != None:
 			self._mediasel.set_current_folder(self._copyfile)
-		self._cancelbutton.connect_after("clicked",self.cancel)
+		self._cancelbutton.connect_after("clicked", self.cancel)
 		self._progress.show()
 		self._element.show()
-	
-	def openit(self,obj,obj2):
+
+	def openit(self, obj, obj2):
 		openDefault(self.localfile);
 
 	def getElement(self):
 		"""Return element containing the gui display for this download"""
 		return self._element
-	
+
 	##
 	# Called when the media-device-directory is changed, copies if download is finished.
-	def folderChange(self,obj):
+	def folderChange(self, obj):
 		self._copydir = self._mediasel.get_current_folder()
 		#Set the selection as the default for new downloads.
 		self._downloadWindow.devicedir = self._copydir
@@ -101,58 +101,62 @@ class Downloader:
 			self._progress.set_text("Copying to %s..." % self._copydir)
 			import shutil
 			try:
-				shutil.copy(self.localfile,self._copydir)
+				shutil.copy(self.localfile, self._copydir)
 			except:
 				self._progress.set_text("Error copying to %s." % self._copydir)
 			else:
 				self._progress.set_text("Copied to %s." % self._copydir)
-	
+
 	def actionSelect(self,obj):
 		"Called when the downloader's combo-box is changed."
 		print self._combo.get_active()
-		if self._combo.get_active()==3:
+		if self._combo.get_active() == 3:
 			self._mediasel.show()
 		else:
 			self._mediasel.hide()
-		if self._combo.get_active()==1 and self.success:
-			#Open now, finished.
+		if self._combo.get_active() == 1 and self.success:
+			# Open now, finished.
 			openDefault(self.localfile)
-		elif self._combo.get_active()==2 and self.success:
+		elif self._combo.get_active() == 2 and self.success:
 			import subprocess
 			try:
-				subprocess.Popen(["soundconverter",self.localfile])
+				subprocess.Popen(["soundconverter", self.localfile])
 			except OSError:
-				msg = gtk.MessageDialog(None,gtk.DIALOG_MODAL, gtk.MESSAGE_ERROR,gtk.BUTTONS_CLOSE, "Soundconverter not found, try installing it with your package manager.")
+				msg = gtk.MessageDialog(None,
+							gtk.DIALOG_MODAL,
+							gtk.MESSAGE_ERROR,
+							gtk.BUTTONS_CLOSE,
+							"Soundconverter not found, try installing it with your package manager.")
 				msg.run()
 				msg.destroy()
-		elif self._combo.get_active()==3 and self.success:
-			#Try to copy, finished.
+		elif self._combo.get_active() == 3 and self.success:
+			# Try to copy, finished.
 			self.copy2device()
-		elif (self._combo.get_active()==4):
+		elif (self._combo.get_active() == 4):
 			print "del"
 			self.deletefile()
-	
-	def cancel(self,obj):
+
+	def cancel(self, obj):
 		"Cancels this download. (this is also called by delete command)"
 		#if self.downloading:
 		self.downloading = False
-		self.t.join() #wait for thread to cancel! Destroying this before the thread finishes may cause major crash!
+		self.t.join() # wait for thread to cancel! Destroying this before the thread finishes may cause major crash!
 		try:
 			os.remove(self.localfile)
-			print "removed "+self.localfile
+			print "removed " + self.localfile
 		except:
 			print "Removing file failed."
-		
+
 		self._element.destroy()
 		#Remove all references to this.
 		self._downloadWindow.downloaders.remove(self)
 		print self._downloadWindow.downloaders
-	
+
 	def start(self):
 		"Starts download thread"
 		self.t = Thread(target=self.downloadThread, args=())
 		self.t.start()
-	
+
 	def downloadThread(self):
 		"This does the actual downloading, it should run as a thread."
 		self.starttime = time.time()
@@ -164,10 +168,10 @@ class Downloader:
 				self.Err = ""
 				self._netfile = self.opener.open(self.url)
 				self.filesize = float(self._netfile.info()['Content-Length'])
-				
+
 				if (os.path.exists(self.localfile) and os.path.isfile(self.localfile)):
 					self.count = os.path.getsize(self.localfile)
-				print self.count,"of",self.filesize,"downloaded."
+				print self.count, "of", self.filesize, "downloaded."
 				if self.count >= self.filesize:
 					self._progress.set_text("Already downloaded.")
 					self._progress.set_fraction(1.0)
@@ -176,45 +180,45 @@ class Downloader:
 					self.success = True
 					self._netfile.close()
 					return
-				
+
 				if (os.path.exists(self.localfile) and os.path.isfile(self.localfile)):
 					#File already exists, start where it left off:
 					#This seems to corrupt the file sometimes?
 					self._netfile.close()
 					req = urllib2.Request(self.url)
-					print "file downloading at byte: ",self.count
-					req.add_header("Range","bytes=%s-" % (self.count))
+					print "file downloading at byte: ", self.count
+					req.add_header("Range", "bytes=%s-" % (self.count))
 					self._netfile = self.opener.open(req)
-				if (self.downloading): #Don't do it if cancelled, downloading=false.
+				if (self.downloading): # Don't do it if cancelled, downloading=false.
 					next = self._netfile.read(1024)
-					self._outfile = open(self.localfile,"ab") #to append binary
+					self._outfile = open(self.localfile, "ab") # to append binary
 					self._outfile.write(next)
 					self.readsize = desc(self.filesize) # get size mb/kb
 					self.count += 1024
-					while (len(next)>0 and self.downloading):
+					while (len(next) > 0 and self.downloading):
 						next = self._netfile.read(1024)
 						self._outfile.write(next)
 						self.count += len(next)
 					self.success = True
 			except httplib.InvalidURL, e:
-				self.Err=("Invalid url. "+str(e))
-				print "Error:",e
+				self.Err=("Invalid url. " + str(e))
+				print "Error:", e
 				if str(e).count("nonnumeric port"):
 					#Workaround for bug: http://bugs.python.org/issue979407
-					self.Err=("Urllib failed! Opening with browser...");
-					openDefault(self.url)#open with browser.
+					self.Err = ("Urllib failed! Opening with browser...")
+					openDefault(self.url) #open with browser.
 				self.downloading = False
 				return
 			except IOError, e:
 				print e
-				self.Err=("Download error, retrying in a few seconds: "+str(e))
+				self.Err=("Download error, retrying in a few seconds: " + str(e))
 				try:
 					self._outfile.close()
 					self._netfile.close()
 				except Exception:
 					pass
-				time.sleep(8) #Then repeat
-		
+				time.sleep(8) # Then repeat
+
 		print "finished one"
 		try:
 			self._outfile.close()
@@ -224,10 +228,10 @@ class Downloader:
 		if self.downloading: #Not cancelled.
 			self.success = True #completed.
 			self._progress.set_fraction(1.0)
-			self._progress.set_text(self.readsize+" downloaded.")
-			if (self._combo.get_active()==1):
+			self._progress.set_text(self.readsize + " downloaded.")
+			if (self._combo.get_active() == 1):
 				openDefault(self.localfile)
-			elif (self._combo.get_active()==3):
+			elif (self._combo.get_active() == 3):
 				# Copy to Device
 				self.copy2device()
 			print "pre dlnotify"
@@ -238,10 +242,14 @@ class Downloader:
 			#see http://faq.pygtk.org/index.py?file=faq20.006.htp&req=show
 			#self._progress.set_text("Error")
 		self.downloading = False
-	
+
 	def deletefile(self):
 		filesize = os.path.getsize(self.localfile)
-		msg = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO,"Are you sure you want to delete this %s file?\n%s" % (desc(filesize),self.localfile))
+		msg = gtk.MessageDialog(None,
+					gtk.DIALOG_MODAL,
+					gtk.MESSAGE_QUESTION,
+					gtk.BUTTONS_YES_NO,
+					"Are you sure you want to delete this %s file?\n%s" % (desc(filesize), self.localfile))
 		answer = msg.run()
 		msg.destroy()
 		if answer == gtk.RESPONSE_YES:
@@ -249,14 +257,14 @@ class Downloader:
 			self.cancel(None)
 		else:
 			self._combo.set_active(0)
-	
+
 	def update(self):
 		if self.Err:
 			self._progress.set_text(self.Err)
 		elif (self.count < self.filesize and self.downloading and self.count > 0):
 			# Update the download progress.
 			self._progress.set_fraction(self.count/self.filesize)
-			#Estimated time remaining: 
+			#Estimated time remaining:
 			# Assume time/totaltime = bytes/totalbytes
 			# So, totaltime = time*totalbytes/bytes.
 			t = time.time() - self.starttime
