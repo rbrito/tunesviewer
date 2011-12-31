@@ -278,6 +278,9 @@ class TunesViewer:
 		exit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
 		exit.set_label("E_xit")
 		exit.connect("activate", self.exitclicked)
+		key, mod = gtk.accelerator_parse("<Ctrl>Q")
+		exit.add_accelerator("activate", agr, key, mod,
+				     gtk.ACCEL_VISIBLE)
 		filemenu.append(exit)
 
 		editmenu = gtk.Menu()
