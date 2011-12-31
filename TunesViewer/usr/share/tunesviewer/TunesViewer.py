@@ -248,18 +248,18 @@ class TunesViewer:
 		mb = gtk.MenuBar()
 		menubox.pack_start(mb, 1, 1, 0)
 		self.throbber = gtk.Image()
-		#Based on firefox throbber:
-		#self.throbber.set_from_animation(gtk.gdk.PixbufAnimation(gtk.icon_theme_get_default().lookup_icon("process-working",16,0).get_filename()))
-		#self.throbber.set_from_animation(gtk.gdk.PixbufAnimation(gtk.icon_theme_get_default().lookup_icon("process-working",16,0).get_filename()))
 
 		throbber_path = '/usr/share/tunesviewer/Throbber.gif'
 		self.throbber.set_from_animation(gtk.gdk.PixbufAnimation(throbber_path))
 
-		#print gtk.icon_theme_get_default().lookup_icon("gnome-spinner",16,0).get_filename()
 		menubox.pack_start(self.throbber, expand=False)
+
+		### Top level 'File' menu
 		filemenu = gtk.Menu()
 		filem = gtk.MenuItem("_File")
 		filem.set_submenu(filemenu)
+
+		## Advanced search
 		aSearch = gtk.ImageMenuItem(gtk.STOCK_FIND)
 		aSearch.set_label("Advanced _Search...")
 		aSearch.connect("activate", self.advancedSearch)
@@ -267,6 +267,8 @@ class TunesViewer:
 		aSearch.add_accelerator("activate", agr, key, mod,
 					gtk.ACCEL_VISIBLE)
 		filemenu.append(aSearch)
+
+		## Search on current page
 		pSearch = gtk.ImageMenuItem(gtk.STOCK_FIND)
 		pSearch.set_label("Find on Current Page...")
 		pSearch.connect("activate", self.searchCurrent)
@@ -274,7 +276,10 @@ class TunesViewer:
 		pSearch.add_accelerator("activate", agr, key, mod,
 					gtk.ACCEL_VISIBLE)
 		filemenu.append(pSearch)
+
 		filemenu.append(gtk.SeparatorMenuItem())
+
+		## Exit application
 		exit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
 		exit.set_label("E_xit")
 		exit.connect("activate", self.exitclicked)
@@ -283,9 +288,12 @@ class TunesViewer:
 				     gtk.ACCEL_VISIBLE)
 		filemenu.append(exit)
 
+		### Edit menu
 		editmenu = gtk.Menu()
 		editm = gtk.MenuItem("_Edit")
 		editm.set_submenu(editmenu)
+
+		## Copy podcast URL
 		self.copym = gtk.ImageMenuItem(gtk.STOCK_COPY)
 		self.copym.set_label("_Copy Normal Podcast Url")
 		self.copym.connect("activate", self.copyrss)
@@ -293,28 +301,39 @@ class TunesViewer:
 		self.copym.add_accelerator("activate", agr, key, mod,
 					   gtk.ACCEL_VISIBLE)
 		editmenu.append(self.copym)
+
+		## Paste URL
 		pastem = gtk.ImageMenuItem(gtk.STOCK_PASTE)
 		pastem.set_label("Paste and _Goto Url")
-		pastem.connect("activate",self.pastego)
+		pastem.connect("activate", self.pastego)
 		key, mod = gtk.accelerator_parse("<Ctrl><Shift>V")
 		pastem.add_accelerator("activate", agr, key, mod,
 				       gtk.ACCEL_VISIBLE)
 		editmenu.append(pastem)
+
 		editmenu.append(gtk.SeparatorMenuItem())
+
+		## Preferences
 		prefs = gtk.ImageMenuItem(gtk.STOCK_PREFERENCES)
 		prefs.connect("activate", self.openprefs)
 		editmenu.append(prefs)
 
+		### View menu
 		viewmenu = gtk.Menu()
 		viewm = gtk.MenuItem("_View")
 		viewm.set_submenu(viewmenu)
 
+		## Request content in HTML mode
 		self.htmlmode = gtk.CheckMenuItem("Request _HTML Mode")
 		self.htmlmode.set_active(True)
 		viewmenu.append(self.htmlmode)
+
 		self.mobilemode = gtk.CheckMenuItem("Mobile Mode")
 		#viewmenu.append(self.mobilemode)
+
 		viewmenu.append(gtk.SeparatorMenuItem())
+
+		## Show downloads
 		viewdownloads = gtk.ImageMenuItem(gtk.STOCK_GO_DOWN)
 		viewdownloads.set_label("Show _Downloads")
 		key, mod = gtk.accelerator_parse("<Ctrl>j")
@@ -322,48 +341,61 @@ class TunesViewer:
 					      gtk.ACCEL_VISIBLE)
 		viewdownloads.connect("activate", self.viewDownloads)
 		viewmenu.append(viewdownloads)
+
+		## Open downloads directory
 		viewdir = gtk.ImageMenuItem(gtk.STOCK_DIRECTORY)
 		viewdir.set_label("Downloads Directory")
 		viewdir.connect("activate", self.openDownloadDir)
 		viewmenu.append(viewdir)
 		viewmenu.append(gtk.SeparatorMenuItem())
 
+		## Zoom in
 		ziItem = gtk.ImageMenuItem(gtk.STOCK_ZOOM_IN)
 		key, mod = gtk.accelerator_parse("<Ctrl>plus")
 		ziItem.add_accelerator("activate", agr, key, mod,
 				       gtk.ACCEL_VISIBLE)
 		ziItem.connect("activate", self.webkitZI)
 		viewmenu.append(ziItem)
+
+		## Zoom out
 		zoItem = gtk.ImageMenuItem(gtk.STOCK_ZOOM_OUT)
 		key, mod = gtk.accelerator_parse("<Ctrl>minus")
 		zoItem.add_accelerator("activate", agr, key, mod,
 				       gtk.ACCEL_VISIBLE)
 		zoItem.connect("activate", self.webkitZO)
 		viewmenu.append(zoItem)
+
+		## Reset zoom
 		znItem = gtk.ImageMenuItem(gtk.STOCK_ZOOM_100)
 		key, mod = gtk.accelerator_parse("<Ctrl>0")
 		znItem.add_accelerator("activate", agr, key, mod,
 				       gtk.ACCEL_VISIBLE)
 		znItem.connect("activate", self.webkitZN)
 		viewmenu.append(znItem)
+
 		viewmenu.append(gtk.SeparatorMenuItem())
 
+		## View page source
 		viewsource = gtk.MenuItem("Page _Source")
 		key, mod = gtk.accelerator_parse("<Ctrl>U")
 		viewsource.add_accelerator("activate", agr, key, mod,
 					   gtk.ACCEL_VISIBLE)
 		viewsource.connect("activate", self.viewsource)
 		viewmenu.append(viewsource)
+
+		## View cookies
 		viewcookie = gtk.MenuItem("_Cookies")
-		viewcookie.connect("activate",self.viewCookie)
+		viewcookie.connect("activate", self.viewCookie)
 		viewmenu.append(viewcookie)
+
+		## View information of selected item
 		viewprop = gtk.ImageMenuItem(gtk.STOCK_INFO)
 		viewprop.set_label("Selection _Info")
 		key, mod = gtk.accelerator_parse("<Ctrl>I")
 		viewprop.add_accelerator("activate", agr, key, mod,
 					 gtk.ACCEL_VISIBLE)
 		viewmenu.append(viewprop)
-		viewprop.connect("activate",self.viewprop)
+		viewprop.connect("activate", self.viewprop)
 
 		self.locShortcut = gtk.MenuItem("Current _URL")
 		key, mod = gtk.accelerator_parse("<Ctrl>L")
@@ -373,53 +405,68 @@ class TunesViewer:
 		self.locShortcut.hide()
 		self.locShortcut.connect("activate", self.locationBar)
 
+		### Go menu
 		gomenu = gtk.Menu()
 		gom = gtk.MenuItem("_Go")
 		gom.set_submenu(gomenu)
 
-		#make the directory links
+		## iTunes U subdirectory
 		self.itunesuDir = gtk.Menu()
 		itunesu = gtk.MenuItem("iTunes_U")
 		itunesu.set_submenu(self.itunesuDir)
 		#self.itunesuDir.append(gtk.MenuItem("directory here"))
 		gomenu.append(itunesu)
+
+		## Podcast subdirectory
 		self.podcastDir = gtk.Menu()
 		podcasts = gtk.MenuItem("_Podcasts")
 		podcasts.set_submenu(self.podcastDir)
 		#self.podcastDir.append(gtk.MenuItem("directory here"))
 		gomenu.append(podcasts)
 
+		## Go back
 		back = gtk.ImageMenuItem(gtk.STOCK_GO_BACK)
 		key, mod = gtk.accelerator_parse("<Alt>Left")
 		back.add_accelerator("activate", agr, key, mod,
 				     gtk.ACCEL_VISIBLE)
 		back.connect("activate", self.goBack)
 		gomenu.append(back)
+
+		## Go forward
 		forward = gtk.ImageMenuItem(gtk.STOCK_GO_FORWARD)
 		key, mod = gtk.accelerator_parse("<Alt>Right")
 		forward.add_accelerator("activate", agr, key, mod,
 					gtk.ACCEL_VISIBLE)
 		forward.connect("activate", self.goForward)
 		gomenu.append(forward)
+
+		## Refresh page
 		refresh = gtk.ImageMenuItem(gtk.STOCK_REFRESH)
 		key, mod = gtk.accelerator_parse("F5")
 		refresh.add_accelerator("activate", agr, key, mod,
 					gtk.ACCEL_VISIBLE)
 		refresh.connect("activate", self.refresh)
 		gomenu.append(refresh)
+
+		## Stop loading
 		stop = gtk.ImageMenuItem(gtk.STOCK_STOP)
 		key, mod = gtk.accelerator_parse("Escape")
 		stop.add_accelerator("activate", agr, key, mod,
 				     gtk.ACCEL_VISIBLE)
 		stop.connect("activate", self.stop)
 		gomenu.append(stop)
+
+		## Go to the initial page
 		homeb = gtk.ImageMenuItem(gtk.STOCK_HOME)
 		homeb.connect("activate", self.goHome)
 		gomenu.append(homeb)
 
+		### Actions menu
 		itemmenu = gtk.Menu()
 		itemm = gtk.MenuItem("_Actions")
 		itemm.set_submenu(itemmenu)
+
+		## Go to link
 		follow = gtk.ImageMenuItem(gtk.STOCK_JUMP_TO)
 		follow.connect("activate", self.followlink)
 		follow.set_label("_Goto Link")
@@ -427,6 +474,8 @@ class TunesViewer:
 		follow.add_accelerator("activate", agr, key, mod,
 				       gtk.ACCEL_VISIBLE)
 		itemmenu.append(follow)
+
+		## Play/View file
 		playview = gtk.ImageMenuItem(gtk.STOCK_MEDIA_PLAY)
 		playview.set_label("_Play/View File")
 		playview.connect("activate", self.playview)
@@ -434,6 +483,8 @@ class TunesViewer:
 		playview.add_accelerator("activate", agr, key, mod,
 					 gtk.ACCEL_VISIBLE)
 		itemmenu.append(playview)
+
+		## Download file
 		download = gtk.ImageMenuItem(gtk.STOCK_SAVE)
 		download.set_label("_Download File")
 		download.connect("activate", self.download)
@@ -441,33 +492,40 @@ class TunesViewer:
 		download.add_accelerator("activate", agr, key, mod,
 					 gtk.ACCEL_VISIBLE)
 		itemmenu.append(download)
+
+		## Add Page to podcast manager
 		self.addpodmenu = gtk.ImageMenuItem(gtk.STOCK_ADD)
 		self.addpodmenu.set_label("_Add Page to Podcast Manager")
 		self.addpodmenu.connect("activate", self.addPod)
 		itemmenu.append(self.addpodmenu)
 
-		# right click menu
+		### Contextual (right-click) menu
 		self.rcmenu = gtk.Menu()
 		self.rcgoto = gtk.ImageMenuItem(gtk.STOCK_JUMP_TO)
 		self.rcgoto.connect("activate", self.followlink)
 		self.rcgoto.set_label("_Goto")
 		self.rcgoto.show()
+
 		self.rccopy = gtk.ImageMenuItem(gtk.STOCK_COPY)
 		self.rccopy.connect("activate", self.copyRowLink)
 		self.rccopy.set_label("_Copy Link")
 		self.rccopy.show()
+
 		self.rcplay = gtk.ImageMenuItem(gtk.STOCK_MEDIA_PLAY)
 		self.rcplay.connect("activate", self.playview)
 		self.rcplay.set_label("_Play/View")
 		self.rcplay.show()
+
 		self.rcdownload = gtk.ImageMenuItem(gtk.STOCK_SAVE)
 		self.rcdownload.connect("activate", self.download)
 		self.rcdownload.set_label("_Download")
 		self.rcdownload.show()
+
 		rcinfo = gtk.ImageMenuItem(gtk.STOCK_INFO)
 		rcinfo.connect("activate", self.viewprop)
 		rcinfo.set_label("Item _Info")
 		rcinfo.show()
+
 		self.rcmenu.append(rcinfo)
 		self.rcmenu.append(self.rcgoto)
 		self.rcmenu.append(self.rccopy)
@@ -475,20 +533,29 @@ class TunesViewer:
 		self.rcmenu.append(self.rcdownload)
 		self.treeview.connect("button_press_event", self.treeclick)
 
+		### Help menu
 		helpmenu = gtk.Menu()
 		helpm = gtk.MenuItem("_Help")
 		helpm.set_submenu(helpmenu)
+
+		## Help
 		helpitem = gtk.ImageMenuItem(gtk.STOCK_HELP)
 		helpitem.connect("activate", self.showHelp)
+		helpmenu.append(helpitem)
+
+		## Check for updates
 		helpupdate = gtk.MenuItem("Check for _Update...")
 		helpupdate.connect("activate", self.progUpdate)
+		helpmenu.append(helpupdate)
+
+		## Report a bug
 		helpreport = gtk.MenuItem("Report a Bug...")
 		helpreport.connect("activate", self.bugReport)
+		helpmenu.append(helpreport)
+
+		## About the program
 		helpabout = gtk.MenuItem("About")
 		helpabout.connect("activate", self.showAbout)
-		helpmenu.append(helpitem)
-		helpmenu.append(helpupdate)
-		helpmenu.append(helpreport)
 		helpmenu.append(helpabout)
 
 		#Set up the main menu:
