@@ -90,8 +90,8 @@ class DownloadBox:
 					"%s/%s download%s completed successfully." % (self.downloaded, self.total, s), gtk.STOCK_GO_DOWN)
 				n.set_timeout(1000 * self.Wopener.config.notifyseconds)
 				n.show()
-			except:
-				print "Notification failed"
+			except ImportError, e:
+				print "Notification failed", e
 
 	def newDownload(self, icon, url, localfile, opener):
 		"""Downloads a url
