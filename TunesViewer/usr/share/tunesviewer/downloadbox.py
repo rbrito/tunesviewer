@@ -35,7 +35,7 @@ class DownloadBox:
 		self.window.add(scrolledwindow)
 
 	def updateLoop(self):
-		"Updates each downloader display. "
+		"""Updates each downloader display."""
 		# Get downloaded/total
 		self.downloaded = 0
 		self.total = 0
@@ -64,7 +64,7 @@ class DownloadBox:
 			return True
 
 	def onclose(self, widget, data):
-		"Cancels closing window, hides it instead."
+		"""Cancels closing window, hides it instead."""
 		self.window.hide()
 		return True # Cancel close window.
 
@@ -81,7 +81,7 @@ class DownloadBox:
 			self.lastCompleteDownloads = self.downloaded
 			try:
 				import pynotify
-				if (self.total == 1):
+				if self.total == 1:
 					s = ""
 				else:
 					s = "s"
@@ -94,7 +94,9 @@ class DownloadBox:
 				print "Notification failed", e
 
 	def newDownload(self, icon, url, localfile, opener):
-		"""Downloads a url
+		"""
+		Downloads a url
+
 		Takes a url, filetype icon, local filename, and opener.
 		"""
 		#Check if already downloading/downloaded:
