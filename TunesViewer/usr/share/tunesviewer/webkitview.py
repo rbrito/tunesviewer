@@ -1,6 +1,5 @@
 import os
 
-import gtk
 import webkit
 
 from inspector import Inspector
