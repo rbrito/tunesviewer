@@ -13,11 +13,11 @@ class DownloadBox:
 	total = 0
 	lastCompleteDownloads = 0
 	devicedir = None # last selected mp3-player directory:
-	
+
 	##
 	# True when a download is running
 	downloadrunning = False
-	
+
 	def __init__(self, Wopener):
 		self.Wopener = Wopener # reference to main prog.
 		self.window = gtk.Window()
@@ -33,7 +33,7 @@ class DownloadBox:
 		scrolledwindow.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 		scrolledwindow.add_with_viewport(self.vbox)
 		self.window.add(scrolledwindow)
-	
+
 	def updateLoop(self):
 		"Updates each downloader display. "
 		# Get downloaded/total
@@ -54,7 +54,7 @@ class DownloadBox:
 		percent = ""
 		if (totalbytes != 0):
 			percent = str(round(dlbytes/totalbytes*100, 1)) + "%, "
-		self.window.set_title("Downloads (%s%s/%s downloaded)" % 
+		self.window.set_title("Downloads (%s%s/%s downloaded)" %
 		  (percent, str(self.downloaded), str(self.total)))
 		if self.downloaded == self.total:
 			self.downloadrunning = False
@@ -62,21 +62,22 @@ class DownloadBox:
 			return False # Downloads Done.
 		else:
 			return True
-	
+
 	def onclose(self, widget, data):
 		"Cancels closing window, hides it instead."
 		self.window.hide()
 		return True # Cancel close window.
-	
+
 	def cancelAll(self):
 		"""Tell all downloaders to cancel"""
 		# for i in self.downloaders: (downloaders get removed, can't use for.)
 		while len(self.downloaders):
 			#print "c", self.downloaders
 			self.downloaders[0].cancel(0)
-	
+
 	def downloadNotify(self):
-		if self.Wopener.config.notifyseconds != 0 and self.lastCompleteDownloads != self.downloaded:
+		if (self.Wopener.config.notifyseconds != 0 and
+		    self.lastCompleteDownloads != self.downloaded):
 			self.lastCompleteDownloads = self.downloaded
 			try:
 				import pynotify
@@ -91,7 +92,7 @@ class DownloadBox:
 				n.show()
 			except:
 				print "Notification failed"
-	
+
 	def newDownload(self, icon, url, localfile, opener):
 		"""Downloads a url
 		Takes a url, filetype icon, local filename, and opener.

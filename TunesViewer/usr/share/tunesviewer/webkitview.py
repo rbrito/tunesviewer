@@ -10,16 +10,22 @@ class WebKitView(webkit.WebView):
 	Instantiated as Tunesviewer.descView.
 	"""
 	def __init__(self, opener):
+		"""
+		In this code, we set user-agent of this webkit view based on
+		code from:
+
+		http://nullege.com/codes/show/src%40p%40r%40PrisPy-HEAD%40PrisPy.py/33/webkit.WebView/python
+		"""
 		self.opener = opener
 		webkit.WebView.__init__(self)
 		self.set_highlight_text_matches(True)
-		#Set user-agent of this webkit view (based on code from http://nullege.com/codes/show/src%40p%40r%40PrisPy-HEAD%40PrisPy.py/33/webkit.WebView/python)
 		settings = self.get_settings()
 		self.ua = settings.get_property('user-agent')
 		if self.ua.find("AppleWebKit") > -1:
-			# Without this, javascript will give many javascript errors on item mouseover,
-			# TypeError: Result of expression 'a' [null] is not an object.
-			# in its.webkitVersion
+			# Without this, javascript will give many javascript
+			# errors on item mouseover, TypeError: Result of
+			# expression 'a' [null] is not an object.  in
+			# its.webkitVersion
 			self.ua = 'iTunes/10.5 ' + self.ua[self.ua.find("AppleWebKit"):]
 		else:
 			self.ua = 'iTunes/10.5'
@@ -35,7 +41,8 @@ class WebKitView(webkit.WebView):
 		#self.connect("resource-request-starting", self.webkitReqStart)
 		#self.descView.connect("resource-request-starting", self.webkitReqStart)
 		current = os.path.dirname(os.path.realpath(__file__))
-		self.injectJavascript = file(os.path.join(current, "Javascript.js"), "r").read()
+		self.injectJavascript = file(os.path.join(current, "Javascript.js"),
+					     "r").read()
 		
 	def webKitLoaded(self, view, frame):
 		"""

@@ -51,7 +51,10 @@ except ImportError, e:
 				gtk.DIALOG_MODAL,
 				gtk.MESSAGE_ERROR,
 				gtk.BUTTONS_CLOSE,
-				"This program requires LXML, but it is not installed.\nPlease install python-lxml with your system's package manager, or follow the installation instructions at:\nhttp://codespeak.net/lxml/index.html#download")
+				"This program requires LXML, but it is not installed.\n"
+				"Please install python-lxml with your system's package manager,"
+				"or follow the installation instructions at:\n"
+				"http://codespeak.net/lxml/index.html#download")
 	msg.run()
 	msg.destroy()
 	sys.exit(1)
@@ -98,13 +101,16 @@ class TunesViewer:
 			print "Couldn't load window icon."
 
 		# will hold icon, title, artist, time, type, comment, releasedate, datemodified, gotourl, previewurl, price, itemid.
-		self.liststore = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, str, str, str, str, str, str, str, str)
+		self.liststore = gtk.ListStore(gtk.gdk.Pixbuf, str, str,
+					       str, str, str, str, str, str,
+					       str, str, str)
 
 		#Liststore goes in a TreeView inside a Scrolledwindow:
 		self.treeview = gtk.TreeView(model=self.liststore)
 		self.treeview.set_enable_search(True)
 		self.scrolledwindow = gtk.ScrolledWindow()
-		self.scrolledwindow.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.scrolledwindow.set_policy(gtk.POLICY_AUTOMATIC,
+					       gtk.POLICY_AUTOMATIC)
 		self.scrolledwindow.add(self.treeview)
 
 		cell = gtk.CellRendererText()
@@ -204,7 +210,8 @@ class TunesViewer:
 		self.treeview.set_search_column(1)
 
 		self.treeview.connect("row-activated", self.rowSelected)
-		self.treeview.get_selection().set_select_function(self.treesel, data=None)
+		self.treeview.get_selection().set_select_function(self.treesel,
+								  data=None)
 
 		# Make the locationbar-searchbar:
 		locationbox = gtk.HBox()
@@ -254,13 +261,15 @@ class TunesViewer:
 		aSearch.set_label("Advanced _Search...")
 		aSearch.connect("activate", self.advancedSearch)
 		key, mod = gtk.accelerator_parse("<Ctrl>K")
-		aSearch.add_accelerator("activate", agr, key, mod, gtk.ACCEL_VISIBLE)
+		aSearch.add_accelerator("activate", agr, key, mod,
+					gtk.ACCEL_VISIBLE)
 		filemenu.append(aSearch)
 		pSearch = gtk.ImageMenuItem(gtk.STOCK_FIND)
 		pSearch.set_label("Find on Current Page...")
 		pSearch.connect("activate", self.searchCurrent)
 		key, mod = gtk.accelerator_parse("<Ctrl>F")
-		pSearch.add_accelerator("activate", agr, key, mod, gtk.ACCEL_VISIBLE)
+		pSearch.add_accelerator("activate", agr, key, mod,
+					gtk.ACCEL_VISIBLE)
 		filemenu.append(pSearch)
 		filemenu.append(gtk.SeparatorMenuItem())
 		exit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
@@ -275,13 +284,15 @@ class TunesViewer:
 		self.copym.set_label("_Copy Normal Podcast Url")
 		self.copym.connect("activate", self.copyrss)
 		key, mod = gtk.accelerator_parse("<Ctrl><Shift>C")
-		self.copym.add_accelerator("activate", agr, key, mod, gtk.ACCEL_VISIBLE)
+		self.copym.add_accelerator("activate", agr, key, mod,
+					   gtk.ACCEL_VISIBLE)
 		editmenu.append(self.copym)
 		pastem = gtk.ImageMenuItem(gtk.STOCK_PASTE)
 		pastem.set_label("Paste and _Goto Url")
 		pastem.connect("activate",self.pastego)
 		key, mod = gtk.accelerator_parse("<Ctrl><Shift>V")
-		pastem.add_accelerator("activate", agr, key, mod, gtk.ACCEL_VISIBLE)
+		pastem.add_accelerator("activate", agr, key, mod,
+				       gtk.ACCEL_VISIBLE)
 		editmenu.append(pastem)
 		editmenu.append(gtk.SeparatorMenuItem())
 		prefs = gtk.ImageMenuItem(gtk.STOCK_PREFERENCES)
@@ -301,7 +312,8 @@ class TunesViewer:
 		viewdownloads = gtk.ImageMenuItem(gtk.STOCK_GO_DOWN)
 		viewdownloads.set_label("Show _Downloads")
 		key, mod = gtk.accelerator_parse("<Ctrl>j")
-		viewdownloads.add_accelerator("activate", agr, key, mod, gtk.ACCEL_VISIBLE)
+		viewdownloads.add_accelerator("activate", agr, key, mod,
+					      gtk.ACCEL_VISIBLE)
 		viewdownloads.connect("activate", self.viewDownloads)
 		viewmenu.append(viewdownloads)
 		viewdir = gtk.ImageMenuItem(gtk.STOCK_DIRECTORY)
@@ -312,24 +324,28 @@ class TunesViewer:
 
 		ziItem = gtk.ImageMenuItem(gtk.STOCK_ZOOM_IN)
 		key, mod = gtk.accelerator_parse("<Ctrl>plus")
-		ziItem.add_accelerator("activate", agr, key, mod, gtk.ACCEL_VISIBLE)
+		ziItem.add_accelerator("activate", agr, key, mod,
+				       gtk.ACCEL_VISIBLE)
 		ziItem.connect("activate", self.webkitZI)
 		viewmenu.append(ziItem)
 		zoItem = gtk.ImageMenuItem(gtk.STOCK_ZOOM_OUT)
 		key, mod = gtk.accelerator_parse("<Ctrl>minus")
-		zoItem.add_accelerator("activate", agr, key, mod, gtk.ACCEL_VISIBLE)
+		zoItem.add_accelerator("activate", agr, key, mod,
+				       gtk.ACCEL_VISIBLE)
 		zoItem.connect("activate", self.webkitZO)
 		viewmenu.append(zoItem)
 		znItem = gtk.ImageMenuItem(gtk.STOCK_ZOOM_100)
 		key, mod = gtk.accelerator_parse("<Ctrl>0")
-		znItem.add_accelerator("activate", agr, key, mod, gtk.ACCEL_VISIBLE)
+		znItem.add_accelerator("activate", agr, key, mod,
+				       gtk.ACCEL_VISIBLE)
 		znItem.connect("activate", self.webkitZN)
 		viewmenu.append(znItem)
 		viewmenu.append(gtk.SeparatorMenuItem())
 
 		viewsource = gtk.MenuItem("Page _Source")
 		key, mod = gtk.accelerator_parse("<Ctrl>U")
-		viewsource.add_accelerator("activate", agr, key, mod, gtk.ACCEL_VISIBLE)
+		viewsource.add_accelerator("activate", agr, key, mod,
+					   gtk.ACCEL_VISIBLE)
 		viewsource.connect("activate", self.viewsource)
 		viewmenu.append(viewsource)
 		viewcookie = gtk.MenuItem("_Cookies")
@@ -338,13 +354,15 @@ class TunesViewer:
 		viewprop = gtk.ImageMenuItem(gtk.STOCK_INFO)
 		viewprop.set_label("Selection _Info")
 		key, mod = gtk.accelerator_parse("<Ctrl>I")
-		viewprop.add_accelerator("activate", agr, key, mod, gtk.ACCEL_VISIBLE)
+		viewprop.add_accelerator("activate", agr, key, mod,
+					 gtk.ACCEL_VISIBLE)
 		viewmenu.append(viewprop)
 		viewprop.connect("activate",self.viewprop)
 
 		self.locShortcut = gtk.MenuItem("Current _URL")
 		key, mod = gtk.accelerator_parse("<Ctrl>L")
-		self.locShortcut.add_accelerator("activate", agr, key, mod, gtk.ACCEL_VISIBLE)
+		self.locShortcut.add_accelerator("activate", agr, key, mod,
+						 gtk.ACCEL_VISIBLE)
 		viewmenu.append(self.locShortcut)
 		self.locShortcut.hide()
 		self.locShortcut.connect("activate", self.locationBar)
@@ -367,26 +385,26 @@ class TunesViewer:
 
 		back = gtk.ImageMenuItem(gtk.STOCK_GO_BACK)
 		key, mod = gtk.accelerator_parse("<Alt>Left")
-		back.add_accelerator("activate", agr, key,
-			mod, gtk.ACCEL_VISIBLE)
+		back.add_accelerator("activate", agr, key, mod,
+				     gtk.ACCEL_VISIBLE)
 		back.connect("activate", self.goBack)
 		gomenu.append(back)
 		forward = gtk.ImageMenuItem(gtk.STOCK_GO_FORWARD)
 		key, mod = gtk.accelerator_parse("<Alt>Right")
-		forward.add_accelerator("activate", agr, key,
-			mod, gtk.ACCEL_VISIBLE)
+		forward.add_accelerator("activate", agr, key, mod,
+					gtk.ACCEL_VISIBLE)
 		forward.connect("activate", self.goForward)
 		gomenu.append(forward)
 		refresh = gtk.ImageMenuItem(gtk.STOCK_REFRESH)
 		key, mod = gtk.accelerator_parse("F5")
-		refresh.add_accelerator("activate", agr, key,
-			mod, gtk.ACCEL_VISIBLE)
+		refresh.add_accelerator("activate", agr, key, mod,
+					gtk.ACCEL_VISIBLE)
 		refresh.connect("activate", self.refresh)
 		gomenu.append(refresh)
 		stop = gtk.ImageMenuItem(gtk.STOCK_STOP)
 		key, mod = gtk.accelerator_parse("Escape")
-		stop.add_accelerator("activate", agr, key,
-			mod, gtk.ACCEL_VISIBLE)
+		stop.add_accelerator("activate", agr, key, mod,
+				     gtk.ACCEL_VISIBLE)
 		stop.connect("activate", self.stop)
 		gomenu.append(stop)
 		homeb = gtk.ImageMenuItem(gtk.STOCK_HOME)
@@ -400,22 +418,22 @@ class TunesViewer:
 		follow.connect("activate", self.followlink)
 		follow.set_label("_Goto Link")
 		key, mod = gtk.accelerator_parse("<Ctrl>G")
-		follow.add_accelerator("activate", agr, key,
-			mod, gtk.ACCEL_VISIBLE)
+		follow.add_accelerator("activate", agr, key, mod,
+				       gtk.ACCEL_VISIBLE)
 		itemmenu.append(follow)
 		playview = gtk.ImageMenuItem(gtk.STOCK_MEDIA_PLAY)
 		playview.set_label("_Play/View File")
 		playview.connect("activate", self.playview)
 		key, mod = gtk.accelerator_parse("<Ctrl>P")
-		playview.add_accelerator("activate", agr, key,
-			mod, gtk.ACCEL_VISIBLE)
+		playview.add_accelerator("activate", agr, key, mod,
+					 gtk.ACCEL_VISIBLE)
 		itemmenu.append(playview)
 		download = gtk.ImageMenuItem(gtk.STOCK_SAVE)
 		download.set_label("_Download File")
 		download.connect("activate", self.download)
 		key, mod = gtk.accelerator_parse("<Ctrl>D")
-		download.add_accelerator("activate", agr, key,
-			mod, gtk.ACCEL_VISIBLE)
+		download.add_accelerator("activate", agr, key, mod,
+					 gtk.ACCEL_VISIBLE)
 		itemmenu.append(download)
 		self.addpodmenu = gtk.ImageMenuItem(gtk.STOCK_ADD)
 		self.addpodmenu.set_label("_Add Page to Podcast Manager")
@@ -478,7 +496,8 @@ class TunesViewer:
 		#Location buttons: (University > section > title)
 		self.locationhbox = gtk.HBox()
 		#self.locationhbox.set_size_request(prefheight,-1)
-		self.locationhbox.pack_start(gtk.Label(" Media files on this page: "), False, False, 0)
+		self.locationhbox.pack_start(gtk.Label(" Media files on this page: "),
+					     False, False, 0)
 		#This will hold references to the buttons in this box:
 		#self.locationbuttons = [] not needed
 		self.notebook = gtk.Notebook()
@@ -619,7 +638,9 @@ class TunesViewer:
 		# Set up the main url handler with downloading and cookies:
 		self.cj = cookielib.CookieJar()
 		self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
-		self.opener.addheaders = [('User-agent', self.descView.ua), ('Accept-Encoding', 'gzip'), ('Accept-Language', 'en-US')]
+		self.opener.addheaders = [('User-agent', self.descView.ua),
+					  ('Accept-Encoding', 'gzip'),
+					  ('Accept-Language', 'en-US')]
 
 	def webkitZI(self,obj):
 		self.descView.zoom_in()
@@ -639,7 +660,8 @@ class TunesViewer:
 
 	def getDirectory(self):
 		"""Sets up quick links in the Go menu.
-		This info appears to have been moved to <script id="protocol" type="text/x-apple-plist">
+		This info appears to have been moved to
+		    <script id="protocol" type="text/x-apple-plist">
 		sections, so this code no longer works correctly."""
 		pass
 
@@ -724,7 +746,7 @@ class TunesViewer:
 				#pass
 			print url.lower()[:9]
 			if url.lower()[:9] == "<a href=\"":
-				url = url[9:url.find("\"",9)]
+				url = url[9:url.find("\"", 9)]
 				print "u:", url
 			if url != "":
 				self.gotoURL(url, True)
@@ -744,17 +766,18 @@ class TunesViewer:
 				widget.currentFound = -1 #start at beginning.
 				break
 			thisrow = self.liststore[widget.currentFound]
-			if str(thisrow[1]).lower().find(findT) > -1 \
-				or str(thisrow[2]).lower().find(findT) > -1 \
-				or str(thisrow[3]).lower().find(findT) > -1 \
-				or str(thisrow[4]).lower().find(findT) > -1 \
-				or str(thisrow[5]).lower().find(findT) > -1 \
-				or str(thisrow[6]).lower().find(findT) > -1 \
-				or str(thisrow[7]).lower().find(findT) > -1:
-					print str(thisrow[1]) #this is a match.
-					self.treeview.get_selection().select_iter(thisrow.iter)
-					self.treeview.scroll_to_cell(thisrow.path, None, False, 0, 0)
-					break
+			if (str(thisrow[1]).lower().find(findT) > -1 or
+			    str(thisrow[2]).lower().find(findT) > -1 or
+			    str(thisrow[3]).lower().find(findT) > -1 or
+			    str(thisrow[4]).lower().find(findT) > -1 or
+			    str(thisrow[5]).lower().find(findT) > -1 or
+			    str(thisrow[6]).lower().find(findT) > -1 or
+			    str(thisrow[7]).lower().find(findT) > -1):
+				print str(thisrow[1]) #this is a match.
+				self.treeview.get_selection().select_iter(thisrow.iter)
+				self.treeview.scroll_to_cell(thisrow.path,
+							     None, False, 0, 0)
+				break
 		#TODO: Fix webkit search so it will search and highlight the text, this should work, but it doesn't:
 		self.descView.search_text(findT, False, True, True)
 		self.descView.set_highlight_text_matches(highlight=True)
@@ -763,11 +786,12 @@ class TunesViewer:
 		openDefault(self.config.downloadfolder)
 
 	def viewsource(self, obj):
-		"Starts a new View Source box based on current url and source."
+		"""Starts a new View Source box based on current url and source."""
 		VWin("Source of: " + self.url, self.source)
 
 	def treeclick(self, treeview, event):
-		"For right click menu - see http://faq.pygtk.org/index.py?req=show&file=faq13.017.htp"
+		"""For right click menu:
+		see http://faq.pygtk.org/index.py?req=show&file=faq13.017.htp"""
 		if event.button == 3:
 			x = int(event.x)
 			y = int(event.y)
@@ -778,7 +802,8 @@ class TunesViewer:
 				treeview.grab_focus()
 				treeview.set_cursor(path, col, 0)
 				# Right click menu
-				self.rcmenu.popup(None, None, None, event.button, time)
+				self.rcmenu.popup(None, None, None,
+						  event.button, time)
 			return True
 
 	def tabChange(self, obj1, obj2, i):
@@ -801,7 +826,9 @@ class TunesViewer:
 					gtk.DIALOG_MODAL,
 					gtk.MESSAGE_INFO,
 					gtk.BUTTONS_CLOSE,
-					"TunesViewer - Easy iTunesU access in Linux\nVersion 1.4 by Luke Bryan\nThis is open source software, distributed 'as is'")
+					"TunesViewer - Easy iTunesU access in Linux\n"
+					"Version 1.4 by Luke Bryan\n"
+					"This is open source software, distributed 'as is'")
 		msg.run()
 		msg.destroy()
 
@@ -816,7 +843,8 @@ class TunesViewer:
 			for k2 in self.cj._cookies[k].keys():
 				cList.append("   " + k2)
 				for k3 in self.cj._cookies[k][k2]:
-					cList.append("      " + k3 + " = " + self.cj._cookies[k][k2][k3].value)
+					cList.append("      " + k3 + " = " +
+						     self.cj._cookies[k][k2][k3].value)
 		VWin("Cookies", "\n".join(cList))
 
 	def advancedSearch(self, obj):
@@ -842,12 +870,13 @@ class TunesViewer:
 				cmds[i] = "itpc" + self.podcast[self.podcast.find("://"):] #rhythmbox requires itpc to specify it's a podcast.
 		try:
 			subprocess.Popen(cmds)
-		except OSError,e:
+		except OSError, e:
 			msg = gtk.MessageDialog(self.window,
 						gtk.DIALOG_MODAL,
 						gtk.MESSAGE_WARNING,
 						gtk.BUTTONS_CLOSE,
-						"Error running: %s\n\nIs the program installed and working?\n%s" % (" ".join(cmds), e))
+						"Error running: %s\n\n"
+						"Is the program installed and working?\n%s" % (" ".join(cmds), e))
 			msg.run()
 			msg.destroy()
 
@@ -926,7 +955,8 @@ class TunesViewer:
 		gtk.Clipboard().set_text(self.selected()[8])
 
 	def combomodechanged(self, obj):
-		"""Called when the search/url combobox is changed, sets focus to the location-entry."""
+		"""Called when the search/url combobox is changed,
+		sets focus to the location-entry."""
 		self.window.set_focus(self.locationentry)
 		if self.modecombo.get_active() == 0:
 			self.locationentry.set_text(self.url)
@@ -939,7 +969,8 @@ class TunesViewer:
 		self.delete_event(None, None, None)
 
 	def rowSelected(self, treeview, path, column):
-		"""Called when row is selected with enter or double-click, runs default action."""
+		"""Called when row is selected with enter or double-click,
+		runs default action."""
 		model = self.treeview.get_model()
 		iter = model.get_iter(path)
 		print model.get_value(iter, 0)
@@ -952,21 +983,23 @@ class TunesViewer:
 		openurl = model.get_value(iter, 9) #directurl
 		gotourl = model.get_value(iter, 8)
 
-		if (int(self.config.defaultcommand) == 1 and openurl!=""):
+		if (int(self.config.defaultcommand) == 1 and openurl != ""):
 			self.playview(None) # play directly.
 			print "played"
-		elif (int(self.config.defaultcommand)==2 and openurl!=""):
+		elif (int(self.config.defaultcommand) == 2 and openurl != ""):
 			self.download(None) # download.
 		else:
 			print "goto"
-			if gotourl != "" and openurl == "" and model.get_value(iter, 5) == "(Web Link)":
+			if (gotourl != "" and openurl == "" and
+			    model.get_value(iter, 5) == "(Web Link)"):
 				print "web link"
 				openDefault(gotourl)
 			else:
 				self.gotoURL(gotourl, True)
 
 	def playview(self, obj):
-		"""Plays or views the selected file (Streaming to program directly, not downloading)."""
+		"""Plays or views the selected file
+		(Streaming to program directly, not downloading)."""
 		print self.selected()
 		if self.selected() == None:
 			return
@@ -991,7 +1024,8 @@ class TunesViewer:
 						gtk.BUTTONS_CLOSE,
 						"You don't have any program set to open " +
 						type +
-						"\nfiles directly from the web. You must first choose the program in Preferences.")
+						"\nfiles directly from the web. "
+						"You must first choose the program in Preferences.")
 			msg.run()
 			msg.destroy()
 
@@ -1005,7 +1039,7 @@ class TunesViewer:
 		self.infoboxes.append(ItemDetails(self, self.selected()))
 
 	def selected(self):
-		""" Gives the array of properties of selected item. """
+		"""Gives the array of properties of selected item."""
 		(model, iter) = self.treeview.get_selection().get_selected()
 		out = []
 		for i in range(12):
@@ -1049,7 +1083,7 @@ class TunesViewer:
 			#Doesn't exist, try starting it:
 			try:
 				#Try opening filename in the appropriate folder:
-					a=open(os.path.join(self.config.downloadfolder,local), "w")
+					a=open(os.path.join(self.config.downloadfolder, local), "w")
 					a.close()
 			except IOError:
 				# shorten filename to make the filesystem accept it.
@@ -1057,7 +1091,9 @@ class TunesViewer:
 				if len(local) > 100:
 					local = local[-99:]
 		#It should be good, run it:
-		self.downloadbox.newDownload(properties[0], url, os.path.join(self.config.downloadfolder, local), self.opener)
+		self.downloadbox.newDownload(properties[0], url,
+					     os.path.join(self.config.downloadfolder, local),
+					     self.opener)
 		print "starting download", local
 		self.downloadbox.window.show()
 
@@ -1065,7 +1101,8 @@ class TunesViewer:
 		#Check for crashed downloads, AFTER test for another currently running instance.
 		socket.setdefaulttimeout(11) # should improve freeze-up when cancelling downloads
 		try:
-			dlines = open(os.path.expanduser("~/.tunesviewerDownloads"), 'r').read().split("\n")
+			dlines = open(os.path.expanduser("~/.tunesviewerDownloads"),
+				      'r').read().split("\n")
 			os.remove(os.path.expanduser("~/.tunesviewerDownloads"))
 			for i in range(len(dlines)):
 				if dlines[i].startswith("####"):
@@ -1088,7 +1125,8 @@ class TunesViewer:
 						gtk.DIALOG_MODAL,
 						gtk.MESSAGE_QUESTION,
 						gtk.BUTTONS_YES_NO,
-						"Are you sure you want to exit? This will cancel all active downloads.")
+						"Are you sure you want to exit? "
+						"This will cancel all active downloads.")
 			answer = msg.run()
 			msg.destroy()
 			if (answer == gtk.RESPONSE_YES):
@@ -1156,20 +1194,27 @@ class TunesViewer:
 
 		if (str.upper(url)[:4] == "ITMS" or str.upper(url)[:4] == "ITPC"):
 			url = "http" + url[4:]
-		elif url=="": #no url
+		elif url == "": #no url
 			self.downloading = False
 			self.tbStop.set_sensitive(False)
 			return
 
 		#Apparently the x-apple-tz header is UTC offset *60 *60.
 		self.tz = str(-time.altzone)
-		self.opener.addheaders = [('User-agent', self.descView.ua), ('Accept-Encoding', 'gzip'), ('X-Apple-Tz', self.tz)]
+		self.opener.addheaders = [('User-agent', self.descView.ua),
+					  ('Accept-Encoding', 'gzip'),
+					  ('X-Apple-Tz', self.tz)]
 		htmMode = self.htmlmode.get_active() #the checkbox
 		if htmMode:
-			self.opener.addheaders = [('User-agent', self.descView.ua), ('Accept-Encoding', 'gzip'), ("X-Apple-Tz:", self.tz), ("X-Apple-Store-Front", "143441-1,12")]
+			self.opener.addheaders = [('User-agent', self.descView.ua),
+						  ('Accept-Encoding', 'gzip'),
+						  ("X-Apple-Tz:", self.tz),
+						  ("X-Apple-Store-Front", "143441-1,12")]
 		if self.mobilemode.get_active():
 			#as described here http://blogs.oreilly.com/iphone/2008/03/tmi-apples-appstore-protocol-g.html
-			self.opener.addheaders = [('User-agent', 'iTunes-iPhone/1.2.0'), ('Accept-Encoding', 'gzip'), ('X-Apple-Store-Front:', '143441-1,2')]
+			self.opener.addheaders = [('User-agent', 'iTunes-iPhone/1.2.0'),
+						  ('Accept-Encoding', 'gzip'),
+						  ('X-Apple-Store-Front:', '143441-1,2')]
 		#Show that it's loading:
 		self.setLoadDisplay(True)
 
@@ -1179,8 +1224,8 @@ class TunesViewer:
 		t.start()
 
 	def loadPageThread(self, opener, url, newurl):
-		pageType=""
-		text=""
+		pageType = ""
+		text = ""
 		try:
 			#Downloader:
 			response = opener.open(url)
@@ -1198,7 +1243,8 @@ class TunesViewer:
 						f = gzip.GzipFile(fileobj=StringIO(text))
 						try:
 							text = f.read()
-							print "Gzipped response: ", orig, "->", len(text)
+							print ("Gzipped response: ",
+							       orig, "->", len(text))
 						except IOError, e: #bad file
 							print e
 					#self.source = text
@@ -1214,7 +1260,8 @@ class TunesViewer:
 		gobject.idle_add(self.update, url, pageType, text, newurl)
 
 	def update(self, url, pageType, source, newurl):
-		"""Updates display given url, content-type, and source. This does all the gui work after loadPageThread."""
+		"""Updates display given url, content-type, and source.
+		This does all the gui work after loadPageThread."""
 		self.downloading = False
 		self.tbStop.set_sensitive(False)
 		try:
@@ -1281,7 +1328,7 @@ class TunesViewer:
 
 			#Load data:
 			self.descView.loadHTML(parser.HTML, url)
-			print "ITEMS:",len(parser.mediaItems)
+			print "ITEMS:", len(parser.mediaItems)
 			for item in parser.mediaItems:
 				self.liststore.append(item)
 			self.window.set_title(parser.Title)
@@ -1356,14 +1403,20 @@ class TunesViewer:
 		for row in self.liststore:
 			type = row[4].lower()
 			if type:
-				if type in [".mp3", ".m4a", ".amr", ".m4p", ".aiff", ".aif", ".aifc"]:
-					self.liststore.set(row.iter, 0, self.icon_audio)
-				elif type in [".mp4", ".m4v", ".mov", ".m4b", ".3gp"]:
-					self.liststore.set(row.iter, 0, self.icon_video)
+				if type in [".mp3", ".m4a", ".amr", ".m4p",
+					    ".aiff", ".aif", ".aifc"]:
+					self.liststore.set(row.iter, 0,
+							   self.icon_audio)
+				elif type in [".mp4", ".m4v", ".mov",
+					      ".m4b", ".3gp"]:
+					self.liststore.set(row.iter, 0,
+							   self.icon_video)
 				else:
-					self.liststore.set(row.iter, 0, self.icon_other)
+					self.liststore.set(row.iter, 0,
+							   self.icon_other)
 			elif row[8]: #it's a link
-				self.liststore.set(row.iter, 0, self.icon_link)
+				self.liststore.set(row.iter, 0,
+						   self.icon_link)
 			url = row[10]
 
 class VWin:
@@ -1374,7 +1427,7 @@ class VWin:
 		self.window.set_title(title)
 		#self.window.connect("delete_event", self.window.destroy)
 		self.sw = gtk.ScrolledWindow()
-		self.sw.set_policy(gtk.POLICY_AUTOMATIC,gtk.POLICY_AUTOMATIC)
+		self.sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		self.viewer = gtk.TextView()
 		self.viewer.get_buffer().set_text(source)
 		self.viewer.set_wrap_mode(gtk.WRAP_WORD)
@@ -1394,7 +1447,7 @@ elif len(args) > 0:
 # Create the TunesViewer instance and run it:
 print "TunesViewer 1.4"
 prog = TunesViewer()
-prog.sock = SingleWindowSocket(url,prog)
+prog.sock = SingleWindowSocket(url, prog)
 #Only run if it isn't already running:
 if prog.sock.RUN:
 	prog.url = url

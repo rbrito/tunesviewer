@@ -2,19 +2,20 @@ import gc
 import re
 import time
 
-from common import *
 from lxml import etree
 import lxml.html
 
+from common import *
+
 def safe(obj):
-	""" Makes an object safe to add to string, even if it is NoneType. """
+	"""Makes an object safe to add to string, even if it is NoneType."""
 	if obj:
 		return obj
 	else:
 		return ""
 
 class Parser:
-	def __init__(self,url,contentType,source):
+	def __init__(self, url, contentType, source):
 		# Initialized each time...
 		self.Redirect = "" # URL to redirect to.
 		self.Title = ""
@@ -68,7 +69,17 @@ class Parser:
 							url = i.get("url")
 						elif i.tag.endswith("duration"):
 							duration = i.text
-					self.addItem(title, author, duration, typeof(url), description, pubdate, "", linkurl, url, "", "")
+					self.addItem(title,
+						     author,
+						     duration,
+						     typeof(url),
+						     description,
+						     pubdate,
+						     "",
+						     linkurl,
+						     url,
+						     "",
+						     "")
 			else:
 				self.seeXMLElement(dom)
 		except Exception, e:
@@ -79,7 +90,7 @@ class Parser:
 				newU = self.source[ustart+27:self.source.find("'", ustart+27)]
 				self.Redirect = newU
 			print "Parsing HTML"
-			self.HTML = self.source;
+			self.HTML = self.source
 			dom = lxml.html.document_fromstring(self.source.replace('<html xmlns="http://www.apple.com/itms/"', '<html'))
 			self.seeHTMLElement(dom)
 		# print "content:", self.textContent(lxml.html.document_fromstring(self.HTML))
@@ -89,13 +100,17 @@ class Parser:
 
 		keys = dom.xpath("//key") # important parts of document! this is only calculated once to save time
 		# Now get location path:
-		location = []; locationLinks=[]; lastloc = "" # location description and links and last location in location bar.
+		# location description and links and last location in location bar.
+		location = []
+		locationLinks = []
+		lastloc = ""
 		locationelements = dom.xpath("//Path")
 		if len(locationelements) > 0:
 			for i in locationelements[0]:
 				if (type(i).__name__ == '_Element' and i.tag == "PathElement"):
 					location.append(i.get("displayName"))
 					locationLinks.append(i.text)
+
 		if location == ["iTunes U"]:
 			section = dom.xpath("//HBoxView") # looking for first section with location info.
 			if len(section) > 0: # may be out of range
@@ -117,7 +132,9 @@ class Parser:
 			if len(ks):
 				arr = ks
 				print "Special end page after html link?", len(ks)
-				if len(ks) == 1 and dom.get("disableNavigation") == "true" and dom.get("disableHistory") == "true":
+				if (len(ks) == 1 and
+				    dom.get("disableNavigation") == "true" and
+				    dom.get("disableHistory") == "true"):
 					self.singleItem = True
 		print "tag", dom.tag
 
@@ -198,7 +215,18 @@ class Parser:
 									id = t
 							elif (j.text == "metadata"): # for the special case end page after html link
 								i.extend(j.getnext().getchildren()) # look inside this <dict><key></key><string></string>... also.
-					self.addItem(name, artist, timeFind(duration), typeof(directurl), rtype+comments, self.formatTime(releaseDate), self.formatTime(modifiedDate), url, directurl, "", id)
+					self.addItem(name,
+						     artist,
+						     timeFind(duration),
+						     typeof(directurl),
+						     rtype + comments,
+						     self.formatTime(releaseDate),
+						     self.formatTime(modifiedDate),
+						     url,
+						     directurl,
+						     "",
+						     id)
+
 		# Now put page details in the detail-box on top.
 		if dom.tag == "rss":
 			out = ""
@@ -305,7 +333,7 @@ class Parser:
 
 		print "update took:", (time.time() - sttime), "seconds"
 
-	def seeXMLElement(self,element):
+	def seeXMLElement(self, element):
 		""" Recursively looks at xml elements. """
 		if isinstance(element.tag, str):
 			# Good element, check this element:
@@ -329,7 +357,7 @@ class Parser:
 				else:
 					self.HTML += "<a href=\"%s\">" % element.get("url")
 					for i in element:
-						self.seeXMLElement(i);
+						self.seeXMLElement(i)
 					self.HTML += safe(element.text) + "</a>" + safe(element.tail)
 			elif element.tag == "FontStyle":
 				if element.get("styleName") == "default":
@@ -373,43 +401,43 @@ class Parser:
 				# See if there is text right after it for author.
 				nexttext = element.getparent().getparent().getnext()
 				# If there's a TextView-node right after, it should be the author-text or college name.
-				if nexttext != None and isinstance(nexttext.tag,str) and nexttext.tag == "TextView":
+				if nexttext != None and isinstance(nexttext.tag, str) and nexttext.tag == "TextView":
 					author = self.textContent(nexttext).strip()
-				self.HTML += "<a href=\"%s\">%s" % (urllink, HTmarkup(name,False))
+				self.HTML += "<a href=\"%s\">%s" % (urllink, HTmarkup(name, False))
 				#if urllink and urllink[0:4]=="itms":
 					#lnk = "(Link)"
 				#else:
 					#lnk = "(Web Link)"
-			elif element.tag=="key" and element.text=="action" and element.getnext() is not None:
+			elif element.tag == "key" and element.text == "action" and element.getnext() is not None:
 				#Page action for redirect.
 				#Key-val map is stored in <key>name</key><tag>value(s)</tag>
 				keymap = {}
 				for node in element.getnext():
-					if node.tag=="key" and node.getnext() is not None:
+					if node.tag == "key" and node.getnext() is not None:
 						keymap[node.text] = node.getnext().text
 				print keymap
 				if keymap.has_key("kind") and (keymap["kind"]=="Goto" or keymap["kind"]=="OpenURL") and keymap.has_key("url"):
 					self.Redirect = keymap["url"]
-			elif element.tag=="key" and element.getnext() is not None and (element.text=="message" or element.text=="explanation" or element.text=="customerMessage"):
+			elif element.tag == "key" and element.getnext() is not None and (element.text == "message" or element.text == "explanation" or element.text == "customerMessage"):
 				self.HTML += "<p>%s</p>" % element.getnext().text
-			elif element.tag=="key" and element.getnext() is not None and (element.text=="subscribe-podcast") and (element.getnext().tag=="dict"):
+			elif element.tag == "key" and element.getnext() is not None and (element.text == "subscribe-podcast") and (element.getnext().tag == "dict"):
 				for node in element.getnext():
-					if node.tag=="key" and node.getnext() is not None and node.text=="feedURL":
+					if node.tag == "key" and node.getnext() is not None and node.text == "feedURL":
 						self.Redirect = node.getnext().text
-			elif element.tag=="key" and element.getnext() is not None and element.text=="kind" and element.getnext().text=="Perform" and element.getnext().getnext() is not None and element.getnext().getnext().text=="url" and element.getnext().getnext().getnext() is not None:
+			elif element.tag == "key" and element.getnext() is not None and element.text == "kind" and element.getnext().text == "Perform" and element.getnext().getnext() is not None and element.getnext().getnext().text == "url" and element.getnext().getnext().getnext() is not None:
 				self.Redirect = element.getnext().getnext().getnext().text
-				print "REDIR",self.Redirect
-			elif element.tag=="Test" and (element.get("comparison").startswith("lt") or element.get("comparison")=="less"):
+				print "REDIR", self.Redirect
+			elif element.tag == "Test" and (element.get("comparison").startswith("lt") or element.get("comparison") == "less"):
 				pass #Ignore older version info, it would cause duplicates.
-			elif element.tag=="string" or (element.getprevious() is not None and element.getprevious().tag=="key" and element.tag!="dict") or element.tag=="key" or element.tag=="MenuItem" or element.tag=="iTunes" or element.tag=="PathElement" or element.tag=="FontStyleSet":
+			elif element.tag == "string" or (element.getprevious() is not None and element.getprevious().tag == "key" and element.tag != "dict") or element.tag == "key" or element.tag == "MenuItem" or element.tag == "iTunes" or element.tag == "PathElement" or element.tag == "FontStyleSet":
 				pass
 			else:
 				#print element.tag
 				self.HTML += "<%s>" % element.tag
-				if element.text and element.text.strip()!="":
+				if element.text and element.text.strip() != "":
 					#Workaround for double text that is supposed to be shadow.
 					#There is probably a better way to do this?
-					if self.last_text.strip()!=element.text.strip():
+					if self.last_text.strip() != element.text.strip():
 						#print "last:",self.last_text.strip(),"current:",element.text.strip()
 						self.HTML += element.text
 						self.last_text = element.text
@@ -420,31 +448,48 @@ class Parser:
 					self.seeXMLElement(node)
 				self.HTML += "</%s>%s" % (element.tag, safe(element.tail))
 
-	def seeHTMLElement(self,element):
-		if isinstance(element.tag,str): # normal element
-			if element.get("comparison")=="lt" or (element.get("comparison") and element.get("comparison").find("less")>-1):
+	def seeHTMLElement(self, element):
+		if isinstance(element.tag, str): # normal element
+			if element.get("comparison") == "lt" or (element.get("comparison") and element.get("comparison").find("less") > -1):
 				return #Ignore child nodes.
-			if element.tag=="tr" and element.get("dnd-clipboard-data"):
+			if element.tag == "tr" and element.get("dnd-clipboard-data"):
 				import json
 				data = json.loads(element.get("dnd-clipboard-data"))
-				itemid=""; title=""; artist=""; duration=""; url=""; gotou=""; price="0"; comment=""
+				itemid = ""
+				title = ""
+				artist = ""
+				duration = ""
+				url = ""
+				gotou = ""
+				price = "0"
+				comment = ""
 				if (data.has_key('itemName')):
-					title=data['itemName']
+					title = data['itemName']
 				if (data.has_key('artistName')):
-					artist=data['artistName']
+					artist = data['artistName']
 				if (data.has_key('duration')):
-					duration=timeFind(data['duration'])
+					duration = timeFind(data['duration'])
 				if (data.has_key('preview-url')):
-					url=data['preview-url']
+					url = data['preview-url']
 				if (data.has_key('playlistName')):
-					comment=data['playlistName']
+					comment = data['playlistName']
 				if (data.has_key('url')):
-					gotou=data['url']
+					gotou = data['url']
 				if (data.has_key('price')):
-					price=data['price']
+					price = data['price']
 				if (data.has_key('itemId')):
-					itemid=data['itemId']
-				self.addItem(title,artist,duration,typeof(url),comment,"","",gotou,url,price,itemid)
+					itemid = data['itemId']
+				self.addItem(title,
+					     artist,
+					     duration,
+					     typeof(url),
+					     comment,
+					     "",
+					     "",
+					     gotou,
+					     url,
+					     price,
+					     itemid)
 			#elif False and element.tag=="tr" and element.get("class") and (element.get("class").find("track-preview")>-1 or element.get("class").find("podcast-episode")>-1 or element.get("class").find("song")>-1 or element.get("class").find("video")>-1):
 				##You'll find the info in the rows using the inspector (right click, inspect).
 				#title=""; exp=""; itemid=""; artist = ""; time=""; url = ""; comment = ""; releaseDate=""; gotou = ""; price=""
@@ -499,59 +544,91 @@ class Parser:
 				if element.get("preview-duration"):
 					duration = timeFind(element.get("preview-duration"))
 				print "preview-url adding row"
-				self.mediaItems.append([None,markup(title,False),author,duration,typeof(url),"","","","",url,"",""])
-			elif element.tag=="button" and element.get("anonymous-download-url") and element.get("kind") and (element.get("title") or element.get("item-name")):#Added for epub feature
+				self.mediaItems.append([None,
+							markup(title, False),
+							author,
+							duration,
+							typeof(url),
+							"",
+							"",
+							"",
+							"",
+							url,
+							"",
+							""])
+			elif element.tag == "button" and element.get("anonymous-download-url") and element.get("kind") and (element.get("title") or element.get("item-name")):#Added for epub feature
 				print "button row adding"
-				title = ""; artist=""
+				title = ""
+				artist = ""
 				if element.get("title"):
 					title = element.get("title")
 				if element.get("item-name"):
 					title = element.get("item-name")
 				if element.get("preview-artist"):
 					artist = element.get("preview-artist")
-				self.addItem(title,artist,"",typeof(element.get("anonymous-download-url")),"","","",element.get("anonymous-download-url"),"","",element.get("adam-id"))
+				self.addItem(title,
+					     artist,
+					     "",
+					     typeof(element.get("anonymous-download-url")),
+					     "",
+					     "",
+					     "",
+					     element.get("anonymous-download-url"),
+					     "",
+					     "",
+					     element.get("adam-id"))
 				#self.mediaItems.append([None,markup(title,False),element.get("item-name"),"",typeof(element.get("anonymous-download-url")),"","","",element.get("anonymous-download-url"),"","",""])#Special
 			else: # go through the childnodes.
 				for i in element:
 					self.seeHTMLElement(i)
 
-	def getItemsArray(self,dom):
-		""" Tries to get the array element of the dom, returns None if it doesn't exist. """
+	def getItemsArray(self, dom):
+		"""Tries to get the array element of the dom, returns None if it doesn't exist."""
 		array = None
 		els = dom.xpath("/Document/TrackList/plist/dict/key")#isinstance(i.tag,str) and i.tag == "key" and
 		for i in els: #all childnodes:
-			if (i.text=="items"):
+			if i.text == "items":
 				array = i.getnext()
 		return array
 
-	def addItem(self,title,author,duration,type,comment,releasedate,datemodified, gotourl, previewurl, price, itemid):
-		"Adds item to media list."
-		self.mediaItems.append([None,markup(title,False),author,duration,type,comment,releasedate,datemodified,gotourl,previewurl,price,itemid])
+	def addItem(self, title, author, duration, type, comment, releasedate, datemodified, gotourl, previewurl, price, itemid):
+		"""Adds item to media list."""
+		self.mediaItems.append([None,
+					markup(title, False),
+					author,
+					duration,
+					type,
+					comment,
+					releasedate,
+					datemodified,
+					gotourl,
+					previewurl,
+					price,
+					itemid])
 
-	def textContent(self,element):
-		""" Gets all text content of the node. """
+	def textContent(self, element):
+		"""Gets all text content of the node."""
 		#out = element.text
 		#for i in element.itertext(): # includes comment nodes... :(
 		#	out += i
 		#return out
 		out = []
-		if type(element).__name__=="_Element":
+		if type(element).__name__ == "_Element":
 			if element.text:
-				out.append( element.text )
+				out.append(element.text)
 			for i in element:
 				out.append(self.textContent(i))
 				if i.tail:
 					out.append(i.tail)
 		return "".join(out)
 
-	def formatTime(self,text):
-		""" Changes the weird DateTTimeZ format found in the xml date-time. """
-		return text.replace("T"," ").replace("Z"," ")
+	def formatTime(self, text):
+		"""Changes the weird DateTTimeZ format found in the xml date-time."""
+		return text.replace("T", " ").replace("Z", " ")
 
-	def imgText(self,picurl,height,width):
-		""" Returns html for an image, given url, height, width."""
+	def imgText(self, picurl, height, width):
+		"""Returns html for an image, given url, height, width."""
 		if height and width:
 			return '<img src="%s" height="%s" width="%s">' % (picurl, height, width)
 		else:
 			return '<img src="%s">' % picurl
-
