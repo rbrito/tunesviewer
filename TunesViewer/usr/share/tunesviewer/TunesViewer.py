@@ -95,7 +95,8 @@ class TunesViewer:
 		self.window.connect('drag_data_received', self.got_data_cb)
 
 		try:
-			pixbuf = gtk.gdk.pixbuf_new_from_file('/usr/share/icons/hicolor/scalable/apps/tunesview.svg')
+			icon_app_path = '/usr/share/icons/hicolor/scalable/apps/tunesview.svg'
+			pixbuf = gtk.gdk.pixbuf_new_from_file(icon_app_path)
 			self.window.set_icon(pixbuf)
 		except:
 			print "Couldn't load window icon."
@@ -250,7 +251,9 @@ class TunesViewer:
 		#Based on firefox throbber:
 		#self.throbber.set_from_animation(gtk.gdk.PixbufAnimation(gtk.icon_theme_get_default().lookup_icon("process-working",16,0).get_filename()))
 		#self.throbber.set_from_animation(gtk.gdk.PixbufAnimation(gtk.icon_theme_get_default().lookup_icon("process-working",16,0).get_filename()))
-		self.throbber.set_from_animation(gtk.gdk.PixbufAnimation('/usr/share/tunesviewer/Throbber.gif'))
+
+		throbber_path = '/usr/share/tunesviewer/Throbber.gif'
+		self.throbber.set_from_animation(gtk.gdk.PixbufAnimation(throbber_path))
 
 		#print gtk.icon_theme_get_default().lookup_icon("gnome-spinner",16,0).get_filename()
 		menubox.pack_start(self.throbber, expand=False)
