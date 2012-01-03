@@ -1,4 +1,8 @@
-import gobject, gtk, os
+import os
+
+import gobject
+import gtk
+
 from downloader import Downloader
 from common import *
 
@@ -8,33 +12,34 @@ class DownloadBox:
 	downloaded = 0
 	total = 0
 	lastCompleteDownloads = 0
-	devicedir = None #last selected mp3-player directory:
-	
+	devicedir = None # last selected mp3-player directory:
+
 	##
 	# True when a download is running
 	downloadrunning = False
-	
-	def __init__(self,Wopener):
+
+	def __init__(self, Wopener):
 		self.Wopener = Wopener # reference to main prog.
 		self.window = gtk.Window()
-		self.window.set_icon(self.window.render_icon(gtk.STOCK_SAVE, gtk.ICON_SIZE_BUTTON))
+		self.window.set_icon(self.window.render_icon(gtk.STOCK_SAVE,
+							     gtk.ICON_SIZE_BUTTON))
 		self.window.set_title("Downloads")
 		self.window.set_size_request(500, 200)
-		self.window.connect("delete_event",self.onclose)
+		self.window.connect("delete_event", self.onclose)
 		self.vbox = gtk.VBox()
 		self.vbox.show()
 		scrolledwindow = gtk.ScrolledWindow()
 		scrolledwindow.show()
-		scrolledwindow.set_policy(gtk.POLICY_NEVER,gtk.POLICY_AUTOMATIC)
+		scrolledwindow.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 		scrolledwindow.add_with_viewport(self.vbox)
 		self.window.add(scrolledwindow)
-	
+
 	def updateLoop(self):
-		"Updates each downloader display. "
-		#Get downloaded/total
+		"""Updates each downloader display."""
+		# Get downloaded/total
 		self.downloaded = 0
 		self.total = 0
-		#Also get bytes/bytes total, for overall download percentage:
+		# Also get bytes/bytes total, for overall download percentage:
 		totalbytes = 0
 		dlbytes = 0
 		for i in self.downloaders:
@@ -42,53 +47,56 @@ class DownloadBox:
 			if i.success:
 				self.downloaded += 1
 				self.total += 1
-			else:#elif i.downloading:
+			else: #elif i.downloading:
 				self.total += 1
 			totalbytes += i.filesize
 			dlbytes += i.count
 		percent = ""
 		if (totalbytes != 0):
-			percent = str(round(dlbytes/totalbytes*100,1)) + "%, "
-		self.window.set_title("Downloads (%s%s/%s downloaded)" % 
-		  ( percent,str(self.downloaded), str(self.total) ))
+			percent = str(round(dlbytes/totalbytes*100, 1)) + "%, "
+		self.window.set_title("Downloads (%s%s/%s downloaded)" %
+		  (percent, str(self.downloaded), str(self.total)))
 		if self.downloaded == self.total:
 			self.downloadrunning = False
 			self.downloadNotify()
-			return False #Downloads Done.
+			return False # Downloads Done.
 		else:
 			return True
-	
-	def onclose(self,widget,data):
-		"Cancels closing window, hides it instead."
+
+	def onclose(self, widget, data):
+		"""Cancels closing window, hides it instead."""
 		self.window.hide()
-		return True #Cancel close window.
-	
+		return True # Cancel close window.
+
 	def cancelAll(self):
 		"""Tell all downloaders to cancel"""
-		#for i in self.downloaders: (downloaders get removed, can't use for.)
+		# for i in self.downloaders: (downloaders get removed, can't use for.)
 		while len(self.downloaders):
-			#print "c",self.downloaders
+			#print "c", self.downloaders
 			self.downloaders[0].cancel(0)
-	
+
 	def downloadNotify(self):
-		if self.Wopener.config.notifyseconds != 0 and self.lastCompleteDownloads!=self.downloaded:
+		if (self.Wopener.config.notifyseconds != 0 and
+		    self.lastCompleteDownloads != self.downloaded):
 			self.lastCompleteDownloads = self.downloaded
 			try:
 				import pynotify
-				if (self.total==1):
-					s=""
+				if self.total == 1:
+					s = ""
 				else:
-					s="s"
+					s = "s"
 				pynotify.init("TunesViewer")
-				n=pynotify.Notification("Download%s Finished" % s,
-					"%s/%s download%s completed successfully." % (self.downloaded, self.total, s),gtk.STOCK_GO_DOWN)
-				n.set_timeout(1000*self.Wopener.config.notifyseconds)
+				n = pynotify.Notification("Download%s Finished" % s,
+					"%s/%s download%s completed successfully." % (self.downloaded, self.total, s), gtk.STOCK_GO_DOWN)
+				n.set_timeout(1000 * self.Wopener.config.notifyseconds)
 				n.show()
-			except:
-				print "Notification failed"
-	
-	def newDownload(self,icon,url,localfile,opener):
-		"""Downloads a url
+			except ImportError, e:
+				print "Notification failed", e
+
+	def newDownload(self, icon, url, localfile, opener):
+		"""
+		Downloads a url
+
 		Takes a url, filetype icon, local filename, and opener.
 		"""
 		#Check if already downloading/downloaded:
@@ -98,18 +106,21 @@ class DownloadBox:
 					message = "File is already downloading."
 				else:#if (i.success):
 					message = "File already downloaded."
-				msg = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE,
-				message)
+				msg = gtk.MessageDialog(self.window,
+							gtk.DIALOG_MODAL,
+							gtk.MESSAGE_INFO,
+							gtk.BUTTONS_CLOSE,
+							message)
 				msg.run()
 				msg.destroy()
 				return
 		self.window.show()
-		d=Downloader(icon,url,localfile,opener,self)
+		d = Downloader(icon, url, localfile, opener, self)
 		self.downloaders.append(d)
-		#Add the visible downloader progressbar etc.
+		# Add the visible downloader progressbar etc.
 		el = d.getElement()
 		el.show()
-		self.vbox.pack_start(el,False,False,10)
+		self.vbox.pack_start(el, False, False, 10)
 		self.window.show()
 		if (not(self.downloadrunning)):
 			#Start download loop:
@@ -119,7 +130,7 @@ class DownloadBox:
 			print "STARTING TIMEOUT"
 			#Only update the progress bar only about 4x a second,
 			#this won't make cpu work too much.
-			gobject.timeout_add(250,self.updateLoop)
+			gobject.timeout_add(250, self.updateLoop)
 		d.start()
-		f = open(os.path.expanduser("~/.tunesviewerDownloads"),'a');
-		f.write("#### url and localfile name: ####\n"+url+"\n"+localfile+"\n");
+		f = open(os.path.expanduser("~/.tunesviewerDownloads"), 'a')
+		f.write("#### url and localfile name: ####\n" + url + "\n" + localfile + "\n")
