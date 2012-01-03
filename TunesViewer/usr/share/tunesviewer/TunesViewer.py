@@ -1148,12 +1148,25 @@ class TunesViewer:
 			return
 		if properties[10] != "0" and properties[10] != "":
 			return
+		
+		name = safeFilename(name,self.config.downloadsafe)
+		artist = safeFilename(artist,self.config.downloadsafe)
+		duration = safeFilename(duration,self.config.downloadsafe)
+		type = safeFilename(type,self.config.downloadsafe)
+		comment = safeFilename(comment,self.config.downloadsafe)
+		title = safeFilename(self.window.get_title(),self.config.downloadsafe)
 		#Now make an appropriate local-file name:
-		local = self.config.downloadfile.replace("%n", name).replace("%a", artist).replace("%c", comment).replace("%t", type).replace("%l", duration).replace(os.sep, "-")
-		if self.config.downloadsafe:
-			local = safeFilename(local) # Make dos safe filename.
+		local = self.config.downloadfile \
+		  .replace("%n", name).replace("%a", artist).replace("%p",title).replace("%c", comment).replace("%t", type).replace("%l", duration)#.replace(os.sep, "-")
+		print "LOCAL=",local
+		print os.path.join(self.config.downloadfolder, local) 
+		print 
 		if (not(os.path.isfile(os.path.join(self.config.downloadfolder, local)))):
 			#Doesn't exist, try starting it:
+			try:
+				os.makedirs(os.path.dirname( os.path.join(self.config.downloadfolder, local) ))
+			except OSError:
+				pass #File path already exists, can't create.
 			try:
 				#Try opening filename in the appropriate folder:
 					a=open(os.path.join(self.config.downloadfolder, local), "w")
@@ -1324,7 +1337,7 @@ class TunesViewer:
 				else:
 					self.downloadError = "stopped."
 			else:
-				self.downloadbox.newDownload(None, url, os.path.join(self.config.downloadfolder, url[url.rfind("/")+1:]), opener)
+				self.downloadbox.newDownload(None, url, os.path.join(self.config.downloadfolder, safeFilename(url[url.rfind("/")+1:],self.config.downloadsafe)), opener)
 				return
 			response.close()
 		except Exception, e:

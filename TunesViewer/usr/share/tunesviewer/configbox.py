@@ -12,7 +12,7 @@ class ConfigBox:
 	toolbar = True
 	statusbar = False
 	throbber = True
-	downloadfile = "%n - %a %l%t"
+	downloadfile = "%a/%p/%n %l%t"
 	openers = {
 		".mp3" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000",
 		".m4a" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000",
@@ -79,7 +79,7 @@ class ConfigBox:
 		hbox.pack_start(self.downloadsel, True, True, 0)
 		dtab.pack_start(hbox, True, False, 0)
 
-		lab = gtk.Label("Download File-name\n(%n=name, %a=artist, %c=comment, %l=length, %t=filetype)")
+		lab = gtk.Label("Download File-name\n(%p=page-title, %a=author/artist, %n=name, %c=comment, %l=length, %t=filetype)")
 		lab.set_alignment(0, 1)
 		dtab.pack_start(lab, True, True, 0)
 		self.filenamesel = gtk.Entry()
