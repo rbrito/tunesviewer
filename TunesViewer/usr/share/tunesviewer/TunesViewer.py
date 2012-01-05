@@ -1494,15 +1494,15 @@ class TunesViewer:
 		video_types = [".mp4", ".m4v", ".mov", ".m4b", ".3gp"]
 
 		for row in self.liststore:
-			type = row[4].lower()
+			content_type = row[4].lower()
 
-			if type in audio_types:
+			if content_type in audio_types:
 				self.liststore.set(row.iter, 0,
 						   self.icon_audio)
-			elif type in video_types:
+			elif content_type in video_types:
 				self.liststore.set(row.iter, 0,
 						   self.icon_video)
-			elif type != "":
+			elif content_type != "":
 				self.liststore.set(row.iter, 0,
 						   self.icon_other)
 			elif row[8]: #it's a link
