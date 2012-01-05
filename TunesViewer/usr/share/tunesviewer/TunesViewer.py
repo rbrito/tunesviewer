@@ -35,6 +35,9 @@ import pygtk
 
 gobject.threads_init()
 
+
+from lxml import etree
+
 # Import local project modules
 from configbox import ConfigBox
 from findinpagebox import FindInPageBox
@@ -45,22 +48,6 @@ from webkitview import WebKitView
 from Parser import Parser
 from SingleWindowSocket import SingleWindowSocket
 from common import *
-
-try:
-	from lxml import etree
-except ImportError, e:
-	print "This program requires LXML, but it is not installed."
-	msg = gtk.MessageDialog(None,
-				gtk.DIALOG_MODAL,
-				gtk.MESSAGE_ERROR,
-				gtk.BUTTONS_CLOSE,
-				"This program requires LXML, but it is not installed.\n"
-				"Please install python-lxml with your system's package manager,"
-				"or follow the installation instructions at:\n"
-				"http://codespeak.net/lxml/index.html#download")
-	msg.run()
-	msg.destroy()
-	sys.exit(1)
 
 class TunesViewer:
 	source = "" # full html/xml source
