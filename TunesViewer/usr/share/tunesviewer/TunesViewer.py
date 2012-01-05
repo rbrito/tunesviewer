@@ -12,7 +12,7 @@
 #See the License for the specific language governing permissions and
 #limitations under the License.
 
-# Import the standard python libraries needed:
+# Import standard Python modules
 import cookielib
 import gzip
 import os
@@ -23,16 +23,19 @@ import time
 import urllib
 import urllib2
 
-from threading import Thread
 from StringIO import StringIO
+from threading import Thread
 
-#Import GTK for gui.
+# Import third-party modules (GTK and siblings for GUI)
+import glib
 import gobject
-gobject.threads_init()
-import pygtk, pango, glib
-pygtk.require('2.0')
 import gtk
+import pango
+import pygtk
 
+gobject.threads_init()
+
+# Import local project modules
 from configbox import ConfigBox
 from findinpagebox import FindInPageBox
 from downloadbox import DownloadBox
@@ -626,20 +629,20 @@ class TunesViewer:
 
 		opendl = gtk.ToolButton(gtk.STOCK_DIRECTORY)
 		opendl.set_tooltip_text("Open Downloads Directory")
-		opendl.connect("clicked",self.openDownloadDir)
+		opendl.connect("clicked", self.openDownloadDir)
 		self.toolbar.insert(opendl, -1)
 		self.toolbar.insert(gtk.SeparatorToolItem(), -1)
 
 		self.tbInfo = gtk.ToolButton(gtk.STOCK_INFO)
-		self.tbInfo.connect("clicked",self.viewprop)
+		self.tbInfo.connect("clicked", self.viewprop)
 		self.tbInfo.set_tooltip_text("View Selection Information")
 		self.toolbar.insert(self.tbInfo, -1)
 		self.tbGoto = gtk.ToolButton(gtk.STOCK_JUMP_TO)
-		self.tbGoto.connect("clicked",self.followlink)
+		self.tbGoto.connect("clicked", self.followlink)
 		self.tbGoto.set_tooltip_text("Goto Link")
 		self.toolbar.insert(self.tbGoto, -1)
 		self.tbPlay = gtk.ToolButton(gtk.STOCK_MEDIA_PLAY)
-		self.tbPlay.connect("clicked",self.playview)
+		self.tbPlay.connect("clicked", self.playview)
 		self.tbPlay.set_tooltip_text("Play/View File")
 		self.toolbar.insert(self.tbPlay, -1)
 		self.tbDownload = gtk.ToolButton(gtk.STOCK_SAVE)
@@ -664,14 +667,15 @@ class TunesViewer:
 		self.toolbar.insert(tbZO, -1)
 		tbZI = gtk.ToolButton(gtk.STOCK_ZOOM_IN)
 		tbZI.connect("clicked", self.webkitZI)
-		self.toolbar.insert(tbZI,-1)
-		self.toolbar.insert(gtk.SeparatorToolItem(),-1)
+		self.toolbar.insert(tbZI, -1)
+		self.toolbar.insert(gtk.SeparatorToolItem(), -1)
 
 		tbFind.set_tooltip_text("Advanced Search")
 		tbFind.connect("clicked", self.advancedSearch)
 		self.toolbar.insert(tbFind, -1)
 		spacer = gtk.SeparatorToolItem()
-		spacer.set_draw(0); spacer.set_expand(1)
+		spacer.set_draw(0)
+		spacer.set_expand(1)
 		self.toolbar.insert(spacer, -1)
 		self.tbAuth = gtk.ToolButton(gtk.STOCK_DIALOG_AUTHENTICATION)
 		self.toolbar.insert(self.tbAuth, -1)
@@ -688,7 +692,7 @@ class TunesViewer:
 		self.statusbar = gtk.Label()
 		self.statusbar.set_justify(gtk.JUSTIFY_LEFT)
 		self.mainvbox.pack_start(self.statusbar, False, True, 0)
-		#self.window.set_property('allow-shrink',True)
+		#self.window.set_property('allow-shrink', True)
 
 		self.updateBackForward()
 		self.window.add(self.mainvbox)
@@ -715,20 +719,20 @@ class TunesViewer:
 					  ('Accept-Encoding', 'gzip'),
 					  ('Accept-Language', 'en-US')]
 
-	def webkitZI(self,obj):
+	def webkitZI(self, obj):
 		self.descView.zoom_in()
 
-	def webkitZO(self,obj):
+	def webkitZO(self, obj):
 		self.descView.zoom_out()
 
-	def webkitZN(self,obj):
+	def webkitZN(self, obj):
 		self.descView.set_zoom_level(1)
 
-	def buttonGoto(self,obj,url):
+	def buttonGoto(self, obj, url):
 		"Menu directory-shortcuts handler"
 		self.gotoURL(url, True)
 
-	def goHome(self,obj):
+	def goHome(self, obj):
 		self.gotoURL(self.config.home, True)
 
 	def getDirectory(self):
@@ -745,15 +749,17 @@ class TunesViewer:
 		self.tbGoto.set_sensitive(False)
 		self.tbDownload.set_sensitive(False)
 
-	def addTab(self,match, urllink):
-		label = gtk.Label(); label.show()
-		contents = gtk.Label(); contents.show()
+	def addTab(self, match, urllink):
+		label = gtk.Label()
+		label.show()
+		contents = gtk.Label()
+		contents.show()
 		contents.set_size_request(0, 0) # No tab contents
-		if match[0:12]==", Selected. ":
+		if match[0:12] == ", Selected. ":
 			match = match[12:]
 			print "sel:", match
 			label.set_markup("<i><b>" + glib.markup_escape_text(match) + "</b></i>")
-			self.notebook.append_page(contents,label)
+			self.notebook.append_page(contents, label)
 			self.notebook.set_current_page(-1) #select this one
 			self.notebook.queue_draw_area(0, 0, -1, -1)
 		else:
@@ -763,19 +769,19 @@ class TunesViewer:
 		self.taburls.append(urllink)
 		self.notebook.show_all()
 
-	def progUpdate(self,obj):
-		"Checks for update to the program."
+	def progUpdate(self, obj):
+		"""Checks for update to the program."""
 		openDefault("http://tunesviewer.sourceforge.net/checkversion.php?version=1.4")
 
-	def treesel(self,selection, model):
-		"Called when selection changes, changes the enabled toolbar buttons."
+	def treesel(self, selection, model):
+		"""Called when selection changes, changes the enabled toolbar buttons."""
 		self.tbInfo.set_sensitive(True)
 		ind = selection[0]
 		gotoable = (self.liststore[ind][8] != "")
 		playable = (self.liststore[ind][9] != "")
 		downloadable = (self.liststore[ind][9] != "" and
-				(self.liststore[ind][10]=="" or
-				 self.liststore[ind][10]=="0"))
+				(self.liststore[ind][10] == "" or
+				 self.liststore[ind][10] == "0"))
 		self.tbGoto.set_sensitive(gotoable) # only if there is goto url
 		self.tbPlay.set_sensitive(playable) # only if there is media url
 		self.tbDownload.set_sensitive(downloadable)
@@ -851,7 +857,9 @@ class TunesViewer:
 				self.treeview.scroll_to_cell(thisrow.path,
 							     None, False, 0, 0)
 				break
-		#TODO: Fix webkit search so it will search and highlight the text, this should work, but it doesn't:
+
+		# TODO: Fix webkit search so it will search and highlight
+		# the text, this should work, but it doesn't:
 		self.descView.search_text(findT, False, True, True)
 		self.descView.set_highlight_text_matches(highlight=True)
 
@@ -953,12 +961,12 @@ class TunesViewer:
 			msg.run()
 			msg.destroy()
 
-	def copyrss(self,obj):
+	def copyrss(self, obj):
 		"Copies the standard rss podcast link for the current page."
 		print "copying:", self.podcast
 		gtk.Clipboard().set_text(self.podcast)
 
-	def goBack(self,obj):
+	def goBack(self, obj):
 		"Called when back-button is pressed."
 		if len(self.backStack) > 0 and not(self.downloading):
 			print self.backStack, self.forwardStack
@@ -976,7 +984,7 @@ class TunesViewer:
 		#Update the back, forward buttons:
 		self.updateBackForward()
 
-	def goForward(self,obj):
+	def goForward(self, obj):
 		"Called when forward button is pressed"
 		if len(self.forwardStack) > 0 and not(self.downloading):
 			self.backStack.append(self.url)
@@ -1002,7 +1010,7 @@ class TunesViewer:
 
 	def refresh(self, obj):
 		"Called when refresh is pressed, reopens current page."
-		self.gotoURL(self.url,False)
+		self.gotoURL(self.url, False)
 
 	def gobutton(self, obj):
 		"Called when the go-button is pressed."
@@ -1102,7 +1110,7 @@ class TunesViewer:
 			msg.run()
 			msg.destroy()
 
-	def locationBar(self ,obj):
+	def locationBar(self, obj):
 		"Selects the url, similar to Ctrl+L in web browser"
 		self.modecombo.set_active(0)
 
@@ -1148,43 +1156,45 @@ class TunesViewer:
 			return
 		if properties[10] != "0" and properties[10] != "":
 			return
-		
-		name = safeFilename(name,self.config.downloadsafe)
-		artist = safeFilename(artist,self.config.downloadsafe)
-		duration = safeFilename(duration,self.config.downloadsafe)
-		type = safeFilename(type,self.config.downloadsafe)
-		comment = safeFilename(comment,self.config.downloadsafe)
-		title = safeFilename(self.window.get_title(),self.config.downloadsafe)
-		#Now make an appropriate local-file name:
+
+		name = safeFilename(name, self.config.downloadsafe)
+		artist = safeFilename(artist, self.config.downloadsafe)
+		duration = safeFilename(duration, self.config.downloadsafe)
+		type = safeFilename(type, self.config.downloadsafe)
+		comment = safeFilename(comment, self.config.downloadsafe)
+		title = safeFilename(self.window.get_title(), self.config.downloadsafe)
+		# Now make an appropriate local-file name:
 		local = self.config.downloadfile \
-		  .replace("%n", name).replace("%a", artist).replace("%p",title).replace("%c", comment).replace("%t", type).replace("%l", duration)#.replace(os.sep, "-")
-		print "LOCAL=",local
-		print os.path.join(self.config.downloadfolder, local) 
-		print 
-		if (not(os.path.isfile(os.path.join(self.config.downloadfolder, local)))):
-			#Doesn't exist, try starting it:
+		  .replace("%n", name).replace("%a", artist).replace("%p", title).replace("%c", comment).replace("%t", type).replace("%l", duration)#.replace(os.sep, "-")
+		print "LOCAL=", local
+		print os.path.join(self.config.downloadfolder, local)
+		print
+		if not os.path.isfile(os.path.join(self.config.downloadfolder, local)):
+			# Doesn't exist, try starting it:
 			try:
-				os.makedirs(os.path.dirname( os.path.join(self.config.downloadfolder, local) ))
+				os.makedirs(os.path.dirname(os.path.join(self.config.downloadfolder,
+									 local)))
 			except OSError:
 				pass #File path already exists, can't create.
 			try:
 				#Try opening filename in the appropriate folder:
-					a=open(os.path.join(self.config.downloadfolder, local), "w")
+					a = open(os.path.join(self.config.downloadfolder, local), "w")
 					a.close()
 			except IOError:
 				# shorten filename to make the filesystem accept it.
 				local = local.replace(" ", "")
 				if len(local) > 100:
 					local = local[-99:]
-		#It should be good, run it:
+
+		# It should be good, run it:
 		self.downloadbox.newDownload(properties[0], url,
 					     os.path.join(self.config.downloadfolder, local),
 					     self.opener)
 		print "starting download", local
 		self.downloadbox.window.show()
 
-	def main(self): #Startup
-		#Check for crashed downloads, AFTER test for another currently running instance.
+	def main(self): # Startup
+		# Check for crashed downloads, AFTER test for another currently running instance.
 		socket.setdefaulttimeout(11) # should improve freeze-up when cancelling downloads
 		try:
 			dlines = open(os.path.expanduser("~/.tunesviewerDownloads"),
@@ -1216,7 +1226,7 @@ class TunesViewer:
 			answer = msg.run()
 			msg.destroy()
 			if (answer == gtk.RESPONSE_YES):
-				#Clear crash recovery
+				# Clear crash recovery
 				try:
 					os.remove(os.path.expanduser("~/.tunesviewerDownloads"))
 				except OSError, e:
@@ -1225,12 +1235,12 @@ class TunesViewer:
 				self.downloadbox.cancelAll()
 				self.downloadbox.window.destroy()
 				gtk.main_quit()
-				#sys.exit()
+				# sys.exit()
 				return False
 			else:
 				return True
 		else:
-			#Clear crash recovery
+			# Clear crash recovery
 			try:
 				os.remove(os.path.expanduser("~/.tunesviewerDownloads"))
 			except OSError, e:
@@ -1238,7 +1248,7 @@ class TunesViewer:
 			self.sock.sendUrl("EXIT")
 			self.downloadbox.window.destroy()
 			gtk.main_quit()
-			#sys.exit()
+			# sys.exit()
 
 	def setLoadDisplay(self, load):
 		"""Shows that page is loading."""
@@ -1337,7 +1347,12 @@ class TunesViewer:
 				else:
 					self.downloadError = "stopped."
 			else:
-				self.downloadbox.newDownload(None, url, os.path.join(self.config.downloadfolder, safeFilename(url[url.rfind("/")+1:],self.config.downloadsafe)), opener)
+				self.downloadbox.newDownload(None,
+							     url,
+							     os.path.join(self.config.downloadfolder,
+									  safeFilename(url[url.rfind("/")+1:],
+										       self.config.downloadsafe)),
+							     opener)
 				return
 			response.close()
 		except Exception, e:
@@ -1376,7 +1391,7 @@ class TunesViewer:
 			try:#urllib.unquote?
 				id = self.cj._cookies[".deimos.apple.com"]["/WebObjects"]["identity"].value
 				print "identity:", id
-				tip += "\nLogged in as: %s" % id;
+				tip += "\nLogged in as: %s" % id
 				print "credentialKey:", self.cj._cookies[".deimos.apple.com"]["/WebObjects"]["identity"].value
 			except:
 				print "none"
@@ -1425,7 +1440,7 @@ class TunesViewer:
 			#No item selected now, disable item buttons.
 			self.noneSelected()
 			self.treeview.set_model(self.liststore)
-			print "rows:",len(self.liststore)
+			print "rows:", len(self.liststore)
 			mediacount = 0
 			linkscount = 0
 			for row in self.liststore:
@@ -1436,7 +1451,7 @@ class TunesViewer:
 			#specific item should be selected?
 			for i in self.liststore:
 					if i[11] == parser.itemId:
-						print "selecting item",parser.itemId
+						print "selecting item", parser.itemId
 						self.treeview.get_selection().select_iter(i.iter)
 						self.treeview.scroll_to_cell(i.path,
 									     None,
@@ -1464,7 +1479,7 @@ class TunesViewer:
 			ms = ""
 			if len(self.liststore) != 1:
 				rs = "s"
-			if linkscount !=1:
+			if linkscount != 1:
 				ls = "s"
 			if mediacount != 1:
 				ms = "s"
@@ -1485,7 +1500,7 @@ class TunesViewer:
 			self.icon_other = icon_theme.load_icon("gnome-fs-regular", self.config.iconsizeN, 0)
 			self.icon_link = icon_theme.load_icon("gtk-jump-to-ltr", self.config.iconsizeN, 0)
 		except Exception, e:
-			print "Exception:", e;
+			print "Exception:", e
 		for row in self.liststore:
 			type = row[4].lower()
 			if type:
