@@ -1488,23 +1488,27 @@ class TunesViewer:
 			self.icon_link = icon_theme.load_icon("gtk-jump-to-ltr", self.config.iconsizeN, 0)
 		except Exception, e:
 			print "Exception:", e
+
+		audio_types = [".mp3", ".m4a", ".amr", ".m4p", ".aiff", ".aif",
+			       ".aifc"]
+		video_types = [".mp4", ".m4v", ".mov", ".m4b", ".3gp"]
+
 		for row in self.liststore:
 			type = row[4].lower()
-			if type:
-				if type in [".mp3", ".m4a", ".amr", ".m4p",
-					    ".aiff", ".aif", ".aifc"]:
-					self.liststore.set(row.iter, 0,
-							   self.icon_audio)
-				elif type in [".mp4", ".m4v", ".mov",
-					      ".m4b", ".3gp"]:
-					self.liststore.set(row.iter, 0,
-							   self.icon_video)
-				else:
-					self.liststore.set(row.iter, 0,
-							   self.icon_other)
+
+			if type in audio_types:
+				self.liststore.set(row.iter, 0,
+						   self.icon_audio)
+			elif type in video_types:
+				self.liststore.set(row.iter, 0,
+						   self.icon_video)
+			elif type != "":
+				self.liststore.set(row.iter, 0,
+						   self.icon_other)
 			elif row[8]: #it's a link
 				self.liststore.set(row.iter, 0,
 						   self.icon_link)
+
 			url = row[10]
 
 class VWin:
