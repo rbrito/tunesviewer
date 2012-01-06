@@ -15,12 +15,12 @@ class FirstSetup:
 					"Do you want to enable opening university media directly from the web browser?")
 			r = msg.run()
 			if r == gtk.RESPONSE_YES:
-				print "Setting default..."
+				print("Setting default...")
 				self.setdefault(None)
 			msg.destroy()
 			return
 		else:
-			print "Run this as user, not root."
+			print("Run this as user, not root.")
 
 	# code from main program file:
 
