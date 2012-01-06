@@ -1,12 +1,22 @@
-import os, time, urllib2, httplib
+import httplib
+import os
+import time
+import urllib2
+
 from threading import Thread
 
-import pango, gobject, gtk
-gobject.threads_init()
+import gobject
+import gtk
+import pango
+
 from common import *
 
+gobject.threads_init()
+
 class Downloader:
-	"""A downloader class to download a file."""
+	"""
+	A downloader class to download a file.
+	"""
 	downloading = False # True if not cancelled or finished.
 	success = False #Download succeeded.
 	Err = "" # Error to show in progress box.
@@ -14,6 +24,7 @@ class Downloader:
 	count = 0 # bytes downloaded
 	filesize = 0 # total bytes
 	readsize = "0" # Human-readable description of size.
+
 	def __init__(self, icon, url, localfile, opener, downloadWindow):
 		self.opener = opener # shared downloader
 		self.url = url
@@ -47,7 +58,7 @@ class Downloader:
 		name.set_ellipsize(pango.ELLIPSIZE_END)
 		name.set_selectable(True)
 
-		#Add action button
+		# Add action button
 		self._combo = gtk.combo_box_new_text()
 		self._combo.append_text("Choose Action:")
 		self._combo.append_text("Open File")
@@ -75,25 +86,32 @@ class Downloader:
 		self._element.show()
 
 	def openit(self, obj, obj2):
-		openDefault(self.localfile);
+		openDefault(self.localfile)
 
 	def getElement(self):
-		"""Return element containing the gui display for this download"""
+		"""
+		Return element containing the gui display for this
+		download.
+		"""
 		return self._element
 
-	##
-	# Called when the media-device-directory is changed, copies if download is finished.
 	def folderChange(self, obj):
+		"""
+		Called when the media-device-directory is changed, copies if
+		download is finished.
+		"""
 		self._copydir = self._mediasel.get_current_folder()
 		#Set the selection as the default for new downloads.
 		self._downloadWindow.devicedir = self._copydir
-		print self._copydir
-		if (self.success):
+		print(self._copydir)
+		if self.success:
 			#Downloaded, so copy it.
 			self.copy2device()
 
 	def copy2device(self):
-		"""Copy to selected device"""
+		"""
+		Copy to selected device.
+		"""
 		if self._copydir == None:
 			self._progress.set_text("Select a directory.")
 		else:
@@ -107,9 +125,11 @@ class Downloader:
 			else:
 				self._progress.set_text("Copied to %s." % self._copydir)
 
-	def actionSelect(self,obj):
-		"Called when the downloader's combo-box is changed."
-		print self._combo.get_active()
+	def actionSelect(self, obj):
+		"""
+		Called when the downloader's combo-box is changed.
+		"""
+		print(self._combo.get_active())
 		if self._combo.get_active() == 3:
 			self._mediasel.show()
 		else:
@@ -132,12 +152,14 @@ class Downloader:
 		elif self._combo.get_active() == 3 and self.success:
 			# Try to copy, finished.
 			self.copy2device()
-		elif (self._combo.get_active() == 4):
-			print "del"
+		elif self._combo.get_active() == 4:
+			print("del")
 			self.deletefile()
 
 	def cancel(self, obj):
-		"Cancels this download. (this is also called by delete command)"
+		"""
+		Cancels this download. (this is also called by delete command).
+		"""
 		#if self.downloading:
 		self.downloading = False
 		self.t.join() # wait for thread to cancel! Destroying this before the thread finishes may cause major crash!
@@ -150,28 +172,34 @@ class Downloader:
 		self._element.destroy()
 		#Remove all references to this.
 		self._downloadWindow.downloaders.remove(self)
-		print self._downloadWindow.downloaders
+		print(self._downloadWindow.downloaders)
 
 	def start(self):
-		"Starts download thread"
+		"""
+		Starts download thread.
+		"""
 		self.t = Thread(target=self.downloadThread, args=())
 		self.t.start()
 
 	def downloadThread(self):
-		"This does the actual downloading, it should run as a thread."
+		"""
+		This does the actual downloading, it should run as a thread.
+		"""
 		self.starttime = time.time()
 		self._progress.set_text("Starting Download...")
 		self.count = 0 # Counts downloaded size.
 		self.downloading = True
-		while (not(self.success) and self.downloading):
+		while self.downloading and not self.success:
 			try:
 				self.Err = ""
 				self._netfile = self.opener.open(self.url)
 				self.filesize = float(self._netfile.info()['Content-Length'])
 
-				if (os.path.exists(self.localfile) and os.path.isfile(self.localfile)):
+				if os.path.exists(self.localfile) and os.path.isfile(self.localfile):
 					self.count = os.path.getsize(self.localfile)
-				print self.count, "of", self.filesize, "downloaded."
+
+				print(self.count, "of", self.filesize, "downloaded.")
+
 				if self.count >= self.filesize:
 					self._progress.set_text("Already downloaded.")
 					self._progress.set_fraction(1.0)
@@ -181,37 +209,38 @@ class Downloader:
 					self._netfile.close()
 					return
 
-				if (os.path.exists(self.localfile) and os.path.isfile(self.localfile)):
+				if os.path.exists(self.localfile) and os.path.isfile(self.localfile):
 					#File already exists, start where it left off:
 					#This seems to corrupt the file sometimes?
 					self._netfile.close()
 					req = urllib2.Request(self.url)
-					print "file downloading at byte: ", self.count
+					print("file downloading at byte: ", self.count)
 					req.add_header("Range", "bytes=%s-" % (self.count))
 					self._netfile = self.opener.open(req)
-				if (self.downloading): # Don't do it if cancelled, downloading=false.
+
+				if self.downloading: # Don't do it if cancelled, downloading=false.
 					next = self._netfile.read(1024)
 					self._outfile = open(self.localfile, "ab") # to append binary
 					self._outfile.write(next)
 					self.readsize = desc(self.filesize) # get size mb/kb
 					self.count += 1024
-					while (len(next) > 0 and self.downloading):
+					while len(next) > 0 and self.downloading:
 						next = self._netfile.read(1024)
 						self._outfile.write(next)
 						self.count += len(next)
 					self.success = True
-			except httplib.InvalidURL, e:
-				self.Err=("Invalid url. " + str(e))
-				print "Error:", e
+			except httplib.InvalidURL as e:
+				self.Err = ("Invalid url. " + str(e))
+				print("Error:", e)
 				if str(e).count("nonnumeric port"):
 					#Workaround for bug: http://bugs.python.org/issue979407
 					self.Err = ("Urllib failed! Opening with browser...")
 					openDefault(self.url) #open with browser.
 				self.downloading = False
 				return
-			except IOError, e:
-				print e
-				self.Err=("Download error, retrying in a few seconds: " + str(e))
+			except IOError as e:
+				print(e)
+				self.Err = ("Download error, retrying in a few seconds: " + str(e))
 				try:
 					self._outfile.close()
 					self._netfile.close()
@@ -219,7 +248,7 @@ class Downloader:
 					pass
 				time.sleep(8) # Then repeat
 
-		print "finished one"
+		print("finished one")
 		try:
 			self._outfile.close()
 			self._netfile.close()
@@ -229,12 +258,12 @@ class Downloader:
 			self.success = True #completed.
 			self._progress.set_fraction(1.0)
 			self._progress.set_text(self.readsize + " downloaded.")
-			if (self._combo.get_active() == 1):
+			if self._combo.get_active() == 1:
 				openDefault(self.localfile)
-			elif (self._combo.get_active() == 3):
+			elif self._combo.get_active() == 3:
 				# Copy to Device
 				self.copy2device()
-			print "pre dlnotify"
+			print("pre dlnotify")
 			self._cancelbutton.set_sensitive(False)
 		#else:
 			#This set_text isn't needed, it caused error when it was cancelled, and self._progress destroyed.
@@ -253,7 +282,7 @@ class Downloader:
 		answer = msg.run()
 		msg.destroy()
 		if answer == gtk.RESPONSE_YES:
-			print "deleting..."
+			print("deleting...")
 			self.cancel(None)
 		else:
 			self._combo.set_active(0)
@@ -261,7 +290,7 @@ class Downloader:
 	def update(self):
 		if self.Err:
 			self._progress.set_text(self.Err)
-		elif (self.count < self.filesize and self.downloading and self.count > 0):
+		elif self.count < self.filesize and self.downloading and self.count > 0:
 			# Update the download progress.
 			self._progress.set_fraction(self.count/self.filesize)
 			#Estimated time remaining:
@@ -269,5 +298,7 @@ class Downloader:
 			# So, totaltime = time*totalbytes/bytes.
 			t = time.time() - self.starttime
 			remaining = timeFind((t * self.filesize/self.count - t)*1000)
-			self._progress.set_text("%s%% of %s (%s remaining)" % (str(round(self.count/self.filesize *100,1)),self.readsize, remaining))
+			self._progress.set_text("%s%% of %s (%s remaining)" %
+						(str(round(self.count/self.filesize * 100, 1)),
+						 self.readsize, remaining))
 		return True

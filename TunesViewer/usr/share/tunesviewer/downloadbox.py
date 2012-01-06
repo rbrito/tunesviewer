@@ -90,8 +90,8 @@ class DownloadBox:
 					"%s/%s download%s completed successfully." % (self.downloaded, self.total, s), gtk.STOCK_GO_DOWN)
 				n.set_timeout(1000 * self.Wopener.config.notifyseconds)
 				n.show()
-			except ImportError, e:
-				print "Notification failed", e
+			except ImportError as e:
+				print("Notification failed", e)
 
 	def newDownload(self, icon, url, localfile, opener):
 		"""
@@ -102,7 +102,7 @@ class DownloadBox:
 		#Check if already downloading/downloaded:
 		for i in self.downloaders:
 			if url == i.url or localfile == i.localfile: # already in download-box.
-				if (i.downloading):
+				if i.downloading:
 					message = "File is already downloading."
 				else:#if (i.success):
 					message = "File already downloaded."
@@ -127,7 +127,7 @@ class DownloadBox:
 			self.downloadrunning = True
 			# instead of updating every kb or mb, update regularly.
 			# This should work well no matter what the download speed is.
-			print "STARTING TIMEOUT"
+			print("STARTING TIMEOUT")
 			#Only update the progress bar only about 4x a second,
 			#this won't make cpu work too much.
 			gobject.timeout_add(250, self.updateLoop)
