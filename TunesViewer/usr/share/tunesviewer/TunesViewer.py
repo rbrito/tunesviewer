@@ -2,7 +2,7 @@
 
 # TunesViewer
 # A small, easy-to-use tool to access iTunesU and podcast media.
-# Designed by Luke Bryan 2009 - 2011
+# Designed by Luke Bryan 2009 - 2012
 # Loading-icon is from mozilla's throbber icon.
 
 #Licensed under Apache license
