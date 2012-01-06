@@ -120,7 +120,7 @@ class Downloader:
 			import shutil
 			try:
 				shutil.copy(self.localfile, self._copydir)
-			except:
+			except (IOError, os.error) as e:
 				self._progress.set_text("Error copying to %s." % self._copydir)
 			else:
 				self._progress.set_text("Copied to %s." % self._copydir)
@@ -165,9 +165,9 @@ class Downloader:
 		self.t.join() # wait for thread to cancel! Destroying this before the thread finishes may cause major crash!
 		try:
 			os.remove(self.localfile)
-			print "removed " + self.localfile
-		except:
-			print "Removing file failed."
+			print("removed " + self.localfile)
+		except (IOError, OSError) as e:
+			print("Removing file failed:", str(e))
 
 		self._element.destroy()
 		#Remove all references to this.
@@ -252,7 +252,7 @@ class Downloader:
 		try:
 			self._outfile.close()
 			self._netfile.close()
-		except:
+		except (IOError, OSError):
 			pass
 		if self.downloading: #Not cancelled.
 			self.success = True #completed.
