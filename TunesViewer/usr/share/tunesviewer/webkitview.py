@@ -65,7 +65,7 @@ class WebKitView(webkit.WebView):
 
 	def webkitGo(self, view, frame, net_req, nav_act, pol_dec):
 		print "webkit-request."
-		if self.webkitLoading == False:
+		if not self.webkitLoading:
 			# Don't load in browser, let this program download/convert it...
 			print "Noload"
 			print net_req.get_uri()
