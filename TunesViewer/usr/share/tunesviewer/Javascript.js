@@ -66,7 +66,10 @@ function defined(something) {
 }
 
 function iTSVideoPreviewWithObject(obj) {
-	alert(obj);
+	// This was meant to figure out how to get non-working previews to play.
+	// Unfortunately it gets called many times when you click 'i' on course icon,
+	// freezing the application.
+	//alert(obj);
 }
 
 function fixTransparent(objects) {
