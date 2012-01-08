@@ -44,6 +44,17 @@ taken care of automatically by package managers.
 
 The main [project of TunesViewer][2] is hosted on [SourceForge.net][3].
 
+## Building a Debian Package
+
+Building a Debian Package from the git repository, ready for installation in
+your system is as easy as:
+
+0. Installing the packages `build-essential`, `debhelper`, `fakeroot`
+1. Checking out the `debian` branch (or, once it is merged, skip this step)
+2. Entering the directory `TunesViewer`
+3. Typing `fakeroot debian/rules binary`
+
+
 [0]: http://sourceforge.net/projects/tunesviewer/files/tunesviewer_1.4.deb/download
 [1]: http://sourceforge.net/projects/tunesviewer/files/tunesviewer-1.4.noarch.rpm/download
 [2]: http://sourceforge.net/projects/tunesviewer
