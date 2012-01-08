@@ -45,7 +45,7 @@ class Parser:
 			elif dom.tag == "rss": # rss files are added
 				self.HTML += "<p>This is a podcast feed, click Add to Podcast manager button on the toolbar to subscribe.</p>"
 				items = dom.xpath("//item")
-				print "rss:", len(items)
+				print("rss:", len(items))
 				for item in items:
 					title = ""
 					author = ""
@@ -82,14 +82,14 @@ class Parser:
 						     "")
 			else:
 				self.seeXMLElement(dom)
-		except Exception, e:
-			print "ERR", e
-			print "parsing as html not xml."
+		except Exception as e:
+			print("ERR", e)
+			print("parsing as html not xml.")
 			ustart = self.source.find("<body onload=\"return open('")
 			if ustart > -1: # This is a redirect-page.
 				newU = self.source[ustart+27:self.source.find("'", ustart+27)]
 				self.Redirect = newU
-			print "Parsing HTML"
+			print("Parsing HTML")
 			self.HTML = self.source
 			dom = lxml.html.document_fromstring(self.source.replace('<html xmlns="http://www.apple.com/itms/"', '<html'))
 			self.seeHTMLElement(dom)
@@ -121,27 +121,27 @@ class Parser:
 							if type(j).__name__ == '_Element' and j.tag == "GotoURL":
 								location.append(j.text.strip())
 								locationLinks.append(j.get("url"))
-								print j.text.strip(), j.get("url")
+								print(j.text.strip(), j.get("url"))
 								lastloc = j.get("url")
 				# print textContent(section)
 				if self.textContent(section).find(">") > -1:
 					section.getparent().remove(section) # redundant section > section ... info is removed.
 
-		if arr == None:
+		if arr is None:
 			ks = dom.xpath("/Document/Protocol/plist/dict/array/dict")
 			if len(ks):
 				arr = ks
-				print "Special end page after html link?", len(ks)
+				print("Special end page after html link?", len(ks))
 				if (len(ks) == 1 and
 				    dom.get("disableNavigation") == "true" and
 				    dom.get("disableHistory") == "true"):
 					self.singleItem = True
-		print "tag", dom.tag
+		print("tag", dom.tag)
 
-		if arr == None: # No tracklisting.
+		if arr is None: # No tracklisting.
 			hasmedia = False
 			if len(self.mediaItems) == 0: # blank.
-				print "nothing here!"
+				print("nothing here!")
 				#for i in keys:
 					#if i.text == "url" or i.text == "feedURL":
 						#el = i.getnext()
@@ -254,7 +254,7 @@ class Parser:
 						self.HTML += "<b>%s:</b> %s\n<br>" % (thisname, i.text)
 				try:
 					self.Title = (dom.xpath("/rss/channel/title")[0].text)
-				except IndexError, e:
+				except IndexError as e:
 					pass
 		else:
 			out = " > ".join(location) + "\n"
@@ -266,7 +266,7 @@ class Parser:
 			if dom.tag == "html":
 				try:
 					self.Title = dom.xpath("/html/head/title")[0].text_content()
-				except IndexError, e:
+				except IndexError as e:
 					self.Title = "TunesViewer"
 		self.HTML = "<html><body bgcolor=\"" + self.bgcolor + "\">" + self.HTML + "</body></html>"
 
@@ -274,14 +274,14 @@ class Parser:
 		# already have keys = dom.xpath("//key")
 		self.podcast = ""
 		if len(location) > 0 and location[0] == "Search Results":
-			print "search page, not podcast."
+			print("search page, not podcast.")
 		elif dom.tag == "rss":
 			self.podcast = self.url
 		elif hasmedia:
 			for i in keys:
 				if (i.text == "feedURL"):
 					self.podcast = i.getnext().text # Get next text node's text.
-					print "Podcast:", self.podcast
+					print("Podcast:", self.podcast)
 					break
 			if self.podcast == "":
 				#Last <pathelement> should have the page podcast url, with some modification.
@@ -290,9 +290,9 @@ class Parser:
 				self.podcast = lastloc
 				if lastloc == "":
 					self.podcast = self.url
-				if (self.podcast.find("/Browse/") > -1):
+				if self.podcast.find("/Browse/") > -1:
 					self.podcast = self.podcast.replace("/Browse/", "/Feed/")
-				elif (self.podcast.find("/BrowsePrivately/") > -1):
+				elif self.podcast.find("/BrowsePrivately/") > -1:
 					self.podcast = self.podcast.replace("/BrowsePrivately/", "/Feed/")
 					# If it's a protected podcast, it will have special goto-url:
 					pbvs = dom.xpath("//PictureButtonView")
@@ -300,7 +300,7 @@ class Parser:
 						if pbv.get("alt") == "Subscribe":
 							self.podcast = pbv.getparent().get("draggingURL")
 				else:
-					print "Not a podcast page."
+					print("Not a podcast page.")
 		else: # not a podcast page? Check for html podcast feed-url in page:
 			#Maybe redundant, with the subscribe links working.
 			buttons = dom.xpath("//button")
@@ -308,15 +308,17 @@ class Parser:
 				isPod = True
 				podurl = buttons[len(buttons)-1].get("feed-url") #the last feed-url, see if all feed-urls are this one.
 				for b in buttons:
-					if b.get("feed-url") and b.get("feed-url") != podurl: #has feed-url, but it's different.
+					if (b.get("feed-url") and
+					    b.get("feed-url") != podurl): #has feed-url, but it's different.
 						isPod = False
 				if isPod and podurl: # Every media file has link to same url, so it must be podcast url of this page.
 					self.podcast = podurl
-				elif len(buttons) > 1 and buttons[0].get("subscribe-podcast-url"):
+				elif (len(buttons) > 1 and
+				      buttons[0].get("subscribe-podcast-url")):
 					if not(buttons[0].get("subscribe-podcast-url").startswith("http://itunes.apple.com/WebObjects/DZR.woa/wa/subscribePodcast?id=")):
 						self.podcast = buttons[0].get("subscribe-podcast-url")
 
-		print "Parse took", time.time()-sttime, "s."
+		print("Parse took", time.time()-sttime, "s.")
 
 		#Done with this:
 		del dom
@@ -331,7 +333,7 @@ class Parser:
 		#while True:
 		#		print eval(raw_input(">"))
 
-		print "update took:", (time.time() - sttime), "seconds"
+		print("update took:", (time.time() - sttime), "seconds")
 
 	def seeXMLElement(self, element):
 		""" Recursively looks at xml elements. """
@@ -350,7 +352,7 @@ class Parser:
 				nexttext = element.getparent().getparent().getnext()
 				match = re.match("Tab [0-9][0-9]* of [0-9][0-9]*", author)
 				if match: # Tab handler
-					print "ADDTAB", match, urllink
+					print("ADDTAB", match, urllink)
 					match = author[match.end():]
 					self.tabMatches.append(match)
 					self.tabLinks.append(urllink)
@@ -383,9 +385,13 @@ class Parser:
 				self.HTML += "</table>"
 			elif element.tag == "PictureView":
 				if element.get("url"):
-					self.HTML += self.imgText(element.get("url"), element.get("height"), element.get("width"))
+					self.HTML += self.imgText(element.get("url"),
+								  element.get("height"),
+								  element.get("width"))
 				else:
-					self.HTML += self.imgText(element.get("src"), element.get("height"), element.get("width"))
+					self.HTML += self.imgText(element.get("src"),
+								  element.get("height"),
+								  element.get("width"))
 				for node in element:
 					self.seeXMLElement(node)
 				self.HTML += "</img>"
@@ -408,28 +414,50 @@ class Parser:
 					#lnk = "(Link)"
 				#else:
 					#lnk = "(Web Link)"
-			elif element.tag == "key" and element.text == "action" and element.getnext() is not None:
+			elif (element.tag == "key" and
+			      element.text == "action" and
+			      element.getnext() is not None):
 				#Page action for redirect.
 				#Key-val map is stored in <key>name</key><tag>value(s)</tag>
 				keymap = {}
 				for node in element.getnext():
 					if node.tag == "key" and node.getnext() is not None:
 						keymap[node.text] = node.getnext().text
-				print keymap
-				if keymap.has_key("kind") and (keymap["kind"]=="Goto" or keymap["kind"]=="OpenURL") and keymap.has_key("url"):
+				print(keymap)
+				if ("kind" in keymap and
+				    keymap["kind"] in ["Goto", "OpenURL"] and
+				    "url" in keymap):
 					self.Redirect = keymap["url"]
-			elif element.tag == "key" and element.getnext() is not None and (element.text == "message" or element.text == "explanation" or element.text == "customerMessage"):
+			elif (element.tag == "key" and
+			      element.getnext() is not None and
+			      element.text in ["message", "explanation", "customerMessage"]):
 				self.HTML += "<p>%s</p>" % element.getnext().text
-			elif element.tag == "key" and element.getnext() is not None and (element.text == "subscribe-podcast") and (element.getnext().tag == "dict"):
+			elif (element.tag == "key" and
+			      element.getnext() is not None and
+			      element.text == "subscribe-podcast" and
+			      element.getnext().tag == "dict"):
 				for node in element.getnext():
-					if node.tag == "key" and node.getnext() is not None and node.text == "feedURL":
+					if (node.tag == "key" and
+					    node.getnext() is not None and
+					    node.text == "feedURL"):
 						self.Redirect = node.getnext().text
-			elif element.tag == "key" and element.getnext() is not None and element.text == "kind" and element.getnext().text == "Perform" and element.getnext().getnext() is not None and element.getnext().getnext().text == "url" and element.getnext().getnext().getnext() is not None:
+			elif (element.tag == "key" and
+			      element.getnext() is not None and
+			      element.text == "kind" and
+			      element.getnext().text == "Perform" and
+			      element.getnext().getnext() is not None and
+			      element.getnext().getnext().text == "url" and
+			      element.getnext().getnext().getnext() is not None):
 				self.Redirect = element.getnext().getnext().getnext().text
-				print "REDIR", self.Redirect
-			elif element.tag == "Test" and (element.get("comparison").startswith("lt") or element.get("comparison") == "less"):
+				print("REDIR", self.Redirect)
+			elif (element.tag == "Test" and
+			      (element.get("comparison").startswith("lt") or
+			       element.get("comparison") == "less")):
 				pass #Ignore older version info, it would cause duplicates.
-			elif element.tag == "string" or (element.getprevious() is not None and element.getprevious().tag == "key" and element.tag != "dict") or element.tag == "key" or element.tag == "MenuItem" or element.tag == "iTunes" or element.tag == "PathElement" or element.tag == "FontStyleSet":
+			elif (element.tag == "string" or
+			      (element.getprevious() is not None and
+			       element.getprevious().tag == "key" and element.tag != "dict") or
+			      element.tag in ["key", "MenuItem", "iTunes", "PathElement", "FontStyleSet"]):
 				pass
 			else:
 				#print element.tag
@@ -450,7 +478,9 @@ class Parser:
 
 	def seeHTMLElement(self, element):
 		if isinstance(element.tag, str): # normal element
-			if element.get("comparison") == "lt" or (element.get("comparison") and element.get("comparison").find("less") > -1):
+			if (element.get("comparison") == "lt" or
+			    (element.get("comparison") and
+			     element.get("comparison").find("less") > -1)):
 				return #Ignore child nodes.
 			if element.tag == "tr" and element.get("dnd-clipboard-data"):
 				import json
@@ -463,21 +493,21 @@ class Parser:
 				gotou = ""
 				price = "0"
 				comment = ""
-				if (data.has_key('itemName')):
+				if ('itemName' in data):
 					title = data['itemName']
-				if (data.has_key('artistName')):
+				if ('artistName' in data):
 					artist = data['artistName']
-				if (data.has_key('duration')):
+				if ('duration' in data):
 					duration = timeFind(data['duration'])
-				if (data.has_key('preview-url')):
+				if ('preview-url' in data):
 					url = data['preview-url']
-				if (data.has_key('playlistName')):
+				if ('playlistName' in data):
 					comment = data['playlistName']
-				if (data.has_key('url')):
+				if ('url' in data):
 					gotou = data['url']
-				if (data.has_key('price')):
+				if ('price' in data):
 					price = data['price']
-				if (data.has_key('itemId')):
+				if ('itemId' in data):
 					itemid = data['itemId']
 				self.addItem(title,
 					     artist,
@@ -529,7 +559,8 @@ class Parser:
 							#price = val
 				#print "tr row adding"
 				#self.mediaItems.append([None,markup(title,False),artist,time,type,exp+comment,releaseDate,"",gotou,url,price,itemid])
-			elif (element.get("audio-preview-url") or element.get("video-preview-url")):
+			elif (element.get("audio-preview-url") or
+			      element.get("video-preview-url")):
 				if element.get("video-preview-url"):
 					url = element.get("video-preview-url")
 				else:
@@ -543,7 +574,7 @@ class Parser:
 				duration = ""
 				if element.get("preview-duration"):
 					duration = timeFind(element.get("preview-duration"))
-				print "preview-url adding row"
+				print("preview-url adding row")
 				self.mediaItems.append([None,
 							markup(title, False),
 							author,
@@ -556,8 +587,11 @@ class Parser:
 							url,
 							"",
 							""])
-			elif element.tag == "button" and element.get("anonymous-download-url") and element.get("kind") and (element.get("title") or element.get("item-name")):#Added for epub feature
-				print "button row adding"
+			elif (element.tag == "button" and
+			      element.get("anonymous-download-url") and
+			      element.get("kind") and
+			      (element.get("title") or element.get("item-name"))):#Added for epub feature
+				print("button row adding")
 				title = ""
 				artist = ""
 				if element.get("title"):
@@ -591,7 +625,8 @@ class Parser:
 				array = i.getnext()
 		return array
 
-	def addItem(self, title, author, duration, type, comment, releasedate, datemodified, gotourl, previewurl, price, itemid):
+	def addItem(self, title, author, duration, type, comment, releasedate,
+		    datemodified, gotourl, previewurl, price, itemid):
 		"""Adds item to media list."""
 		self.mediaItems.append([None,
 					markup(title, False),

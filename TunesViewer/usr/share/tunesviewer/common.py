@@ -1,5 +1,5 @@
 """
-Common functions for tunesviewer.
+Common functions for Tunesviewer.
 """
 import os.path
 import re

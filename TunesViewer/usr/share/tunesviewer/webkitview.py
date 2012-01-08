@@ -6,7 +6,9 @@ from inspector import Inspector
 
 class WebKitView(webkit.WebView):
 	"""
-	The main browser view. Shows the page, or a description of the podcast page.
+	The main browser view. Shows the page, or a description of the
+	podcast page.
+
 	Instantiated as Tunesviewer.descView.
 	"""
 	def __init__(self, opener):
@@ -34,7 +36,7 @@ class WebKitView(webkit.WebView):
 		settings.set_property("enable-developer-extras", True)
 		self._inspector = Inspector(self.get_web_inspector())
 		self.set_settings(settings)
-		
+
 		# These signals are documented in webkit.WebView.__doc__
 		self.connect("load-finished", self.webKitLoaded)
 		self.connect("navigation-policy-decision-requested", self.webkitGo)
@@ -43,7 +45,7 @@ class WebKitView(webkit.WebView):
 		current = os.path.dirname(os.path.realpath(__file__))
 		self.injectJavascript = file(os.path.join(current, "Javascript.js"),
 					     "r").read()
-		
+
 	def webKitLoaded(self, view, frame):
 		"""
 		Onload code.
@@ -51,23 +53,24 @@ class WebKitView(webkit.WebView):
 		"""
 		# Javascript.js is executed on this page.
 		self.execute_script(self.injectJavascript)
-		
-	def loadHTML(self, html, url):
+
+	def loadHTML(self, html_string, url_to_load):
 		"""
-		Loads html into the webview.
+		Loads an string containing HTML content from html_string
+		into the webview.
 		"""
 		self.webkitLoading = True
-		self.load_html_string(html, url)
+		self.load_html_string(html_string, url_to_load)
 		self.webkitLoading = False
-		
+
 	def webkitGo(self, view, frame, net_req, nav_act, pol_dec):
 		print "webkit-request."
-		if self.webkitLoading == False:
+		if not self.webkitLoading:
 			# Don't load in browser, let this program download/convert it...
 			print "Noload"
 			print net_req.get_uri()
 			self.opener.gotoURL(net_req.get_uri(), True)
 			return True
-	
+
 	#def webkitReqStart(self, webView, webFrame, webResource, NetReq, NetResp):
 	#	pass
