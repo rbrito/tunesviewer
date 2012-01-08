@@ -11,7 +11,7 @@ def timeFind(ms):
 	"""Given time in milliseconds, returns it as a string in mm:ss format."""
 	try:
 		seconds = int(ms)/1000
-	except ValueError:
+	except (ValueError, TypeError):
 		return ms
 	mins = seconds / 60
 	secs = seconds % 60

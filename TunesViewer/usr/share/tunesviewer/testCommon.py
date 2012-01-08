@@ -7,6 +7,7 @@ class TestCommon(unittest.TestCase):
 	def testTimeFind(self):
 		self.assertEqual(timeFind(1000), "00:01")
 		self.assertEqual(timeFind("bogus"), "bogus")
+		self.assertEqual(timeFind([]), [])
 		self.assertEqual(timeFind(1000*60), "01:00")
 
 	def testHTML(self):
