@@ -20,10 +20,14 @@ def timeFind(ms):
 
 
 def htmlentitydecode(s):
-	if s: # based on http://wiki.python.org/moin/EscapingHtml
-		from htmlentitydefs import name2codepoint
-		return (re.sub('&(%s);' % '|'.join(name2codepoint),
-				lambda m: unichr(name2codepoint[m.group(1)]), s)).replace("&apos;", "'")
+	if s:
+		# This unescape function is an internal function of
+		# HTMLParser but let's use it, as it does a better job than
+		# what we have so far.
+		#
+		# See: hg.python.org/cpython/file/2.7/Lib/HTMLParser.py
+		import HTMLParser
+		return HTMLParser.HTMLParser().unescape(s).replace("&apos;", "'")
 	else:
 		return ""
 
