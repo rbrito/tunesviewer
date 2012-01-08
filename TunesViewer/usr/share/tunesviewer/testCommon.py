@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import logging
 import unittest
 
@@ -6,12 +8,17 @@ from common import *
 class TestCommon(unittest.TestCase):
 	def testTimeFind(self):
 		self.assertEqual(timeFind(1000), "00:01")
+		self.assertEqual(timeFind(1000*60), "01:00")
+
 		self.assertEqual(timeFind("bogus"), "bogus")
 		self.assertEqual(timeFind([]), [])
-		self.assertEqual(timeFind(1000*60), "01:00")
 
 	def testHTML(self):
 		self.assertEqual(htmlentitydecode("M&amp;M"), "M&M")
+		self.assertEqual(htmlentitydecode("&lt;"), "<")
+		self.assertEqual(htmlentitydecode("&#60;"), "<")
+		self.assertEqual(htmlentitydecode("dynlists&copy;"), "dynlists©")
+		self.assertEqual(htmlentitydecode("dynlists&copy"), "dynlists&copy")
 
 	def testSafeFilename(self):
 		basename = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 $%`-_@{}~!#()."
