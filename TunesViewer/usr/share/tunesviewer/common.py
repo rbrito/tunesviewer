@@ -28,8 +28,9 @@ def htmlentitydecode(s):
 		return ""
 
 
-def safeFilename(name,dos):
-	"""Given a string called name, return a 'filtered' version of name
+def safeFilename(name, dos):
+	"""
+	Given a string called name, return a 'filtered' version of name
 	(with special characters removed) that is suitable to be used as a
 	file name for a DOS/FAT filesystem, when DOS=true.
 
@@ -52,7 +53,7 @@ def safeFilename(name,dos):
 
 	if len(name) > 255 and dos:
 		name = root[:255-len(ext)] + ext
-	elif len(name)==0:
+	elif len(name) == 0:
 		name = "(unknown)"
 	return name
 
