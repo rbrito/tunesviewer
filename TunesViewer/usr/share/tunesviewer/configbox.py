@@ -2,7 +2,8 @@ import os
 import ConfigParser
 
 import gtk
-from firstsetup import FirstSetup
+
+import firstsetup
 
 class ConfigBox:
 	"""
@@ -146,7 +147,7 @@ class ConfigBox:
 		defv = gtk.VBox()
 		defFrame.add(defv)
 		setbutton = gtk.Button("Set TunesViewer as default opener")
-		setbutton.connect("clicked", FirstSetup().setdefault)
+		setbutton.connect("clicked", firstsetup.setdefault)
 		defv.pack_start(setbutton, True, False, 0)
 		self.setOtherProg = gtk.Entry()
 		self.setOtherProg.set_text("rhythmbox %s")
@@ -327,7 +328,8 @@ class ConfigBox:
 
 
 	def first_setup(self):
-		FirstSetup().run()
+		firstsetup.run()
+
 
 	def response(self, obj, value):
 		"""Saves or loads settings when ok or cancel or close is selected."""
@@ -340,7 +342,7 @@ class ConfigBox:
 
 
 	def setOtherDefault(self, obj):
-		setup = FirstSetup()
+		setup = firstsetup
 		err = 0
 		err += setup.setdefaultprotocol("itms", self.setOtherProg.get_text())
 		err += setup.setdefaultprotocol("itmss", self.setOtherProg.get_text())
