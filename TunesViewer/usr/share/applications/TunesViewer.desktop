@@ -11,3 +11,5 @@ Icon=/usr/share/icons/hicolor/scalable/apps/tunesview.svg
 Categories=Application;Network;
 MimeType=x-scheme-handler/itms;x-scheme-handler/itmss;x-scheme-handler/itpc;
 Comment[en_US.utf8]=Small, easy-to-use program to access iTunesU media
+Comment[pt_BR.utf8]=Programa pequeno e simples de usar para acessar conteúdo do iTunes U
+Comment[pt_BR]=Programa pequeno e simples de usar para acessar conteúdo do iTunes U
