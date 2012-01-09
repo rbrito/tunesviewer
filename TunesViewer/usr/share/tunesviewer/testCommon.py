@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import logging
 import unittest
 
 from common import *
@@ -25,6 +24,7 @@ class TestCommon(unittest.TestCase):
 		good = "/home/" + basename
 		self.assertEqual(safeFilename("/home/mydirectory/somefile", True), "somefile")
 		self.assertEqual(safeFilename(good, True), good[6:]) #without /home/.
+
 
 if __name__ == "__main__":
 	# run all tests
