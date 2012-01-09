@@ -32,14 +32,7 @@ class ConfigBox:
 	notifyseconds = 7
 	iconsizeN = 16
 	imagesizeN = 48
-	# new for 0.9:
-	#scaleImage = True - deprecated
-	#autoRedirect = True - deprecated
-	# new for 1.0:
-	#(redundant now) alwaysHTML = ["/artist/","/institution/","/wa/viewGenre","/wa/viewRoom","/wa/viewSeeAll","/wa/viewArtist","/wa/viewTagged","/wa/viewGrouping","://c.itunes.apple.com","://t.co/"]
-	# new in 1.1:
 	home = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewGrouping?id=27753"
-	# new in 1.1.1:
 	zoomAll = True
 	releasedCol = False
 	modifiedCol = False
