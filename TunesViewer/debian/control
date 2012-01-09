@@ -3,7 +3,8 @@ Section: net
 Priority: optional
 Maintainer: Luke Bryan <lb1programmer@users.sourceforge.net>
 Build-Depends:
- debhelper (>= 8)
+ debhelper (>= 8),
+ python
 Standards-Version: 3.9.2
 Homepage: http://tunesviewer.sf.net/
 
