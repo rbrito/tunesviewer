@@ -1,8 +1,8 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Exec=/usr/bin/tunesviewer %U
-Icon=/usr/share/icons/hicolor/scalable/apps/tunesview.svg
+Exec=tunesviewer %U
+Icon=tunesview
 Terminal=false
 Categories=Application;Network;
 MimeType=x-scheme-handler/itms;x-scheme-handler/itmss;x-scheme-handler/itpc;
