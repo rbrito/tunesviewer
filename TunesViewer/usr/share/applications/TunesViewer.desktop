@@ -1,15 +1,18 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Terminal=false
 Exec=/usr/bin/tunesviewer %U
-Name[en_US]=TunesViewer
-Comment[en_US]=Small, easy-to-use program to access iTunesU media
-Name=TunesViewer
-Comment=Small, easy-to-use program to access iTunesU media
 Icon=/usr/share/icons/hicolor/scalable/apps/tunesview.svg
+Terminal=false
 Categories=Application;Network;
 MimeType=x-scheme-handler/itms;x-scheme-handler/itmss;x-scheme-handler/itpc;
+Name=TunesViewer
+Name[en_US]=TunesViewer
+Name[pt_BR]=TunesViewer
+GenericName=iTunes U browser
+GenericName[pt_BR]=navegador do iTunes
+Comment=Small, easy-to-use program to access iTunesU media
 Comment[en_US.utf8]=Small, easy-to-use program to access iTunesU media
+Comment[en_US]=Small, easy-to-use program to access iTunesU media
 Comment[pt_BR.utf8]=Programa pequeno e simples de usar para acessar conteúdo do iTunes U
 Comment[pt_BR]=Programa pequeno e simples de usar para acessar conteúdo do iTunes U
