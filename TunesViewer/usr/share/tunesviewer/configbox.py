@@ -5,8 +5,10 @@ import gtk
 from firstsetup import FirstSetup
 
 class ConfigBox:
-	"""Initialize variable defaults, as these variables are directly
-	accessed by the other classes."""
+	"""
+	Initialize variable defaults, as these variables are directly
+	accessed by the other classes.
+	"""
 	downloadfolder = os.path.expanduser("~")
 	downloadsafe = True
 	toolbar = True
@@ -146,7 +148,7 @@ class ConfigBox:
 		vtab.pack_start(hbox, True, False, 0)
 
 		# default program frame:
-		defFrame = gtk.Frame(label="Default handler for itms,itmss,itpc protocols:")
+		defFrame = gtk.Frame(label="Default handler for itms, itmss, itpc protocols:")
 		vtab.pack_start(defFrame)
 		defv = gtk.VBox()
 		defFrame.add(defv)
@@ -167,6 +169,7 @@ class ConfigBox:
 		#Set initial configuration:
 		self.load_settings()
 
+
 	def getopeners(self, text):
 		"""Turns text into a dictionary of filetype -> program associations."""
 		# Map filetype to opener, start new dictionary:
@@ -180,6 +183,7 @@ class ConfigBox:
 				out[format] = opener
 		return out
 
+
 	def openertext(self, opener):
 		"""Turn a dictionary back to text
 
@@ -189,6 +193,7 @@ class ConfigBox:
 		for key, value in opener.items():
 			out += key + ":" + value + "\n"
 		return out
+
 
 	def save_settings(self):
 		"""Save the changed values, and write to file"""
@@ -242,6 +247,7 @@ class ConfigBox:
 		config.set(sec, "zoom", self.mainwin.descView.get_zoom_level())
 		config.write(open(os.path.expanduser("~/.tunesviewerprefs"), "w"))
 		self.setVisibility()
+
 
 	def load_settings(self):
 		"""Try to load settings from file, then update display"""
@@ -306,6 +312,7 @@ class ConfigBox:
 			self.save_settings()
 		self.setVisibility()
 
+
 	def setVisibility(self):
 		if self.toolbar:
 			self.mainwin.toolbar.show()
@@ -319,10 +326,12 @@ class ConfigBox:
 		self.mainwin.treeview.get_column(7).set_property('visible', self.modifiedCol)
 		self.mainwin.descView.set_full_content_zoom(self.zoomAll) #Not just text zoom
 
+
 	def delete_event(self, widget, event, data=None):
 		"""Cancels close, only hides window."""
 		self.window.hide()
 		return True # Hide, don't close.
+
 
 	def first_setup(self):
 		FirstSetup().run()
@@ -336,13 +345,14 @@ class ConfigBox:
 		#Done, call the hide-window event:
 		self.delete_event(None, None, None)
 
+
 	def setOtherDefault(self, obj):
 		setup = FirstSetup()
 		err = 0
 		err += setup.setdefaultprotocol("itms", self.setOtherProg.get_text())
 		err += setup.setdefaultprotocol("itmss", self.setOtherProg.get_text())
 		err += setup.setdefaultprotocol("itpc", self.setOtherProg.get_text())
-		if (err):
+		if err:
 			msg = gtk.MessageDialog(self.window,
 						gtk.DIALOG_MODAL,
 						gtk.MESSAGE_ERROR,
