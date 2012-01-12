@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import sys
 import unittest
+
+sys.path.append('src')
 
 from common import *
 
