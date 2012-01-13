@@ -8,15 +8,29 @@ import glib
 import gtk
 
 def timeFind(ms):
-	"""Given time in milliseconds, returns it as a string in mm:ss format."""
+	"""
+	Given time in milliseconds, returns it as a string:
+
+	* In mm:ss format if the time is less than 1 hour.
+	* In the hh:mm:ss for if the time is at least 1 hour.
+
+	This is done for consistency with the rest of the iTunes Store.
+	"""
 	try:
 		seconds = int(ms)/1000
 	except (ValueError, TypeError):
 		return ms
+
+	hour = seconds / 3600
+	seconds = seconds % 3600
+
 	mins = seconds / 60
 	secs = seconds % 60
 
-	return "%02d:%02d" % (mins, secs)
+	if (hour):
+		return "%d:%02d:%02d" % (hour, mins, secs)
+
+	return "%d:%02d" % (mins, secs)
 
 
 def htmlentitydecode(s):
