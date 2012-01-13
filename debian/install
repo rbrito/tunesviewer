@@ -1,3 +1,3 @@
-usr/share/applications/TunesViewer.desktop		usr/share/applications/
-usr/share/icons/hicolor/scalable/apps/tunesview.svg	usr/share/icons/hicolor/scalable/apps/
-usr/share/tunesviewer/*					usr/share/tunesviewer/
+resources/TunesViewer.desktop		usr/share/applications/
+resources/tunesview.svg			usr/share/icons/hicolor/scalable/apps/
+src/*					usr/share/tunesviewer/

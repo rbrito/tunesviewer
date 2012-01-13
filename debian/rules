@@ -3,8 +3,4 @@
 	dh $@
 
 override_dh_installchangelogs:
-	dh_installchangelogs usr/share/doc/tunesviewer/changelog
-
-override_dh_install:
-	dh_install
-	rm -f debian/tunesviewer/usr/share/tunesviewer/test*.py
+	dh_installchangelogs doc/changelog
