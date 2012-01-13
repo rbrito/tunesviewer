@@ -3,4 +3,4 @@
 	dh $@
 
 override_dh_installchangelogs:
-	dh_installchangelogs usr/share/doc/tunesviewer/changelog
+	dh_installchangelogs doc/changelog
