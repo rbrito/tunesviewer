@@ -4,16 +4,25 @@ import sys
 import unittest
 
 sys.path.append('src')
+sys.path.append('../src')
 
 from common import *
 
 class TestCommon(unittest.TestCase):
-	def testTimeFind(self):
-		self.assertEqual(timeFind(1000), "00:01")
-		self.assertEqual(timeFind(1000*60), "01:00")
+	def testTime_Convert(self):
+		self.assertEqual(time_convert(1000), "0:01")
+		self.assertEqual(time_convert(1000*60), "1:00")
+		self.assertEqual(time_convert(1000*61), "1:01")
+		self.assertEqual(time_convert(1000*70), "1:10")
+		self.assertEqual(time_convert(1000*3599), "59:59")
+		self.assertEqual(time_convert(1000*3600), "1:00:00")
+		self.assertEqual(time_convert(1000*3601), "1:00:01")
+		self.assertEqual(time_convert(1000*3660), "1:01:00")
+		self.assertEqual(time_convert(1000*3661), "1:01:01")
+		self.assertEqual(time_convert(1000*7200), "2:00:00")
 
-		self.assertEqual(timeFind("bogus"), "bogus")
-		self.assertEqual(timeFind([]), [])
+		self.assertEqual(time_convert("bogus"), "bogus")
+		self.assertEqual(time_convert([]), [])
 
 	def testHTML(self):
 		self.assertEqual(htmlentitydecode("M&amp;M"), "M&M")

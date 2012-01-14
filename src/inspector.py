@@ -14,12 +14,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import logging
+
 import gtk
 import webkit
 
-class Inspector (gtk.Window):
+class Inspector(gtk.Window):
     def __init__ (self, inspector):
-        """initialize the WebInspector class"""
+        """
+        Initialize the WebInspector class.
+        """
         gtk.Window.__init__(self)
         self._web_inspector = inspector
 
@@ -38,8 +42,11 @@ class Inspector (gtk.Window):
 
         self.connect("delete-event", self._close_window_cb)
 
-    def _inspect_web_view_cb (self, inspector, web_view):
-        """Called when the 'inspect' menu item is activated"""
+
+    def _inspect_web_view_cb(self, inspector, web_view):
+        """
+        Called when the 'inspect' menu item is activated.
+        """
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.props.hscrollbar_policy = gtk.POLICY_AUTOMATIC
         scrolled_window.props.vscrollbar_policy = gtk.POLICY_AUTOMATIC
@@ -48,39 +55,53 @@ class Inspector (gtk.Window):
         scrolled_window.show_all()
 
         self.add(scrolled_window)
-        
+
         ##  Modified to make window bigger, and add title  ##
         self.set_default_size(650, 400)
         self.set_title("Webkit Inspector")
-        
+
         return webview
 
-    def _show_window_cb (self, inspector):
-        """Called when the inspector window should be displayed"""
+
+    def _show_window_cb(self, inspector):
+        """
+        Called when the inspector window should be displayed.
+        """
         self.present()
         return True
 
-    def _attach_window_cb (self, inspector):
-        """Called when the inspector should displayed in the same
-        window as the WebView being inspected
+
+    def _attach_window_cb(self, inspector):
         """
-        print "attach"
+        Called when the inspector should be displayed in the same window as
+        the WebView being inspected.
+        """
+        logging.debug("Inspector window attached.")
         return False
 
-    def _detach_window_cb (self, inspector):
-        """Called when the inspector should appear in a separate window"""
-        print "detach"
+
+    def _detach_window_cb(self, inspector):
+        """
+        Called when the inspector should appear in a separate window.
+        """
+        logging.debug("Inspector window detached.")
         return False
 
-    def _close_window_cb (self, inspector, web_view):
-        """Called when the inspector window should be closed"""
-        print "close"
+
+    def _close_window_cb(self, inspector, web_view):
+        """
+        Called when the inspector window should be closed.
+        """
+        logging.debug("Inspector window closed.")
         self.hide()
         return True
 
-    def _finished_cb (self, inspector):
-        """Called when inspection is done"""
-        print "finished"
+
+    def _finished_cb(self, inspector):
+        """
+        Called when inspection is done.
+        """
+        logging.debug("Inspector finished.")
         self._web_inspector = 0
         self.destroy()
         return False

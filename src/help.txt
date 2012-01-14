@@ -10,25 +10,25 @@ Select Ok, and click the add button on the toolbar, or Actions Menu - Add Page t
 Menus:
 File
 	Advanced Search - lets you search for podcasts and media by university, title, or description.
-	
+
 Edit
 	Copy Normal Podcast Url - copies the real podcast url of the current page. You can use this in a podcast manager such as gpodder.
 	Paste & Goto url - goes to the url currently in the clipboard.
 	Preferences - change options for this program.
-	
+
 View
 	Request HTML Mode - Check this if you have problems with a page not loading.
 	Show Downloads - shows current downloads.
 	Downloads Directory - shows the files in your file manager.
 	Page Source - shows the source text of current page.
 	Selection Info - shows information on the current row selected, including comments and filesize.
-	
+
 Actions
 	Goto Link - Goes to the link of the row currently selected.
 	Play/View File - Opens selected link streaming, using the program you chose in preferences.
 	Download File - Downloads currently selected link.
 	Add Page to Podcast Manager - Adds to your podcast manager (you can choose this program in the preferences)
-	
+
 When files are downloaded, you can choose an action from the lower left dropdown box by the progress bar.
 Actions are:
 	Open file - opens the file with the system default opener for this filetype.
