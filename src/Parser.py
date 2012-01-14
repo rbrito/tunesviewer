@@ -1,4 +1,5 @@
 import gc
+import logging
 import re
 import time
 
@@ -49,7 +50,7 @@ class Parser:
 			elif dom.tag == "rss": # rss files are added
 				self.HTML += "<p>This is a podcast feed, click Add to Podcast manager button on the toolbar to subscribe.</p>"
 				items = dom.xpath("//item")
-				print("rss:", len(items))
+				logging.debug("rss: " + str(len(items)))
 				for item in items:
 					title = ""
 					author = ""
@@ -87,13 +88,13 @@ class Parser:
 			else:
 				self.seeXMLElement(dom)
 		except Exception as e:
-			print("ERR", e)
-			print("parsing as html not xml.")
+			logging.debug("ERR: " + str(e))
+			logging.debug("Parsing as HTML, not as XML.")
 			ustart = self.source.find("<body onload=\"return open('")
 			if ustart > -1:  # This is a redirect-page.
 				newU = self.source[ustart+27:self.source.find("'", ustart+27)]
 				self.Redirect = newU
-			print("Parsing HTML")
+			logging.debug("Parsing HTML")
 			self.HTML = self.source
 			dom = lxml.html.document_fromstring(self.source.replace('<html xmlns="http://www.apple.com/itms/"', '<html'))
 			self.seeHTMLElement(dom)
@@ -124,7 +125,7 @@ class Parser:
 							if type(j).__name__ == '_Element' and j.tag == "GotoURL":
 								location.append(j.text.strip())
 								locationLinks.append(j.get("url"))
-								print(j.text.strip(), j.get("url"))
+								logging.debug(j.text.strip() + j.get("url"))
 								lastloc = j.get("url")
 				if self.textContent(section).find(">") > -1:
 					section.getparent().remove(section) # redundant section > section ... info is removed.
@@ -133,17 +134,17 @@ class Parser:
 			ks = dom.xpath("/Document/Protocol/plist/dict/array/dict")
 			if len(ks):
 				arr = ks
-				print("Special end page after html link?", len(ks))
+				logging.debug("Special end page after html link?" + str(len(ks)))
 				if (len(ks) == 1 and
 				    dom.get("disableNavigation") == "true" and
 				    dom.get("disableHistory") == "true"):
 					self.singleItem = True
-		print("tag", dom.tag)
+		logging.debug("tag " + dom.tag)
 
 		if arr is None: # No tracklisting.
 			hasmedia = False
 			if len(self.mediaItems) == 0:
-				print("nothing here!")
+				logging.debug("nothing here!")
 		else: # add the tracks:
 			# TODO: Add XML page's elements to the top panel, so the bottom panel isn't necessary.
 			hasmedia = True
@@ -267,14 +268,14 @@ class Parser:
 		# already have keys = dom.xpath("//key")
 		self.podcast = ""
 		if len(location) > 0 and location[0] == "Search Results":
-			print("search page, not podcast.")
+			logging.debug("Search page, not podcast.")
 		elif dom.tag == "rss":
 			self.podcast = self.url
 		elif hasmedia:
 			for i in keys:
 				if (i.text == "feedURL"):
 					self.podcast = i.getnext().text # Get next text node's text.
-					print("Podcast:", self.podcast)
+					logging.debug("Podcast: " + self.podcast)
 					break
 			if self.podcast == "":
 				#Last <pathelement> should have the page podcast url, with some modification.
@@ -291,7 +292,7 @@ class Parser:
 						if pbv.get("alt") == "Subscribe":
 							self.podcast = pbv.getparent().get("draggingURL")
 				else:
-					print("Not a podcast page.")
+					logging.debug("Not a podcast page.")
 		else: # not a podcast page? Check for html podcast feed-url in page:
 			#Maybe redundant, with the subscribe links working.
 			buttons = dom.xpath("//button")
@@ -309,7 +310,7 @@ class Parser:
 					if not(buttons[0].get("subscribe-podcast-url").startswith("http://itunes.apple.com/WebObjects/DZR.woa/wa/subscribePodcast?id=")):
 						self.podcast = buttons[0].get("subscribe-podcast-url")
 
-		print("Parse took", time.time()-sttime, "s.")
+		logging.debug("Parse took " + str(time.time()-sttime) + "s.")
 
 		#Done with this:
 		del dom
@@ -320,7 +321,7 @@ class Parser:
 			self.itemId = self.url[self.url.rfind("?i=")+3:]
 			self.itemId = self.itemId.split("&")[0]
 
-		print("update took:", (time.time() - sttime), "seconds")
+		logging.debug("Update took " + str(time.time()-sttime) + "seconds")
 
 	def seeXMLElement(self, element):
 		"""
@@ -341,7 +342,7 @@ class Parser:
 				nexttext = element.getparent().getparent().getnext()
 				match = re.match("Tab [0-9][0-9]* of [0-9][0-9]*", author)
 				if match: # Tab handler
-					print("ADDTAB", match, urllink)
+					logging.debug("ADDTAB " + match + " " + urllink)
 					match = author[match.end():]
 					self.tabMatches.append(match)
 					self.tabLinks.append(urllink)
@@ -412,7 +413,7 @@ class Parser:
 				for node in element.getnext():
 					if node.tag == "key" and node.getnext() is not None:
 						keymap[node.text] = node.getnext().text
-				print(keymap)
+				logging.debug(keymap)
 				if ("kind" in keymap and
 				    keymap["kind"] in ["Goto", "OpenURL"] and
 				    "url" in keymap):
@@ -438,7 +439,7 @@ class Parser:
 			      element.getnext().getnext().text == "url" and
 			      element.getnext().getnext().getnext() is not None):
 				self.Redirect = element.getnext().getnext().getnext().text
-				print("REDIR", self.Redirect)
+				logging.debug("REDIR" + self.Redirect)
 			elif (element.tag == "Test" and
 			      (element.get("comparison").startswith("lt") or
 			       element.get("comparison") == "less")):
@@ -522,7 +523,7 @@ class Parser:
 				duration = ""
 				if element.get("preview-duration"):
 					duration = time_convert(element.get("preview-duration"))
-				print("preview-url adding row")
+				logging.debug("preview-url adding row")
 				self.mediaItems.append([None,
 							markup(title, False),
 							author,
@@ -539,7 +540,7 @@ class Parser:
 			      element.get("anonymous-download-url") and
 			      element.get("kind") and
 			      (element.get("title") or element.get("item-name"))):#Added for epub feature
-				print("button row adding")
+				logging.debug("button row adding")
 				title = ""
 				artist = ""
 				if element.get("title"):

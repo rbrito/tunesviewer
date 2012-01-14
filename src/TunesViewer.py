@@ -964,7 +964,9 @@ class TunesViewer:
 		Called when back-button is pressed.
 		"""
 		if len(self.backStack) > 0 and not(self.downloading):
-			print self.backStack, self.forwardStack
+			logging.debug(self.backStack)
+			logging.debug(self.forwardStack)
+
 			self.forwardStack.append(self.url)
 			self.gotoURL(self.backStack[-1], False) # last in back stack
 			if self.downloadError:
@@ -973,7 +975,9 @@ class TunesViewer:
 			else:
 				#remove from back:
 				self.backStack.pop()
-			print self.backStack, self.forwardStack
+
+			logging.debug(self.backStack)
+			logging.debug(self.forwardStack)
 		else:
 			gtk.gdk.beep()
 		#Update the back, forward buttons:
@@ -1193,7 +1197,8 @@ class TunesViewer:
 		self.downloadbox.newDownload(properties[0], url,
 					     final_file,
 					     self.opener)
-		logging.debug("Starting download of " + local + " to " + final_file)
+		logging.debug("Starting download of " + local +
+			      " to " + final_file)
 		self.downloadbox.window.show()
 
 	def main(self):
@@ -1281,7 +1286,7 @@ class TunesViewer:
 		if self.downloading:
 			return
 		elif url.startswith("web"):
-			print url
+			logging.debug(url)
 			openDefault(url[3:])
 			return
 		# Fix url based on http://bugs.python.org/issue918368
@@ -1354,11 +1359,9 @@ class TunesViewer:
 						f = gzip.GzipFile(fileobj=StringIO(text))
 						try:
 							text = f.read()
-							print ("Gzipped response: ",
-							       orig, "->", len(text))
+							logging.debug("Gzipped response: " + str(orig) + "->" + str(len(text)))
 						except IOError, e: #bad file
-							print e
-					#self.source = text
+							logging.debug(str(e))
 				else:
 					self.downloadError = "stopped."
 			else:
@@ -1372,7 +1375,7 @@ class TunesViewer:
 			response.close()
 		except Exception, e:
 			self.downloadError = "Download Error:\n" + str(e)
-			print e
+			logging.error(e)
 		gobject.idle_add(self.update, url, pageType, text, newurl)
 
 
@@ -1408,21 +1411,21 @@ class TunesViewer:
 			self.tbAuth.show()
 			try:#urllib.unquote?
 				id = self.cj._cookies[".deimos.apple.com"]["/WebObjects"]["identity"].value
-				print "identity:", id
+				logging.debug("identity: " + id)
 				tip += "\nLogged in as: %s" % id
-				print "credentialKey:", self.cj._cookies[".deimos.apple.com"]["/WebObjects"]["identity"].value
+				logging.debug("credentialKey: " +
+					      self.cj._cookies[".deimos.apple.com"]["/WebObjects"]["identity"].value)
 			except:
-				print "none"
+				logging.debug("none")
 			self.tbAuth.set_tooltip_text(tip)
 		else:
 			self.tbAuth.hide()
 
 		#Parse the page and display:
-		print "PARSING", url, pageType
+		logging.debug("PARSING " + url + " " + pageType)
 		parser = Parser(url, pageType, source)
-		#print "Read page,",len(parser.mediaItems),"items, source=",parser.HTML
-		if (parser.Redirect != ""):
-			print "REDIRECT:", parser.Redirect
+		if parser.Redirect != "":
+			logging.debug("REDIRECT: " + parser.Redirect)
 			self.gotoURL(parser.Redirect, True)
 			return False
 		elif len(parser.mediaItems) == 1 and parser.singleItem:
@@ -1430,7 +1433,7 @@ class TunesViewer:
 			self.startDownload(parser.mediaItems[0])
 			return False
 		else: #normal page, show it:
-			print "normal page", url
+			logging.debug("normal page" + url)
 			#Reset data:
 			self.taburls = [] #reset tab-urls until finished to keep it from going to other tabs.
 			while self.notebook.get_n_pages():
@@ -1447,7 +1450,7 @@ class TunesViewer:
 
 			#Load data:
 			self.descView.loadHTML(parser.HTML, url)
-			print "ITEMS:", len(parser.mediaItems)
+			logging.debug("ITEMS: " + str(len(parser.mediaItems)))
 			for item in parser.mediaItems:
 				self.liststore.append(item)
 			self.window.set_title(parser.Title)
@@ -1458,7 +1461,7 @@ class TunesViewer:
 			#No item selected now, disable item buttons.
 			self.noneSelected()
 			self.treeview.set_model(self.liststore)
-			print "rows:", len(self.liststore)
+			logging.debug("Rows:" + str(len(self.liststore)))
 			mediacount = 0
 			linkscount = 0
 			for row in self.liststore:
@@ -1520,7 +1523,7 @@ class TunesViewer:
 			self.icon_other = icon_theme.load_icon("gnome-fs-regular", self.config.iconsizeN, 0)
 			self.icon_link = icon_theme.load_icon("gtk-jump-to-ltr", self.config.iconsizeN, 0)
 		except Exception, e:
-			print "Exception:", e
+			logging.debug("Exception:" + str(e))
 
 		audio_types = [".mp3", ".m4a", ".amr", ".m4p", ".aiff", ".aif",
 			       ".aifc"]
