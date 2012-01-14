@@ -5,6 +5,7 @@ import sys
 import unittest
 import urllib2
 
+sys.path.append('src')
 sys.path.append('../src')
 
 from Parser import Parser
