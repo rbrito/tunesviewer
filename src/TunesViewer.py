@@ -1208,9 +1208,9 @@ class TunesViewer:
 		# Check for crashed downloads, AFTER test for another currently running instance.
 		socket.setdefaulttimeout(11) # should improve freeze-up when cancelling downloads
 		try:
-			pending_downloads_file = os.path.expanduser("~/.tunesviewerDownloads")
-			dlines = open(pending_downloads_file, 'r').read().split("\n")
-			os.remove(pending_downloads_file)
+			pending_dl_file = os.path.expanduser("~/.tunesviewerDownloads")
+			dlines = open(pending_dl_file, 'r').read().split("\n")
+			os.remove(pending_dl_file)
 			for i in range(len(dlines)):
 				if dlines[i].startswith("####"):
 					self.downloadbox.newDownload(None, dlines[i+1], dlines[i+2], self.opener)
@@ -1229,7 +1229,7 @@ class TunesViewer:
 		Called when exiting, checks if downloads should be cancelled.
 		"""
 
-		pending_downloads_file = os.path.expanduser("~/.tunesviewerDownloads")
+		pending_dl_file = os.path.expanduser("~/.tunesviewerDownloads")
 		self.config.save_settings()
 		if self.downloadbox.downloadrunning:
 			msg = gtk.MessageDialog(self.window,
@@ -1243,7 +1243,7 @@ class TunesViewer:
 			if answer == gtk.RESPONSE_YES:
 				# Clear crash recovery
 				try:
-					os.remove(pending_downloads_file)
+					os.remove(pending_dl_file)
 				except OSError, e:
 					pass
 				self.sock.sendUrl("EXIT")
@@ -1257,7 +1257,7 @@ class TunesViewer:
 		else:
 			# Clear crash recovery
 			try:
-				os.remove(pending_downloads_file)
+				os.remove(pending_dl_file)
 			except OSError, e:
 				pass
 			self.sock.sendUrl("EXIT")
