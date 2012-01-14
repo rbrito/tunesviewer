@@ -1,3 +1,5 @@
+import logging
+
 import gtk
 
 class FindBox:
@@ -67,7 +69,7 @@ class FindBox:
 		return True # Hide, don't close.
 
 	def response(self, obj, value):
-		print obj, value
+		logging.debug(str(obj) + str(value))
 		if value == 0:
 			self.window.hide()
 		elif value == 1:

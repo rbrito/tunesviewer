@@ -14,6 +14,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import logging
+
 import gtk
 import webkit
 
@@ -74,7 +76,7 @@ class Inspector(gtk.Window):
         Called when the inspector should be displayed in the same window as
         the WebView being inspected.
         """
-        print "attach"
+        logging.debug("Inspector window attached.")
         return False
 
 
@@ -82,7 +84,7 @@ class Inspector(gtk.Window):
         """
         Called when the inspector should appear in a separate window.
         """
-        print "detach"
+        logging.debug("Inspector window detached.")
         return False
 
 
@@ -90,7 +92,7 @@ class Inspector(gtk.Window):
         """
         Called when the inspector window should be closed.
         """
-        print "close"
+        logging.debug("Inspector window closed.")
         self.hide()
         return True
 
@@ -99,7 +101,7 @@ class Inspector(gtk.Window):
         """
         Called when inspection is done.
         """
-        print "finished"
+        logging.debug("Inspector finished.")
         self._web_inspector = 0
         self.destroy()
         return False

@@ -1,3 +1,4 @@
+import logging
 import os
 
 import webkit
@@ -62,11 +63,11 @@ class WebKitView(webkit.WebView):
 		self.webkitLoading = False
 
 	def webkitGo(self, view, frame, net_req, nav_act, pol_dec):
-		print "webkit-request."
+		logging.debug("webkit-request.")
 		if not self.webkitLoading:
 			# Don't load in browser, let this program download/convert it...
-			print "Noload"
-			print net_req.get_uri()
+			logging.debug("Noload")
+			logging.debug(net_req.get_uri())
 			self.opener.gotoURL(net_req.get_uri(), True)
 			return True
 

@@ -1,11 +1,15 @@
-import gtk
-from common import *
+import logging
 from threading import Thread
+
+import gtk
+
+from common import *
+
 
 class ItemDetails:
 	def __init__(self, mainwin, selection):
-		if selection == None:
-			print "No selection."
+		if selection is None:
+			logging.debug("No selection.")
 		else:
 			self.mainwin = mainwin
 			self.selection = selection
@@ -25,7 +29,7 @@ class ItemDetails:
 			self.window.get_content_area().pack_start(mainhbox, True, True, 0)
 			self.updateText(self.selection, "")
 			self.window.show_all()
-			print "starting item thread"
+			logging.debug("starting item thread")
 			#Start thread:
 			t = Thread(target=self.update, args=())
 			t.start()
@@ -58,12 +62,15 @@ class ItemDetails:
 			self.viewer.get_buffer().set_text(self.text)
 			gtk.gdk.threads_leave()
 
+
 	def update(self):
 		try:
 			op = self.mainwin.opener.open(self.selection[9])
 			self.updateText(self.selection, desc(int(op.info()['Content-Length'])))
 			op.close()
 		except Exception, e:
-			print e
+			logging.debug(e)
+
+
 	def leave(self, obj, obj2):
 		self.window.destroy()
