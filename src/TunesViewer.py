@@ -1471,15 +1471,13 @@ class TunesViewer:
 					linkscount += 1
 			#specific item should be selected?
 			for i in self.liststore:
-					if i[11] == parser.itemId:
-						print "selecting item", parser.itemId
-						self.treeview.get_selection().select_iter(i.iter)
-						self.treeview.scroll_to_cell(i.path,
-									     None,
-									     False,
-									     0,
-									     0)
-						#self.treeview.grab_focus()
+				if i[11] == parser.itemId:
+					logging.debug("Selecting item " + parser.itemId)
+					self.treeview.get_selection().select_iter(i.iter)
+					self.treeview.scroll_to_cell(i.path,
+								     None,
+								     False, 0,
+								     0)
 			#Only change the stack if this is an actual page, not redirect/download.
 			if newurl:
 				self.forwardStack = []
