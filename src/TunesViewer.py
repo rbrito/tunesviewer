@@ -1,16 +1,21 @@
 #!/usr/bin/env python
 
-# TunesViewer
-# A small, easy-to-use tool to access iTunesU and podcast media.
-# Designed by Luke Bryan 2009 - 2012
-# Loading-icon is from mozilla's throbber icon.
+"""
+TunesViewer
 
-#Licensed under Apache license
-#Unless required by applicable law or agreed to in writing, software
-#distributed under the License is distributed on an "AS IS" BASIS,
-#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#See the License for the specific language governing permissions and
-#limitations under the License.
+A small, easy-to-use tool to access iTunesU and podcast media.
+
+Designed by Luke Bryan 2009 - 2012
+Loading-icon is from mozilla's throbber icon.
+
+Licensed under Apache license
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.
+"""
 
 # Import standard Python modules
 import cookielib
@@ -52,12 +57,14 @@ from common import *
 # Start logging messages
 logging.basicConfig(level=logging.DEBUG)
 
+
 class TunesViewer:
-	source = "" # full html/xml source
-	url = "" # page url
-	podcast = "" #podcast url
-	pageType = "" #text/xml or text/html
-	downloading = False #when true, don't download again, freezing prog. (Enforces having ONE gotoURL)
+	source = ""  # full html/xml source
+	url = ""  # page url
+	podcast = ""  # podcast url
+	pageType = ""  # text/xml or text/html
+	downloading = False  # when true, don't download again, freezing
+			     # prog. (Enforces having ONE gotoURL)
 	downloadError = ""
 	infoboxes = []
 	redirectPages = []
@@ -67,8 +74,8 @@ class TunesViewer:
 	backStack = []
 	forwardStack = []
 
-	#Initializes the main window
-	def __init__(self, dname = None):
+	# Initializes the main window
+	def __init__(self, dname=None):
 
 		self.downloadbox = DownloadBox(self) # Only one downloadbox is constructed
 		self.findbox = FindBox(self)
@@ -233,7 +240,6 @@ class TunesViewer:
 		locationbox.pack_start(gobutton, False, False, 0)
 		prefheight = self.locationentry.size_request()[1]
 		#Default button is very tall, try to make buttons the same height as the text box:
-		#print gobutton.size_request()
 		gobutton.set_size_request(-1, prefheight)
 
 		# Now make menus: http://zetcode.com/tutorials/pygtktutorial/menus/
@@ -611,7 +617,6 @@ class TunesViewer:
 
 		self.toolbar.insert(gtk.SeparatorToolItem(), -1)
 
-
 		opendl = gtk.ToolButton(gtk.STOCK_DIRECTORY)
 		opendl.set_tooltip_text("Open Downloads Directory")
 		opendl.connect("clicked", self.openDownloadDir)
@@ -790,11 +795,7 @@ class TunesViewer:
 
 	def got_data_cb(self, wid, context, x, y, data, info, time):
 		if data.get_target() != "text/html":
-			# Got data.
 			logging.debug(data.get_text())
-			#print data.get_target()
-			#print data.target()
-			#print dir(data)
 			if data.get_text() == data.data:
 				url = data.data
 			else:
@@ -979,7 +980,9 @@ class TunesViewer:
 		self.updateBackForward()
 
 	def goForward(self, obj):
-		"Called when forward button is pressed"
+		"""
+		Called when forward button is pressed.
+		"""
 		if len(self.forwardStack) > 0 and not(self.downloading):
 			self.backStack.append(self.url)
 			self.gotoURL(self.forwardStack[-1], False)
@@ -1015,7 +1018,8 @@ class TunesViewer:
 			self.gotoURL('http://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?media=iTunesU&submit=media&term=' +
 					self.locationentry.get_text(), True)
 		else:
-			self.gotoURL('http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&term=' + self.locationentry.get_text() + '&media=podcast', True)
+			self.gotoURL('http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&term=' +
+				     self.locationentry.get_text() + '&media=podcast', True)
 
 	def followlink(self, obj):
 		"""
@@ -1108,7 +1112,9 @@ class TunesViewer:
 			msg.destroy()
 
 	def locationBar(self, obj):
-		"Selects the url, similar to Ctrl+L in web browser"
+		"""
+		Selects the url, similar to Ctrl+L in web browser.
+		"""
 		self.modecombo.set_active(0)
 
 	def viewprop(self, obj):
@@ -1117,7 +1123,9 @@ class TunesViewer:
 		self.infoboxes.append(ItemDetails(self, self.selected()))
 
 	def selected(self):
-		"""Gives the array of properties of selected item."""
+		"""
+		Gives the array of properties of selected item.
+		"""
 		(model, iter) = self.treeview.get_selection().get_selected()
 		out = []
 		for i in range(12):
@@ -1130,7 +1138,7 @@ class TunesViewer:
 		return out
 
 	def download(self, obj):
-		if self.selected() == None:
+		if self.selected() is None:
 			return
 		properties = self.selected()
 		self.startDownload(properties)
@@ -1168,7 +1176,6 @@ class TunesViewer:
 		final_file = os.path.join(self.config.downloadfolder, local)
 		logging.debug(final_file)
 		if not os.path.isfile(final_file):
-			# Doesn't exist, try starting it:
 			try:
 				os.makedirs(os.path.dirname(final_file))
 			except OSError:
@@ -1183,14 +1190,16 @@ class TunesViewer:
 				if len(local) > 100:
 					local = local[-99:]
 
-		# It should be good, run it:
 		self.downloadbox.newDownload(properties[0], url,
 					     final_file,
 					     self.opener)
 		logging.debug("Starting download of " + local + " to " + final_file)
 		self.downloadbox.window.show()
 
-	def main(self): # Startup
+	def main(self):
+		"""
+		Startup.
+		"""
 		# Check for crashed downloads, AFTER test for another currently running instance.
 		socket.setdefaulttimeout(11) # should improve freeze-up when cancelling downloads
 		try:
@@ -1339,8 +1348,8 @@ class TunesViewer:
 					next = response.read(100)
 				if next == "": #Finished successfully.
 					self.downloadError = ""
-					#self.url = url
-					if (response.info().get('Content-Encoding') == 'gzip'):
+
+					if response.info().get('Content-Encoding') == 'gzip':
 						orig = len(text)
 						f = gzip.GzipFile(fileobj=StringIO(text))
 						try:
@@ -1497,7 +1506,9 @@ class TunesViewer:
 			return False
 
 	def updateListIcons(self):
-		"""Sets the icons in the liststore based on the media type."""
+		"""
+		Sets the icons in the liststore based on the media type.
+		"""
 		self.icon_audio = None
 		self.icon_video = None
 		self.icon_other = None
@@ -1535,11 +1546,13 @@ class TunesViewer:
 
 class VWin:
 	def __init__(self, title, source):
-		"""When initialized, this will show a new window with text."""
+		"""
+		When initialized, this will show a new window with text.
+		"""
 		self.window = gtk.Window()
 		self.window.set_size_request(400, 400)
 		self.window.set_title(title)
-		#self.window.connect("delete_event", self.window.destroy)
+
 		self.sw = gtk.ScrolledWindow()
 		self.sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		self.viewer = gtk.TextView()
@@ -1551,6 +1564,7 @@ class VWin:
 		self.window.add(self.sw)
 		self.window.show_all()
 
+
 if __name__ == "__main__":
 	args = sys.argv[1:]
 	url = ""
@@ -1559,7 +1573,8 @@ if __name__ == "__main__":
 	elif len(args) > 0:
 		url = args[0]
 
-	# Create the TunesViewer instance and run it, only if it is not already running
+	# Create the TunesViewer instance and run it. If an instance is
+	# already running, send the url to such instance.
 	logging.info("TunesViewer 1.4")
 	prog = TunesViewer()
 	prog.sock = SingleWindowSocket(url, prog)

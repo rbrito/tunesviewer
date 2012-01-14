@@ -7,8 +7,11 @@ import lxml.html
 
 from common import *
 
+
 def safe(obj):
-	"""Makes an object safe to add to string, even if it is NoneType."""
+	"""
+	Makes an object safe to add to string, even if it is NoneType.
+	"""
 	if obj:
 		return obj
 	else:
@@ -35,8 +38,9 @@ class Parser:
 		self.source = source
 		sttime = time.time()
 		try: #parse as xml
-			#remove bad xml (see http://stackoverflow.com/questions/1016910/how-can-i-strip-invalid-xml-characters-from-strings-in-perl)
-			bad = "[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD]"#\x10000-\x10FFFF]"
+			# Remove bad XML. See:
+			# http://stackoverflow.com/questions/1016910/how-can-i-strip-invalid-xml-characters-from-strings-in-perl
+			bad = "[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD]"
 			self.source = re.sub(bad, " ", self.source) # now it should be valid xml.
 			dom = etree.fromstring(self.source.replace('xmlns="http://www.apple.com/itms/"', '')) #(this xmlns causes problems with xpath)
 			if dom.tag.find("html") > -1 or dom.tag == "{http://www.w3.org/2005/Atom}feed":
@@ -86,14 +90,13 @@ class Parser:
 			print("ERR", e)
 			print("parsing as html not xml.")
 			ustart = self.source.find("<body onload=\"return open('")
-			if ustart > -1: # This is a redirect-page.
+			if ustart > -1:  # This is a redirect-page.
 				newU = self.source[ustart+27:self.source.find("'", ustart+27)]
 				self.Redirect = newU
 			print("Parsing HTML")
 			self.HTML = self.source
 			dom = lxml.html.document_fromstring(self.source.replace('<html xmlns="http://www.apple.com/itms/"', '<html'))
 			self.seeHTMLElement(dom)
-		# print "content:", self.textContent(lxml.html.document_fromstring(self.HTML))
 
 		items = []
 		arr = self.getItemsArray(dom) # get the tracks list element
@@ -123,7 +126,6 @@ class Parser:
 								locationLinks.append(j.get("url"))
 								print(j.text.strip(), j.get("url"))
 								lastloc = j.get("url")
-				# print textContent(section)
 				if self.textContent(section).find(">") > -1:
 					section.getparent().remove(section) # redundant section > section ... info is removed.
 
@@ -253,7 +255,7 @@ class Parser:
 			out = ""
 			for i in range(len(location)):
 				out += "<a href=\"" + safe(locationLinks[i]) + "\">" + safe(location[i]) + "</a> &gt; "
-			out = out [:-6]
+			out = out[:-6]
 			if dom.tag == "html":
 				try:
 					self.Title = dom.xpath("/html/head/title")[0].text_content()
@@ -276,8 +278,6 @@ class Parser:
 					break
 			if self.podcast == "":
 				#Last <pathelement> should have the page podcast url, with some modification.
-				#keys = dom.getElementsByTagName("PathElement")
-				#newurl = textContent(keys[len(keys)-1])
 				self.podcast = lastloc
 				if lastloc == "":
 					self.podcast = self.url
@@ -320,14 +320,12 @@ class Parser:
 			self.itemId = self.url[self.url.rfind("?i=")+3:]
 			self.itemId = self.itemId.split("&")[0]
 
-		#test console:
-		#while True:
-		#		print eval(raw_input(">"))
-
 		print("update took:", (time.time() - sttime), "seconds")
 
 	def seeXMLElement(self, element):
-		""" Recursively looks at xml elements. """
+		"""
+		Recursively looks at xml elements.
+		"""
 		if isinstance(element.tag, str):
 			# Good element, check this element:
 			if element.get("backColor") and self.bgcolor == "":
@@ -451,13 +449,11 @@ class Parser:
 			      element.tag in ["key", "MenuItem", "iTunes", "PathElement", "FontStyleSet"]):
 				pass
 			else:
-				#print element.tag
 				self.HTML += "<%s>" % element.tag
 				if element.text and element.text.strip() != "":
 					#Workaround for double text that is supposed to be shadow.
 					#There is probably a better way to do this?
 					if self.last_text.strip() != element.text.strip():
-						#print "last:",self.last_text.strip(),"current:",element.text.strip()
 						self.HTML += element.text
 						self.last_text = element.text
 					else: #same, ignore one.
