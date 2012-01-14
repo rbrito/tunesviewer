@@ -217,7 +217,7 @@ class Parser:
 								i.extend(j.getnext().getchildren()) # look inside this <dict><key></key><string></string>... also.
 					self.addItem(name,
 						     artist,
-						     timeFind(duration),
+						     time_convert(duration),
 						     typeof(directurl),
 						     rtype + comments,
 						     self.formatTime(releaseDate),
@@ -498,7 +498,7 @@ class Parser:
 				if ('artistName' in data):
 					artist = data['artistName']
 				if ('duration' in data):
-					duration = timeFind(data['duration'])
+					duration = time_convert(data['duration'])
 				if ('preview-url' in data):
 					url = data['preview-url']
 				if ('playlistName' in data):
@@ -530,7 +530,7 @@ class Parser:
 				#if element.get("preview-artist"):
 					#artist = element.get("preview-artist")
 				#if element.get("duration"):
-					#time = timeFind(element.get("duration"))
+					#time = time_convert(element.get("duration"))
 				#if element.get("rating-riaa") and element.get("rating-riaa")!="0":
 					#exp = "[Explicit] "
 				#if element.get("audio-preview-url"):
@@ -550,7 +550,7 @@ class Parser:
 								#gotou = sub[0].get("href") # the <a href in this cell
 						#if cl.find("time")>-1:
 							##print "time",val
-							#time = timeFind(val)
+							#time = time_convert(val)
 						#if cl.find("release-date")>-1:
 							#releaseDate=val
 						#if cl.find("description")>-1:
@@ -573,7 +573,7 @@ class Parser:
 					author = element.get("preview-artist")
 				duration = ""
 				if element.get("preview-duration"):
-					duration = timeFind(element.get("preview-duration"))
+					duration = time_convert(element.get("preview-duration"))
 				print("preview-url adding row")
 				self.mediaItems.append([None,
 							markup(title, False),
