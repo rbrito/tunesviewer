@@ -1090,10 +1090,10 @@ class TunesViewer:
 		if self.selected() is None:
 			return
 		url = self.selected()[9]
-		type = self.selected()[4]
-		if self.config.openers.has_key(type):
+		kind = self.selected()[4]
+		if kind in self.config.openers:
 			# Open the url with the program:
-			start(self.config.openers[type], url)
+			start(self.config.openers[kind], url)
 		elif url == "":
 			msg = gtk.MessageDialog(self.window,
 						gtk.DIALOG_MODAL,
@@ -1109,7 +1109,7 @@ class TunesViewer:
 						gtk.MESSAGE_WARNING,
 						gtk.BUTTONS_CLOSE,
 						"You don't have any program set to open " +
-						type +
+						kind +
 						"\nfiles directly from the web. "
 						"You must first choose the program in Preferences.")
 			msg.run()
