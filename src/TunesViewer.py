@@ -145,9 +145,11 @@ class TunesViewer:
 		col.set_sort_column_id(2)
 		self.treeview.append_column(col)
 
+		time_cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn("Time")
-		col.pack_start(cell)
-		col.add_attribute(cell, 'text', 3)
+		col.pack_start(time_cell)
+		time_cell.set_property('xalign', 1.0)
+		col.add_attribute(time_cell, 'text', 3)
 		col.set_sizing(gtk.TREE_VIEW_COLUMN_AUTOSIZE)
 		col.set_resizable(True)
 		col.set_reorderable(True)

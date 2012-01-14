@@ -1,6 +1,11 @@
+# -*- coding: utf-8 -*-
+
 import logging
+import sys
 import unittest
 import urllib2
+
+sys.path.append('src')
 
 from Parser import Parser
 
