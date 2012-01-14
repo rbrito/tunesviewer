@@ -40,8 +40,6 @@ class WebKitView(webkit.WebView):
 		# These signals are documented in webkit.WebView.__doc__
 		self.connect("load-finished", self.webKitLoaded)
 		self.connect("navigation-policy-decision-requested", self.webkitGo)
-		#self.connect("resource-request-starting", self.webkitReqStart)
-		#self.descView.connect("resource-request-starting", self.webkitReqStart)
 		current = os.path.dirname(os.path.realpath(__file__))
 		self.injectJavascript = file(os.path.join(current, "Javascript.js"),
 					     "r").read()

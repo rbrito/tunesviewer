@@ -140,17 +140,8 @@ class Parser:
 
 		if arr is None: # No tracklisting.
 			hasmedia = False
-			if len(self.mediaItems) == 0: # blank.
+			if len(self.mediaItems) == 0:
 				print("nothing here!")
-				#for i in keys:
-					#if i.text == "url" or i.text == "feedURL":
-						#el = i.getnext()
-						#url = el.text
-						##Redirect page, add link:
-						#self.HTML += "<br><a href=\"%s\">(%s redirect)</a>" % (url,i.text)
-						#self.Redirect = url
-					#elif i.text=="explanation" or i.text=="message":
-						#self.HTML += self.textContent(i.getnext())+"\n"
 		else: # add the tracks:
 			# TODO: Add XML page's elements to the top panel, so the bottom panel isn't necessary.
 			hasmedia = True
@@ -520,45 +511,6 @@ class Parser:
 					     url,
 					     price,
 					     itemid)
-			#elif False and element.tag=="tr" and element.get("class") and (element.get("class").find("track-preview")>-1 or element.get("class").find("podcast-episode")>-1 or element.get("class").find("song")>-1 or element.get("class").find("video")>-1):
-				##You'll find the info in the rows using the inspector (right click, inspect).
-				#title=""; exp=""; itemid=""; artist = ""; time=""; url = ""; comment = ""; releaseDate=""; gotou = ""; price=""
-				#if element.get("adam-id"):
-					#itemid=element.get("adam-id")
-				#if element.get("preview-title"):
-					#title = element.get("preview-title")
-				#if element.get("preview-artist"):
-					#artist = element.get("preview-artist")
-				#if element.get("duration"):
-					#time = time_convert(element.get("duration"))
-				#if element.get("rating-riaa") and element.get("rating-riaa")!="0":
-					#exp = "[Explicit] "
-				#if element.get("audio-preview-url"):
-					#url = element.get("audio-preview-url")
-				#elif element.get("video-preview-url"):
-					#url = element.get("video-preview-url")
-				#type = typeof(url)
-				#for sub in element:
-					#cl = sub.get("class")
-					#val = sub.get("sort-value")
-					#if cl and val: #has class and value, check them:
-						#if cl.find("name")>-1:
-							#title=val
-						#if cl.find("album")>-1:
-							#artist=val
-							#if len(sub) and sub[0].get("href"):
-								#gotou = sub[0].get("href") # the <a href in this cell
-						#if cl.find("time")>-1:
-							##print "time",val
-							#time = time_convert(val)
-						#if cl.find("release-date")>-1:
-							#releaseDate=val
-						#if cl.find("description")>-1:
-							#comment = val
-						#if cl.find("price")>-1:
-							#price = val
-				#print "tr row adding"
-				#self.mediaItems.append([None,markup(title,False),artist,time,type,exp+comment,releaseDate,"",gotou,url,price,itemid])
 			elif (element.get("audio-preview-url") or
 			      element.get("video-preview-url")):
 				if element.get("video-preview-url"):
@@ -611,7 +563,6 @@ class Parser:
 					     "",
 					     "",
 					     element.get("adam-id"))
-				#self.mediaItems.append([None,markup(title,False),element.get("item-name"),"",typeof(element.get("anonymous-download-url")),"","","",element.get("anonymous-download-url"),"","",""])#Special
 			else: # go through the childnodes.
 				for i in element:
 					self.seeHTMLElement(i)
@@ -643,10 +594,6 @@ class Parser:
 
 	def textContent(self, element):
 		"""Gets all text content of the node."""
-		#out = element.text
-		#for i in element.itertext(): # includes comment nodes... :(
-		#	out += i
-		#return out
 		out = []
 		if type(element).__name__ == "_Element":
 			if element.text:

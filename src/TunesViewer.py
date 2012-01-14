@@ -571,13 +571,6 @@ class TunesViewer:
 		self.notebook.set_scrollable(True)
 		self.notebookbox = gtk.HBox()
 		self.notebookbox.pack_start(self.notebook, True, True, 0)
-		#for i in range(5): #test tabs:
-			#label = gtk.Label("Page %d kakl" % (i+1))
-			#if i==3:
-				#label.set_markup("<b><i>Page </i></b>")
-			#a = gtk.Label()
-			#a.set_size_request(0, 0)
-			#self.notebook.append_page(a, label)
 
 		bottom = gtk.VBox()
 		bottom.pack_start(self.locationhbox, False, False, 2)
