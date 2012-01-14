@@ -1,8 +1,11 @@
 import gtk
 
 class FindBox:
-	"""Advanced search based on
-	http://deimos.apple.com/rsrc/doc/AppleEducation-iTunesUUsersGuide/UsingiTunesUSearch/chapter_10_section_4.html"""
+	"""
+	Advanced search based on
+
+	http://deimos.apple.com/rsrc/doc/AppleEducation-iTunesUUsersGuide/UsingiTunesUSearch/chapter_10_section_4.html
+	"""
 	def __init__(self, mainwin):
 		self.mainwin = mainwin
 		self.window = gtk.Dialog("Advanced Search",
