@@ -16,41 +16,41 @@ class FindBox:
 		#set up a table: http://www.pygtk.org/pygtk2tutorial/sec-PackingUsingTables.html
 		vbox = self.window.get_content_area()
 		self.notebook = gtk.Notebook()
-		
+
 		itable = gtk.Table(3, 2, True)
 		#attaching obj,left,right,top,bottom.
 		itable.attach(gtk.Label("Title"), 0, 1, 0, 1)
 		self.title = gtk.Entry()
 		self.title.set_activates_default(True)
 		itable.attach(self.title, 1, 2, 0, 1)
-		
+
 		itable.attach(gtk.Label("Academic Institution"), 0, 1, 1, 2)
 		self.institution = gtk.Entry()
 		self.institution.set_activates_default(True)
 		itable.attach(self.institution, 1, 2, 1, 2)
-		
+
 		itable.attach(gtk.Label("Description"), 0, 1, 2, 3)
 		self.description = gtk.Entry()
 		self.description.set_activates_default(True)
 		itable.attach(self.description, 1, 2, 2, 3)
-		
-		# -- podcast tab -- 
+
+		# -- podcast tab --
 		podtable = gtk.Table(3, 2, True)
 		podtable.attach(gtk.Label("Title"), 0, 1, 0, 1)
 		self.podtitle = gtk.Entry()
 		self.podtitle.set_activates_default(True)
 		podtable.attach(self.podtitle, 1, 2, 0, 1)
-		
+
 		podtable.attach(gtk.Label("Author"), 0, 1, 1, 2)
 		self.podauthor = gtk.Entry()
 		self.podauthor.set_activates_default(True)
 		podtable.attach(self.podauthor, 1, 2, 1, 2)
-		
+
 		podtable.attach(gtk.Label("Description"), 0, 1, 2, 3)
 		self.poddesc = gtk.Entry()
 		self.poddesc.set_activates_default(True)
 		podtable.attach(self.poddesc, 1, 2, 2, 3)
-		
+
 		self.notebook.append_page(itable, gtk.Label("iTunesU"))
 		self.notebook.append_page(podtable, gtk.Label("Podcasts"))
 		vbox.pack_start(self.notebook)
@@ -62,7 +62,7 @@ class FindBox:
 	def delete_event(self, widget, event, data=None):
 		self.window.hide()
 		return True # Hide, don't close.
-		
+
 	def response(self, obj, value):
 		print obj, value
 		if value == 0:

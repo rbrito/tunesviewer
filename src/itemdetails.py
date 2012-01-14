@@ -29,7 +29,7 @@ class ItemDetails:
 			#Start thread:
 			t = Thread(target=self.update, args=())
 			t.start()
-	
+
 	def updateText(self, selection, filesize):
 		if selection:
 			self.window.set_icon(selection[0])
@@ -57,7 +57,7 @@ class ItemDetails:
 			gtk.gdk.threads_enter()
 			self.viewer.get_buffer().set_text(self.text)
 			gtk.gdk.threads_leave()
-	
+
 	def update(self):
 		try:
 			op = self.mainwin.opener.open(self.selection[9])

@@ -48,11 +48,11 @@ class Inspector (gtk.Window):
         scrolled_window.show_all()
 
         self.add(scrolled_window)
-        
+
         ##  Modified to make window bigger, and add title  ##
         self.set_default_size(650, 400)
         self.set_title("Webkit Inspector")
-        
+
         return webview
 
     def _show_window_cb (self, inspector):
