@@ -1524,20 +1524,22 @@ class VWin:
 		self.window.add(self.sw)
 		self.window.show_all()
 
-args = sys.argv[1:]
-url = ""
-if len(args) > 1 and args[0] == "-s":
-	url = 'http://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?media=iTunesU&submit=media&term=' + args[1]
-elif len(args) > 0:
-	url = args[0]
+if __name__ == "__main__":
+	import logging
+	args = sys.argv[1:]
+	url = ""
+	if len(args) > 1 and args[0] == "-s":
+		url = 'http://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?media=iTunesU&submit=media&term=' + args[1]
+	elif len(args) > 0:
+		url = args[0]
 
-# Create the TunesViewer instance and run it:
-print "TunesViewer 1.4"
-prog = TunesViewer()
-prog.sock = SingleWindowSocket(url, prog)
-#Only run if it isn't already running:
-if prog.sock.RUN:
-	prog.url = url
-	prog.main()
-else:
-	print "Sending url to already-running window."
+	# Create the TunesViewer instance and run it, only if it is not already running
+	logging.info("TunesViewer 1.4")
+	prog = TunesViewer()
+	prog.sock = SingleWindowSocket(url, prog)
+
+	if prog.sock.RUN:
+		prog.url = url
+		prog.main()
+	else:
+		logging.info("Sending url to already-running window.")
