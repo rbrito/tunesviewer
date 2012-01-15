@@ -3,6 +3,7 @@ Common functions for Tunesviewer.
 """
 import os.path
 import re
+import urllib2
 
 import glib
 import gtk
@@ -130,5 +131,17 @@ def start(program, arg):
 		msg.destroy()
 
 
-def typeof(name):
-	return os.path.splitext(name)[1]
+def super_unquote(s):
+	# Some silly strings seem to be URL-quoted multiple times!
+	old_s = ''
+	new_s = s
+
+	while old_s != new_s:
+		old_s = new_s
+		new_s = urllib2.unquote(old_s)
+
+	return new_s
+
+
+def type_of(name):
+	return super_unquote(os.path.splitext(name)[1])

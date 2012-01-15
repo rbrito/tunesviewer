@@ -37,6 +37,13 @@ class TestCommon(unittest.TestCase):
 		self.assertEqual(safeFilename("/home/mydirectory/somefile", True), "somefile")
 		self.assertEqual(safeFilename(good, True), good[6:]) #without /home/.
 
+	def test_super_unquote(self):
+		self.assertEqual(super_unquote('. Automated Testing'),
+				 '. Automated Testing')
+		self.assertEqual(super_unquote('.%20Automated%20Testing'),
+				 '. Automated Testing')
+		self.assertEqual(super_unquote('.%2520Automated%2520Testing'),
+				 '. Automated Testing')
 
 if __name__ == "__main__":
 	# run all tests
