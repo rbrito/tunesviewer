@@ -7,7 +7,7 @@ import re
 import glib
 import gtk
 
-def timeFind(ms):
+def time_convert(ms):
 	"""
 	Given time in milliseconds, returns it as a string:
 

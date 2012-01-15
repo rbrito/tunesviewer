@@ -297,7 +297,7 @@ class Downloader:
 			# Assume time/totaltime = bytes/totalbytes
 			# So, totaltime = time*totalbytes/bytes.
 			t = time.time() - self.starttime
-			remaining = timeFind((t * self.filesize/self.count - t)*1000)
+			remaining = time_convert((t * self.filesize/self.count - t)*1000)
 			self._progress.set_text("%s%% of %s (%s remaining)" %
 						(str(round(self.count/self.filesize * 100, 1)),
 						 self.readsize, remaining))
