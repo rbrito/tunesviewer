@@ -342,7 +342,7 @@ class Parser:
 				nexttext = element.getparent().getparent().getnext()
 				match = re.match("Tab [0-9][0-9]* of [0-9][0-9]*", author)
 				if match: # Tab handler
-					logging.debug("ADDTAB " + match + " " + urllink)
+					logging.debug("ADDTAB " + match.group(0) + " " + urllink)
 					match = author[match.end():]
 					self.tabMatches.append(match)
 					self.tabLinks.append(urllink)
