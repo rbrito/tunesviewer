@@ -50,7 +50,6 @@ class TestParser(unittest.TestCase):
 			logging.warn(line)
 
 
-	# XXX: Broken due to changes in iTunes
 	def testPresidentHammond(self):
 		url = "http://deimos.apple.com/WebObjects/Core.woa/Browse/fhsu.edu.1152205441"
 		text = self.o.open(url).read()
@@ -69,7 +68,6 @@ class TestParser(unittest.TestCase):
 			logging.warn(line)
 
 
-	# XXX: Broken due to changes in iTunes
 	def testTopDownloads(self):
 		url = "https://deimos.apple.com/WebObjects/Core.woa/BrowsePrivately/georgefox.edu.01651902695"
 		text = self.o.open(url).read()
