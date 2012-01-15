@@ -30,7 +30,7 @@ class TestParser(unittest.TestCase):
 		self.assertEqual(parsed_html.Title, 'Food and Sustainable Agriculture')
 		self.assertEqual(len(parsed_html.mediaItems), 7)
 
-		# The following should be made into proper tests
+		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
 			logging.warn(line)
 
@@ -40,11 +40,12 @@ class TestParser(unittest.TestCase):
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text)
 
+		# FIXME: Maybe it could be smarter about finding the title...
 		self.assertEqual(parsed_html.Redirect, '')
-		self.assertEqual(parsed_html.Title, 'iTunes U') # Maybe it could be smarter about finding the title...
+		self.assertEqual(parsed_html.Title, 'iTunes U')
 		self.assertEqual(len(parsed_html.mediaItems), 0)
 
-		# The following should be made into proper tests
+		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
 			logging.warn(line)
 
@@ -55,15 +56,15 @@ class TestParser(unittest.TestCase):
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text)
 
+		# FIXME: Maybe it could be smarter about finding the title...
 		self.assertEqual(parsed_html.Redirect, '')
-		# Maybe it could be smarter about finding the title...
 		self.assertEqual(parsed_html.Title,
 				 'iTunes U > Fort Hays State University > '
 				 'FHSU News > From the President - '
 				 'President Hammond')
 		self.assertEqual(len(parsed_html.mediaItems), 28)
 
-		# The following should be made into proper tests
+		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
 			logging.warn(line)
 
@@ -72,12 +73,15 @@ class TestParser(unittest.TestCase):
 	def testTopDownloads(self):
 		url = "https://deimos.apple.com/WebObjects/Core.woa/BrowsePrivately/georgefox.edu.01651902695"
 		text = self.o.open(url).read()
-		parsed_html = Parser(url, "text/HTML", text)
+		parsed_html = Parser(url, "text/xml", text)
 
 		self.assertEqual(parsed_html.Redirect, '')
 		self.assertEqual(parsed_html.Title, 'iTunes U > Top Downloads')
-		self.assertEqual(len(parsed_html.mediaItems), 0) #Not sure where the bogus element is coming from in the gui...
-		# The following should be made into proper tests
+
+		# FIXME: Not sure where the bogus element is coming from in the gui...
+		self.assertEqual(len(parsed_html.mediaItems), 0)
+
+		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
 			logging.warn(line)
 
@@ -87,11 +91,12 @@ class TestParser(unittest.TestCase):
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text)
 
+		# FIXME: Maybe it could be smarter about finding the title...
 		self.assertEqual(parsed_html.Redirect, '')
-		self.assertEqual(parsed_html.Title, 'iTunes U') # Maybe it could be smarter about finding the title...
+		self.assertEqual(parsed_html.Title, 'iTunes U')
 		self.assertEqual(len(parsed_html.mediaItems), 0)
 
-		# The following should be made into proper tests
+		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
 			logging.warn(line)
 
@@ -101,11 +106,12 @@ class TestParser(unittest.TestCase):
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text)
 
+		# FIXME: Maybe it could be smarter about finding the title...
 		self.assertEqual(parsed_html.Redirect, '')
-		self.assertEqual(parsed_html.Title, 'iTunes U') # Maybe it could be smarter about finding the title...
+		self.assertEqual(parsed_html.Title, 'iTunes U')
 		self.assertEqual(len(parsed_html.mediaItems), 0)
 
-		# The following should be made into proper tests
+		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
 			logging.warn(line)
 
@@ -118,7 +124,7 @@ class TestParser(unittest.TestCase):
 		self.assertEqual(parsed_html.Redirect, '')
 		self.assertEqual(parsed_html.Title,
 				 'iTunes U > George Fox University > Chapel - Chapel 2011-2012')
-		#Are all tabs shown?
+		# FIXME: Are all tabs shown?
 		self.assertEqual(parsed_html.tabMatches,
 				 [', Selected. Chapel 2011-2012',
 				  '. Shalom 2011-2012',
@@ -162,5 +168,4 @@ class TestParser(unittest.TestCase):
 
 
 if __name__ == "__main__":
-	# run all tests
 	unittest.main()

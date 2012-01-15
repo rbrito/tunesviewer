@@ -78,12 +78,16 @@ def safeFilename(name, dos):
 
 
 def openDefault(filename):
-	"""Opens file/url in the system default opener."""
+	"""
+	Opens file/url in the system default opener.
+	"""
 	start("xdg-open", filename)
 
 
 def markup(text, isheading):
-	"""Gives markup for name - for liststore"""
+	"""
+	Gives markup for name - for liststore.
+	"""
 	if isheading:
 		return "<u><i>%s</i></u>" % (glib.markup_escape_text(text))
 	else:
@@ -91,7 +95,9 @@ def markup(text, isheading):
 
 
 def HTmarkup(text, isheading):
-	"""Gives html markup for name - for webkit view."""
+	"""
+	Gives html markup for name - for webkit view.
+	"""
 	if isheading:
 		return "<u><i>%s</i></u><br>" % (text)
 	else:
@@ -99,7 +105,9 @@ def HTmarkup(text, isheading):
 
 
 def desc(length):
-	"""Describes length in kb or mb, given a number of bytes."""
+	"""
+	Describes length in kb or mb, given a number of bytes.
+	"""
 	kb = 1024.0
 	mb = 1048576.0
 	if (length >= mb):
@@ -111,7 +119,9 @@ def desc(length):
 
 
 def start(program, arg):
-	"""Runs a program in the background."""
+	"""
+	Runs a program in the background.
+	"""
 	import subprocess
 	try:
 		# We use Popen for security, as a call to
