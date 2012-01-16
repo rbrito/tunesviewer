@@ -7,7 +7,9 @@ from downloader import Downloader
 from common import *
 
 class DownloadBox:
-	"""Window for showing and keeping track of downloads"""
+	"""
+	Window for showing and keeping track of downloads.
+	"""
 	downloaders = [] # Holds references to the downloader objects
 	downloaded = 0
 	total = 0
@@ -35,7 +37,9 @@ class DownloadBox:
 		self.window.add(scrolledwindow)
 
 	def updateLoop(self):
-		"""Updates each downloader display."""
+		"""
+		Updates each downloader display.
+		"""
 		# Get downloaded/total
 		self.downloaded = 0
 		self.total = 0
@@ -52,7 +56,7 @@ class DownloadBox:
 			totalbytes += i.filesize
 			dlbytes += i.count
 		percent = ""
-		if (totalbytes != 0):
+		if totalbytes != 0:
 			percent = str(round(dlbytes/totalbytes*100, 1)) + "%, "
 		self.window.set_title("Downloads (%s%s/%s downloaded)" %
 		  (percent, str(self.downloaded), str(self.total)))
@@ -64,15 +68,17 @@ class DownloadBox:
 			return True
 
 	def onclose(self, widget, data):
-		"""Cancels closing window, hides it instead."""
+		"""
+		Cancels closing window, hides it instead.
+		"""
 		self.window.hide()
 		return True # Cancel close window.
 
 	def cancelAll(self):
-		"""Tell all downloaders to cancel"""
-		# for i in self.downloaders: (downloaders get removed, can't use for.)
+		"""
+		Tell all downloaders to cancel.
+		"""
 		while len(self.downloaders):
-			#print "c", self.downloaders
 			self.downloaders[0].cancel(0)
 
 	def downloadNotify(self):
@@ -122,7 +128,7 @@ class DownloadBox:
 		el.show()
 		self.vbox.pack_start(el, False, False, 10)
 		self.window.show()
-		if (not(self.downloadrunning)):
+		if not self.downloadrunning:
 			#Start download loop:
 			self.downloadrunning = True
 			# instead of updating every kb or mb, update regularly.

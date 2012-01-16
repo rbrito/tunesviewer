@@ -120,7 +120,7 @@ class Downloader:
 			import shutil
 			try:
 				shutil.copy(self.localfile, self._copydir)
-			except (IOError, os.error) as e:
+			except (IOError, os.error):
 				self._progress.set_text("Error copying to %s." % self._copydir)
 			else:
 				self._progress.set_text("Copied to %s." % self._copydir)
