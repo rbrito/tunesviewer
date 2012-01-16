@@ -1,15 +1,20 @@
-import socket
+import logging
 import os
-import gobject
+import socket
+
 from threading import Thread
+
+import gobject
 
 SOCKET = os.path.expanduser("~/.tunesviewerLOCK")
 
 class SingleWindowSocket:
 	"""
-	Called on startup (See last lines of TunesViewer.py).
-	A socket file makes sure there is only one instance of the program.
-	Otherwise, it will mess up downloads when they both download to the same file.
+	Called on startup to emulate a singleton.
+
+	A socket file is one of the ways to makes sure there is only one
+	instance of the program.  Otherwise, it will mess up downloads when
+	they both download to the same file.
 	"""
 	def __init__(self, url, main):
 		self.caller = main
@@ -17,9 +22,9 @@ class SingleWindowSocket:
 		if os.path.exists(SOCKET):
 			try:
 				self.sendUrl(url)
-			except socket.error, msg:
-				print "Error:", msg
-				print "Previous program crashed? Starting server."
+			except socket.error as msg:
+				logging.warn("Error:" + msg)
+				logging.warn("Previous program crashed? Starting server.")
 				os.remove(SOCKET)
 				self.RUN = True
 				Thread(target=self.server).start()
@@ -28,14 +33,18 @@ class SingleWindowSocket:
 			Thread(target = self.server).start()
 
 	def sendUrl(self, url):
-		"Sends to currently running instance."
+		"""
+		Sends to currently running instance.
+		"""
 		s = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
 		s.connect(SOCKET)
 		s.send(url)
 		s.close()
 
 	def server(self):
-		"Listens for urls and loads in this process."
+		"""
+		Listens for urls and loads in this process.
+		"""
 		s = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
 		s.settimeout(None) # important! Otherwise default timeout will apply.
 		s.bind(SOCKET)

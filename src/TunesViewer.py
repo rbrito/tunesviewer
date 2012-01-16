@@ -942,7 +942,7 @@ class TunesViewer:
 				cmds[i] = "itpc" + self.podcast[self.podcast.find("://"):] #rhythmbox requires itpc to specify it's a podcast.
 		try:
 			subprocess.Popen(cmds)
-		except OSError, e:
+		except OSError as e:
 			msg = gtk.MessageDialog(self.window,
 						gtk.DIALOG_MODAL,
 						gtk.MESSAGE_WARNING,
@@ -1214,7 +1214,7 @@ class TunesViewer:
 			for i in range(len(dlines)):
 				if dlines[i].startswith("####"):
 					self.downloadbox.newDownload(None, dlines[i+1], dlines[i+2], self.opener)
-		except IOError, e:
+		except IOError as e:
 			logging.debug("No downloads crashed.")
 
 		if self.url == "":
@@ -1244,7 +1244,7 @@ class TunesViewer:
 				# Clear crash recovery
 				try:
 					os.remove(pending_dl_file)
-				except OSError, e:
+				except OSError as e:
 					pass
 				self.sock.sendUrl("EXIT")
 				self.downloadbox.cancelAll()
@@ -1258,7 +1258,7 @@ class TunesViewer:
 			# Clear crash recovery
 			try:
 				os.remove(pending_dl_file)
-			except OSError, e:
+			except OSError as e:
 				pass
 			self.sock.sendUrl("EXIT")
 			self.downloadbox.window.destroy()
@@ -1360,7 +1360,7 @@ class TunesViewer:
 						try:
 							text = f.read()
 							logging.debug("Gzipped response: " + str(orig) + "->" + str(len(text)))
-						except IOError, e: #bad file
+						except IOError as e: #bad file
 							logging.debug(str(e))
 				else:
 					self.downloadError = "stopped."
@@ -1373,7 +1373,7 @@ class TunesViewer:
 							     opener)
 				return
 			response.close()
-		except Exception, e:
+		except Exception as e:
 			self.downloadError = "Download Error:\n" + str(e)
 			logging.error(e)
 		gobject.idle_add(self.update, url, pageType, text, newurl)
@@ -1520,7 +1520,7 @@ class TunesViewer:
 			self.icon_video = icon_theme.load_icon("video", self.config.iconsizeN, 0)
 			self.icon_other = icon_theme.load_icon("gnome-fs-regular", self.config.iconsizeN, 0)
 			self.icon_link = icon_theme.load_icon("gtk-jump-to-ltr", self.config.iconsizeN, 0)
-		except Exception, e:
+		except Exception as e:
 			logging.debug("Exception:" + str(e))
 
 		audio_types = [".mp3", ".m4a", ".amr", ".m4p", ".aiff", ".aif",
