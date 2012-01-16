@@ -127,12 +127,12 @@ def start(program, arg):
 		# We use Popen for security, as a call to
 		# os.system(program + something) can have dangerous commands
 		# added to end.
-		print program, arg
+		print(program, arg)
 		# program may be something like program -a -b, so split spaces to args:
 		subprocess.Popen(program.split(" ") + [arg])
-		print "completed"
-	except Exception, e:
-		print e
+		print("completed")
+	except Exception as e:
+		print(e)
 		msg = gtk.MessageDialog(None, gtk.DIALOG_MODAL,
 					gtk.MESSAGE_ERROR,
 					gtk.BUTTONS_CLOSE,

@@ -1,7 +1,10 @@
-import socket
+import logging
 import os
-import gobject
+import socket
+
 from threading import Thread
+
+import gobject
 
 SOCKET = os.path.expanduser("~/.tunesviewerLOCK")
 
@@ -19,9 +22,9 @@ class SingleWindowSocket:
 		if os.path.exists(SOCKET):
 			try:
 				self.sendUrl(url)
-			except socket.error, msg:
-				print "Error:", msg
-				print "Previous program crashed? Starting server."
+			except socket.error as msg:
+				logging.warn("Error:" + msg)
+				logging.warn("Previous program crashed? Starting server.")
 				os.remove(SOCKET)
 				self.RUN = True
 				Thread(target=self.server).start()

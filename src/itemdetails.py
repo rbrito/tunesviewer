@@ -68,7 +68,7 @@ class ItemDetails:
 			op = self.mainwin.opener.open(self.selection[9])
 			self.updateText(self.selection, desc(int(op.info()['Content-Length'])))
 			op.close()
-		except Exception, e:
+		except Exception as e:
 			logging.debug(e)
 
 
