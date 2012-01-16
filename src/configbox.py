@@ -6,12 +6,15 @@ import gtk
 
 import firstsetup
 
+
+DOWNLOAD_FOLDER = os.path.expanduser("~")
+PREFS_FILE = os.path.expanduser("~/.tunesviewerprefs")
+
 class ConfigBox:
 	"""
 	Initialize variable defaults, as these variables are directly
 	accessed by the other classes.
 	"""
-	downloadfolder = os.path.expanduser("~")
 	downloadsafe = True
 	toolbar = True
 	statusbar = False
@@ -217,7 +220,7 @@ class ConfigBox:
 		self.modifiedCol = self.checkModifiedCol.get_active()
 		self.zoomAll = self.checkZoomAll.get_active()
 		if self.downloadfolder == None:
-			self.downloadfolder = os.path.expanduser("~")
+			self.downloadfolder = DOWNLOAD_FOLDER
 		self.defaultcommand = self.combo.get_active()
 		self.notifyseconds = int(self.notifyEntry.get_text())
 		self.podcastprog = self.podcastprogbox.child.get_text()
@@ -248,7 +251,7 @@ class ConfigBox:
 		config.set(sec, "modifiedCol", self.modifiedCol)
 		config.set(sec, "zoomAll", self.zoomAll)
 		config.set(sec, "zoom", self.mainwin.descView.get_zoom_level())
-		config.write(open(os.path.expanduser("~/.tunesviewerprefs"), "w"))
+		config.write(open(PREFS_FILE, "w"))
 		self.setVisibility()
 
 
@@ -259,11 +262,11 @@ class ConfigBox:
 		# disk -> variables -> gui
 		logging.debug("Loading Prefs")
 		first = False
-		if os.path.isfile(os.path.expanduser("~/.tunesviewerprefs")):
+		if os.path.isfile(PREFS_FILE):
 			try:
 				#Load to the main variables:
 				config = ConfigParser.ConfigParser()
-				config.read(os.path.expanduser("~/.tunesviewerprefs"))
+				config.read(PREFS_FILE)
 				sec = "TunesViewerPrefs"
 				self.defaultcommand = config.get(sec, "DefaultMode")
 				self.openers = self.getopeners(config.get(sec, "Openers"))
