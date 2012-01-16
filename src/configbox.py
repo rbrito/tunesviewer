@@ -1,5 +1,6 @@
-import os
 import ConfigParser
+import logging
+import os
 
 import gtk
 
@@ -200,7 +201,7 @@ class ConfigBox:
 		Save the changed values, and write to file.
 		"""
 		# gui -> variable -> disk
-		print("Saving Prefs")
+		logging.debug("Saving Prefs")
 		#First set the variables to the new values:
 		text = self.viewer.get_buffer().get_slice(self.viewer.get_buffer().get_start_iter(),
 							  self.viewer.get_buffer().get_end_iter())
@@ -224,7 +225,7 @@ class ConfigBox:
 			self.iconsizeN = int(self.iconsize.get_text())
 			self.imagesizeN = int(self.imagesize.get_text())
 		except Exception as e:
-			print("Couldn't convert icon size:", e)
+			logging.warn("Couldn't convert icon size: " + str(e))
 
 		#Then write config file:
 		config = ConfigParser.ConfigParser()
@@ -256,7 +257,7 @@ class ConfigBox:
 		Try to load settings from file, then update display.
 		"""
 		# disk -> variables -> gui
-		print("Loading Prefs")
+		logging.debug("Loading Prefs")
 		first = False
 		if os.path.isfile(os.path.expanduser("~/.tunesviewerprefs")):
 			try:
@@ -270,7 +271,7 @@ class ConfigBox:
 				if os.path.isdir(folder):
 					self.downloadfolder = folder
 				else:
-					print("Not a valid directory: %s" % folder)
+					logging.debug("Not a valid directory: %s" % folder)
 				self.downloadfile = config.get(sec, "DownloadFile")
 				self.downloadsafe = (config.get(sec, "DownloadSafeFilename") == "True")
 				self.notifyseconds = int(config.get(sec, "NotifySeconds"))
@@ -286,7 +287,7 @@ class ConfigBox:
 				self.zoomAll = (config.get(sec, "zoomAll") == "True")
 				self.mainwin.descView.set_zoom_level(float(config.get(sec, "zoom")))
 			except Exception as e:
-				print("Load-settings error:", e)
+				logging.warn("Load-settings error: " + str(e))
 		else:
 			first = True
 

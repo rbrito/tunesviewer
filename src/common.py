@@ -1,6 +1,7 @@
 """
 Common functions for Tunesviewer.
 """
+import logging
 import os.path
 import re
 import urllib2
@@ -124,15 +125,12 @@ def start(program, arg):
 	"""
 	import subprocess
 	try:
-		# We use Popen for security, as a call to
-		# os.system(program + something) can have dangerous commands
-		# added to end.
-		print(program, arg)
+		logging.debug(program + str(arg))
 		# program may be something like program -a -b, so split spaces to args:
 		subprocess.Popen(program.split(" ") + [arg])
-		print("completed")
+		logging.debug("Execution of %s completed." % program)
 	except Exception as e:
-		print(e)
+		logging.info(str(e))
 		msg = gtk.MessageDialog(None, gtk.DIALOG_MODAL,
 					gtk.MESSAGE_ERROR,
 					gtk.BUTTONS_CLOSE,

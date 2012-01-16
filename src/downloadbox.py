@@ -1,3 +1,4 @@
+import logging
 import os
 
 import gobject
@@ -97,7 +98,7 @@ class DownloadBox:
 				n.set_timeout(1000 * self.Wopener.config.notifyseconds)
 				n.show()
 			except ImportError as e:
-				print("Notification failed", e)
+				logging.warn("Notification failed: " + str(e))
 
 	def newDownload(self, icon, url, localfile, opener):
 		"""
@@ -133,7 +134,7 @@ class DownloadBox:
 			self.downloadrunning = True
 			# instead of updating every kb or mb, update regularly.
 			# This should work well no matter what the download speed is.
-			print("STARTING TIMEOUT")
+			logging.debug("STARTING TIMEOUT")
 			#Only update the progress bar only about 4x a second,
 			#this won't make cpu work too much.
 			gobject.timeout_add(250, self.updateLoop)
