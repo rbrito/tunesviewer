@@ -77,7 +77,7 @@ class Parser:
 					self.addItem(title,
 						     author,
 						     duration,
-						     typeof(url),
+						     type_of(url),
 						     description,
 						     pubdate,
 						     "",
@@ -212,7 +212,7 @@ class Parser:
 					self.addItem(name,
 						     artist,
 						     time_convert(duration),
-						     typeof(directurl),
+						     type_of(directurl),
 						     rtype + comments,
 						     self.formatTime(releaseDate),
 						     self.formatTime(modifiedDate),
@@ -342,7 +342,7 @@ class Parser:
 				nexttext = element.getparent().getparent().getnext()
 				match = re.match("Tab [0-9][0-9]* of [0-9][0-9]*", author)
 				if match: # Tab handler
-					logging.debug("ADDTAB " + match + " " + urllink)
+					logging.debug("ADDTAB " + match.group(0) + " " + urllink)
 					match = author[match.end():]
 					self.tabMatches.append(match)
 					self.tabLinks.append(urllink)
@@ -500,7 +500,7 @@ class Parser:
 				self.addItem(title,
 					     artist,
 					     duration,
-					     typeof(url),
+					     type_of(url),
 					     comment,
 					     "",
 					     "",
@@ -528,7 +528,7 @@ class Parser:
 							markup(title, False),
 							author,
 							duration,
-							typeof(url),
+							type_of(url),
 							"",
 							"",
 							"",
@@ -552,7 +552,7 @@ class Parser:
 				self.addItem(title,
 					     artist,
 					     "",
-					     typeof(element.get("anonymous-download-url")),
+					     type_of(element.get("anonymous-download-url")),
 					     "",
 					     "",
 					     "",

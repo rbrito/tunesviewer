@@ -1,3 +1,4 @@
+import logging
 import os
 
 import gobject
@@ -7,7 +8,9 @@ from downloader import Downloader
 from common import *
 
 class DownloadBox:
-	"""Window for showing and keeping track of downloads"""
+	"""
+	Window for showing and keeping track of downloads.
+	"""
 	downloaders = [] # Holds references to the downloader objects
 	downloaded = 0
 	total = 0
@@ -35,7 +38,9 @@ class DownloadBox:
 		self.window.add(scrolledwindow)
 
 	def updateLoop(self):
-		"""Updates each downloader display."""
+		"""
+		Updates each downloader display.
+		"""
 		# Get downloaded/total
 		self.downloaded = 0
 		self.total = 0
@@ -52,7 +57,7 @@ class DownloadBox:
 			totalbytes += i.filesize
 			dlbytes += i.count
 		percent = ""
-		if (totalbytes != 0):
+		if totalbytes != 0:
 			percent = str(round(dlbytes/totalbytes*100, 1)) + "%, "
 		self.window.set_title("Downloads (%s%s/%s downloaded)" %
 		  (percent, str(self.downloaded), str(self.total)))
@@ -64,15 +69,17 @@ class DownloadBox:
 			return True
 
 	def onclose(self, widget, data):
-		"""Cancels closing window, hides it instead."""
+		"""
+		Cancels closing window, hides it instead.
+		"""
 		self.window.hide()
 		return True # Cancel close window.
 
 	def cancelAll(self):
-		"""Tell all downloaders to cancel"""
-		# for i in self.downloaders: (downloaders get removed, can't use for.)
+		"""
+		Tell all downloaders to cancel.
+		"""
 		while len(self.downloaders):
-			#print "c", self.downloaders
 			self.downloaders[0].cancel(0)
 
 	def downloadNotify(self):
@@ -91,7 +98,7 @@ class DownloadBox:
 				n.set_timeout(1000 * self.Wopener.config.notifyseconds)
 				n.show()
 			except ImportError as e:
-				print("Notification failed", e)
+				logging.warn("Notification failed: " + str(e))
 
 	def newDownload(self, icon, url, localfile, opener):
 		"""
@@ -122,12 +129,12 @@ class DownloadBox:
 		el.show()
 		self.vbox.pack_start(el, False, False, 10)
 		self.window.show()
-		if (not(self.downloadrunning)):
+		if not self.downloadrunning:
 			#Start download loop:
 			self.downloadrunning = True
 			# instead of updating every kb or mb, update regularly.
 			# This should work well no matter what the download speed is.
-			print("STARTING TIMEOUT")
+			logging.debug("STARTING TIMEOUT")
 			#Only update the progress bar only about 4x a second,
 			#this won't make cpu work too much.
 			gobject.timeout_add(250, self.updateLoop)

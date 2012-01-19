@@ -1,16 +1,20 @@
-import os
 import ConfigParser
+import logging
+import os
 
 import gtk
 
 import firstsetup
+
+
+DOWNLOAD_FOLDER = os.path.expanduser("~")
+PREFS_FILE = os.path.expanduser("~/.tunesviewerprefs")
 
 class ConfigBox:
 	"""
 	Initialize variable defaults, as these variables are directly
 	accessed by the other classes.
 	"""
-	downloadfolder = os.path.expanduser("~")
 	downloadsafe = True
 	toolbar = True
 	statusbar = False
@@ -49,7 +53,7 @@ class ConfigBox:
 							     gtk.ICON_SIZE_BUTTON))
 		self.window.connect("response", self.response) # Ok/Cancel
 		self.window.connect("delete_event", self.delete_event)
-		#vbox = self.window.get_content_area()
+
 		dtab = gtk.VBox() # for downloads tab
 		vtab = gtk.VBox() # for display tab
 		tabs = gtk.Notebook()
@@ -75,7 +79,8 @@ class ConfigBox:
 		hbox.pack_start(self.downloadsel, True, True, 0)
 		dtab.pack_start(hbox, True, False, 0)
 
-		lab = gtk.Label("Download File-name\n(%p=page-title, %a=author/artist, %n=name, %c=comment, %l=length, %t=filetype)")
+		lab = gtk.Label("Download File-name\n"
+				"(%p=page-title, %a=author/artist, %n=name, %c=comment, %l=length, %t=filetype)")
 		lab.set_alignment(0, 1)
 		dtab.pack_start(lab, True, True, 0)
 		self.filenamesel = gtk.Entry()
@@ -83,7 +88,9 @@ class ConfigBox:
 		self.downloadsafeCheck = gtk.CheckButton("Force safe _filenames for dos/fat filesystems")
 		dtab.pack_start(self.downloadsafeCheck, False, False, 0)
 
-		lab2 = gtk.Label("Default streaming applications:\nUse this for each line:\n.filetype:/path/to/opener")
+		lab2 = gtk.Label("Default streaming applications:\n"
+				 "Use this for each line:\n."
+				 "filetype:/path/to/opener")
 		lab2.set_alignment(0, 1)
 		dtab.pack_start(lab2, True, False, 0)
 		sw = gtk.ScrolledWindow()
@@ -93,7 +100,7 @@ class ConfigBox:
 		dtab.pack_start(sw, True, True, 0)
 
 		dtab.pack_start(gtk.Label("Podcast manager command: (%u is the url, %i is itpc:// url)"))
-		self.podcastprogbox = gtk.combo_box_entry_new_text()#gtk.Entry()
+		self.podcastprogbox = gtk.combo_box_entry_new_text()
 		self.podcastprogbox.append_text("amarok -l %i")
 		self.podcastprogbox.append_text("gpodder -s %u")
 		self.podcastprogbox.append_text("miro %u")
@@ -165,7 +172,9 @@ class ConfigBox:
 
 
 	def getopeners(self, text):
-		"""Turns text into a dictionary of filetype -> program associations."""
+		"""
+		Turns text into a dictionary of filetype -> program associations.
+		"""
 		# Map filetype to opener, start new dictionary:
 		out = dict()
 		list = text.split("\n")
@@ -173,15 +182,16 @@ class ConfigBox:
 			if i.find(":") > -1:
 				format = i[:i.find(":")]
 				opener = i[i.find(":")+1:]
-				#print format,opener
 				out[format] = opener
 		return out
 
 
 	def openertext(self, opener):
-		"""Turn a dictionary back to text
+		"""
+		Turn a dictionary back to text
 
-		Text is broken into separate lines, each in the form "filetype:program".
+		Text is broken into separate lines, each in the form
+		"filetype:program".
 		"""
 		out = ""
 		for key, value in opener.items():
@@ -190,9 +200,11 @@ class ConfigBox:
 
 
 	def save_settings(self):
-		"""Save the changed values, and write to file"""
+		"""
+		Save the changed values, and write to file.
+		"""
 		# gui -> variable -> disk
-		print "Saving Prefs"
+		logging.debug("Saving Prefs")
 		#First set the variables to the new values:
 		text = self.viewer.get_buffer().get_slice(self.viewer.get_buffer().get_start_iter(),
 							  self.viewer.get_buffer().get_end_iter())
@@ -208,15 +220,15 @@ class ConfigBox:
 		self.modifiedCol = self.checkModifiedCol.get_active()
 		self.zoomAll = self.checkZoomAll.get_active()
 		if self.downloadfolder == None:
-			self.downloadfolder = os.path.expanduser("~")
+			self.downloadfolder = DOWNLOAD_FOLDER
 		self.defaultcommand = self.combo.get_active()
 		self.notifyseconds = int(self.notifyEntry.get_text())
 		self.podcastprog = self.podcastprogbox.child.get_text()
 		try:
 			self.iconsizeN = int(self.iconsize.get_text())
 			self.imagesizeN = int(self.imagesize.get_text())
-		except Exception, e:
-			print "Couldn't convert icon size:", e
+		except Exception as e:
+			logging.warn("Couldn't convert icon size: " + str(e))
 
 		#Then write config file:
 		config = ConfigParser.ConfigParser()
@@ -239,20 +251,22 @@ class ConfigBox:
 		config.set(sec, "modifiedCol", self.modifiedCol)
 		config.set(sec, "zoomAll", self.zoomAll)
 		config.set(sec, "zoom", self.mainwin.descView.get_zoom_level())
-		config.write(open(os.path.expanduser("~/.tunesviewerprefs"), "w"))
+		config.write(open(PREFS_FILE, "w"))
 		self.setVisibility()
 
 
 	def load_settings(self):
-		"""Try to load settings from file, then update display"""
+		"""
+		Try to load settings from file, then update display.
+		"""
 		# disk -> variables -> gui
-		print "Loading Prefs"
+		logging.debug("Loading Prefs")
 		first = False
-		if os.path.isfile(os.path.expanduser("~/.tunesviewerprefs")):
+		if os.path.isfile(PREFS_FILE):
 			try:
 				#Load to the main variables:
 				config = ConfigParser.ConfigParser()
-				config.read(os.path.expanduser("~/.tunesviewerprefs"))
+				config.read(PREFS_FILE)
 				sec = "TunesViewerPrefs"
 				self.defaultcommand = config.get(sec, "DefaultMode")
 				self.openers = self.getopeners(config.get(sec, "Openers"))
@@ -260,7 +274,7 @@ class ConfigBox:
 				if os.path.isdir(folder):
 					self.downloadfolder = folder
 				else:
-					print "Not a valid directory: %s" % folder
+					logging.debug("Not a valid directory: %s" % folder)
 				self.downloadfile = config.get(sec, "DownloadFile")
 				self.downloadsafe = (config.get(sec, "DownloadSafeFilename") == "True")
 				self.notifyseconds = int(config.get(sec, "NotifySeconds"))
@@ -275,16 +289,13 @@ class ConfigBox:
 				self.modifiedCol = (config.get(sec, "modifiedCol") == "True")
 				self.zoomAll = (config.get(sec, "zoomAll") == "True")
 				self.mainwin.descView.set_zoom_level(float(config.get(sec, "zoom")))
-			except Exception, e:
-				print "Load-settings error:", e
+			except Exception as e:
+				logging.warn("Load-settings error: " + str(e))
 		else:
 			first = True
 
 		#Load to the screen:
 		self.downloadsel.set_current_folder(self.downloadfolder)
-		#unfortunately these two are not the same:
-		#print self.downloadfolder
-		#print self.downloadsel.get_current_folder()
 		self.viewer.get_buffer().set_text(self.openertext(self.openers))
 		self.downloadsafeCheck.set_active(self.downloadsafe)
 		self.toolbarCheck.set_active(self.toolbar)
@@ -300,7 +311,6 @@ class ConfigBox:
 		self.checkReleasedCol.set_active(self.releasedCol)
 		self.checkModifiedCol.set_active(self.modifiedCol)
 		self.checkZoomAll.set_active(self.zoomAll)
-		#print self.defaultcommand
 		if first:
 			self.first_setup()
 			self.save_settings()
@@ -322,7 +332,9 @@ class ConfigBox:
 
 
 	def delete_event(self, widget, event, data=None):
-		"""Cancels close, only hides window."""
+		"""
+		Cancels close, only hides window.
+		"""
 		self.window.hide()
 		return True # Hide, don't close.
 
@@ -332,7 +344,10 @@ class ConfigBox:
 
 
 	def response(self, obj, value):
-		"""Saves or loads settings when ok or cancel or close is selected."""
+		"""
+		Saves or loads settings when ok or cancel or close is
+		selected.
+		"""
 		if value == 1:
 			self.save_settings()
 		else:
