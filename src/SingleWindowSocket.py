@@ -23,8 +23,9 @@ class SingleWindowSocket:
 			try:
 				self.sendUrl(url)
 			except socket.error as msg:
-				logging.warn("Error:" + msg)
-				logging.warn("Previous program crashed? Starting server.")
+				logging.error("Error:")
+				logging.error(msg)
+				logging.error("Previous program crashed? Starting server.")
 				os.remove(SOCKET)
 				self.RUN = True
 				Thread(target=self.server).start()
