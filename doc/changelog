@@ -16,7 +16,7 @@ TunesViewer (1.1)
   * Added webkit-debugger (right click, inspect, in the upper panel.)
   * Fixed Subscribe and Download links in the upper panel.
   * Fixed other bugs, and moved description, links, and text to upper panel.
-  
+
 TunesViewer (1.0.1)
   * Fixed display problem in upper panel, and error caused by dragging links.
   * Fixed go menu directory

@@ -1,4 +1,5 @@
 import httplib
+import logging
 import os
 import time
 import urllib2
@@ -103,7 +104,7 @@ class Downloader:
 		self._copydir = self._mediasel.get_current_folder()
 		#Set the selection as the default for new downloads.
 		self._downloadWindow.devicedir = self._copydir
-		print(self._copydir)
+		logging.debug(self._copydir)
 		if self.success:
 			#Downloaded, so copy it.
 			self.copy2device()
@@ -120,7 +121,7 @@ class Downloader:
 			import shutil
 			try:
 				shutil.copy(self.localfile, self._copydir)
-			except (IOError, os.error) as e:
+			except (IOError, os.error):
 				self._progress.set_text("Error copying to %s." % self._copydir)
 			else:
 				self._progress.set_text("Copied to %s." % self._copydir)
@@ -129,7 +130,7 @@ class Downloader:
 		"""
 		Called when the downloader's combo-box is changed.
 		"""
-		print(self._combo.get_active())
+		logging.debug(self._combo.get_active())
 		if self._combo.get_active() == 3:
 			self._mediasel.show()
 		else:
@@ -153,7 +154,7 @@ class Downloader:
 			# Try to copy, finished.
 			self.copy2device()
 		elif self._combo.get_active() == 4:
-			print("del")
+			logging.debug("del")
 			self.deletefile()
 
 	def cancel(self, obj):
@@ -165,14 +166,14 @@ class Downloader:
 		self.t.join() # wait for thread to cancel! Destroying this before the thread finishes may cause major crash!
 		try:
 			os.remove(self.localfile)
-			print("removed " + self.localfile)
+			logging.debug("removed " + self.localfile)
 		except (IOError, OSError) as e:
-			print("Removing file failed:", str(e))
+			logging.debug("Removing file failed: " + str(e))
 
 		self._element.destroy()
 		#Remove all references to this.
 		self._downloadWindow.downloaders.remove(self)
-		print(self._downloadWindow.downloaders)
+		logging.debug(self._downloadWindow.downloaders)
 
 	def start(self):
 		"""
@@ -198,7 +199,7 @@ class Downloader:
 				if os.path.exists(self.localfile) and os.path.isfile(self.localfile):
 					self.count = os.path.getsize(self.localfile)
 
-				print(self.count, "of", self.filesize, "downloaded.")
+				logging.debug("%d of %d downloaded." % (self.count, self.filesize))
 
 				if self.count >= self.filesize:
 					self._progress.set_text("Already downloaded.")
@@ -214,7 +215,7 @@ class Downloader:
 					#This seems to corrupt the file sometimes?
 					self._netfile.close()
 					req = urllib2.Request(self.url)
-					print("file downloading at byte: ", self.count)
+					logging.debug("File downloading at byte: %d." % self.count)
 					req.add_header("Range", "bytes=%s-" % (self.count))
 					self._netfile = self.opener.open(req)
 
@@ -231,7 +232,7 @@ class Downloader:
 					self.success = True
 			except httplib.InvalidURL as e:
 				self.Err = ("Invalid url. " + str(e))
-				print("Error:", e)
+				logging.warn("Error: " + str(e))
 				if str(e).count("nonnumeric port"):
 					#Workaround for bug: http://bugs.python.org/issue979407
 					self.Err = ("Urllib failed! Opening with browser...")
@@ -239,7 +240,7 @@ class Downloader:
 				self.downloading = False
 				return
 			except IOError as e:
-				print(e)
+				logging.warn(str(e))
 				self.Err = ("Download error, retrying in a few seconds: " + str(e))
 				try:
 					self._outfile.close()
@@ -248,7 +249,7 @@ class Downloader:
 					pass
 				time.sleep(8) # Then repeat
 
-		print("finished one")
+		logging.debug("Finished one")
 		try:
 			self._outfile.close()
 			self._netfile.close()
@@ -263,7 +264,7 @@ class Downloader:
 			elif self._combo.get_active() == 3:
 				# Copy to Device
 				self.copy2device()
-			print("pre dlnotify")
+			logging.debug("Pre dlnotify")
 			self._cancelbutton.set_sensitive(False)
 		#else:
 			#This set_text isn't needed, it caused error when it was cancelled, and self._progress destroyed.
@@ -282,7 +283,7 @@ class Downloader:
 		answer = msg.run()
 		msg.destroy()
 		if answer == gtk.RESPONSE_YES:
-			print("deleting...")
+			logging.debug("deleting...")
 			self.cancel(None)
 		else:
 			self._combo.set_active(0)
@@ -297,7 +298,7 @@ class Downloader:
 			# Assume time/totaltime = bytes/totalbytes
 			# So, totaltime = time*totalbytes/bytes.
 			t = time.time() - self.starttime
-			remaining = timeFind((t * self.filesize/self.count - t)*1000)
+			remaining = time_convert((t * self.filesize/self.count - t)*1000)
 			self._progress.set_text("%s%% of %s (%s remaining)" %
 						(str(round(self.count/self.filesize * 100, 1)),
 						 self.readsize, remaining))
