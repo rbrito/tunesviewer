@@ -330,7 +330,7 @@ class TunesViewer:
 		viewmenu.append(self.htmlmode)
 
 		self.mobilemode = gtk.CheckMenuItem("Mobile Mode")
-		#viewmenu.append(self.mobilemode)
+		viewmenu.append(self.mobilemode)
 
 		viewmenu.append(gtk.SeparatorMenuItem())
 

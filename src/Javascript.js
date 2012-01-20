@@ -27,6 +27,10 @@ function player() {
 		return "not 0";
 	};
 	
+	this.openURL = function(url) {
+		location.href = url;
+	};
+	
 	this.addProtocol = function (xml) {
 		console.log(xml);
 		xml = new DOMParser().parseFromString(xml, "text/xml");
