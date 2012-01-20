@@ -26,6 +26,17 @@ function player() {
 		document.getElementById("previewPlayer").play();
 		return "not 0";
 	};
+	
+	this.addProtocol = function (xml) {
+		console.log(xml);
+		xml = new DOMParser().parseFromString(xml, "text/xml");
+		keys = xml.getElementsByTagName('key');
+		for (var i=0; i<keys.length; i++) {
+			if (keys[i].textContent=="URL") {//Goto the download url.
+				document.location = keys[i].nextSibling.textContent;
+			}
+		}
+	};
 
 	this.stop = function () {
 		//document.getElementById("previewPlayer").pause();
