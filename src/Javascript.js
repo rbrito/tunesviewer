@@ -27,6 +27,12 @@ function player() {
 		return "not 0";
 	};
 	
+	this.showMediaPlayer = function(url,showtype,title) {
+		obj = function () {};
+		obj.url = url;
+		this.playURL(obj);
+	};
+	
 	this.openURL = function(url) {
 		location.href = url;
 	};
@@ -132,6 +138,17 @@ document.onpageshow = new function () {
 	fixTransparent(document.getElementsByTagName("h2"));
 	fixTransparent(document.getElementsByTagName("div"));
 	fixTransparent(as);
+	
+	divs = document.getElementsByTagName("div");
+	for (var i=0; i<divs.length; i++) { // fix free-download links, mobile
+		if (divs[i].getAttribute("download-url") != null && divs[i].textContent.indexOf("FREE")!=-1) {
+			console.log(divs[i].getAttribute("download-url"));
+			removeListeners(divs[i].childNodes);
+			divs[i].innerHTML = "<button onclick='window.event.stopPropagation();location.href=\""+divs[i].getAttribute("download-url")+"\";'>Download</button>";
+			divs[i].addEventListener('mouseDown',function () {console.log('opening'+this.getAttribute('download-url'));
+			                                              location.href = this.getAttribute('download-url'); })
+		}
+	}
 
 	//Mouse-over tooltip for ellipsized title...
 	//Unfortunately it seems this may cause X window error!
@@ -183,6 +200,14 @@ document.onpageshow = new function () {
 	}
 	console.log("JS OnPageShow Ran Successfully.");
 };
+
+function removeListeners(objects) {
+	for (var i=0; i<objects.length; i++) {
+		objects[i].onmouseover = (function () {});
+		objects[i].onclick = (function () {});
+		objects[i].onmousedown = (function () {});
+	}
+}
 
 function previewClick(el) {
 	console.log('previewclick');
