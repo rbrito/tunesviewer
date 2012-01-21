@@ -156,7 +156,7 @@ class TestParser(unittest.TestCase):
 
 		self.assertEqual(parsed_html.Redirect, '')
 		self.assertEqual(parsed_html.Title, 'iPad and iPhone Application Development (SD)')
-		self.assertEqual(len(parsed_html.mediaItems), 36)
+		self.assertEqual(len(parsed_html.mediaItems), 43)
 
 		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
