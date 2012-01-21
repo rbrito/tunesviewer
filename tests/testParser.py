@@ -32,7 +32,7 @@ class TestParser(unittest.TestCase):
 
 		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
-			logging.warn(line)
+			logging.debug(line)
 
 
 	def testParseGeorgeFox(self):
@@ -47,7 +47,7 @@ class TestParser(unittest.TestCase):
 
 		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
-			logging.warn(line)
+			logging.debug(line)
 
 
 	def testParseFHSU(self):
@@ -62,7 +62,7 @@ class TestParser(unittest.TestCase):
 
 		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
-			logging.warn(line)
+			logging.debug(line)
 
 
 	def testParseFHSUPresident(self):
@@ -80,7 +80,7 @@ class TestParser(unittest.TestCase):
 
 		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
-			logging.warn(line)
+			logging.debug(line)
 
 
 	def testParseSIUC(self):
@@ -95,7 +95,7 @@ class TestParser(unittest.TestCase):
 
 		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
-			logging.warn(line)
+			logging.debug(line)
 
 
 	def testParseSJSU(self):
@@ -110,7 +110,7 @@ class TestParser(unittest.TestCase):
 
 		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
-			logging.warn(line)
+			logging.debug(line)
 
 
 	def testParseWithTabs(self):
@@ -160,7 +160,7 @@ class TestParser(unittest.TestCase):
 
 		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
-			logging.warn(line)
+			logging.debug(line)
 
 
 
