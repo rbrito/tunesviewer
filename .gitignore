@@ -6,3 +6,4 @@
 debian/*.substvars
 debian/files
 debian/tunesviewer
+tests/*.html

@@ -163,6 +163,12 @@ class TestParser(unittest.TestCase):
 			logging.debug(line)
 
 
+	def testDumpParsedHTML(self):
+		url = "http://deimos3.apple.com/WebObjects/Core.woa/Browse/georgefox.edu.8155705810.08155705816.8223066656?i=1688428005"
+		text = self.o.open(url).read()
+		parsed_html = Parser(url, "text/HTML", text).HTML
+		file("parsed_test.html", "w").write(parsed_html)
+
 
 if __name__ == "__main__":
 	unittest.main()
