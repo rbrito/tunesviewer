@@ -35,8 +35,10 @@ class Downloader:
 		self._copyfile = downloadWindow.devicedir
 		#This downloader has an upper and lower part inside a VBox:
 		self._element = gtk.VBox() # main element container
-		upper = gtk.HBox(); upper.show()
-		lower = gtk.HBox(); lower.show()
+		upper = gtk.HBox()
+		upper.show()
+		lower = gtk.HBox()
+		lower.show()
 		self._element.pack_start(upper, False, False, 0)
 		self._element.pack_start(lower, False, False, 0)
 		self._cancelbutton = gtk.Button("Cancel")
