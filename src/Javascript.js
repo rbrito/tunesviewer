@@ -148,6 +148,19 @@ document.onpageshow = new function () {
 			divs[i].addEventListener('mouseDown',function () {console.log('opening'+this.getAttribute('download-url'));
 			                                              location.href = this.getAttribute('download-url'); })
 		}
+		if (divs[i].getAttribute("role")=="button" && divs[i].getAttribute("aria-label")=="SUBSCRIBE FREE") {
+			rss = "";
+			console.log("subscribe-button");
+			removeListeners(divs[i].parentNode);
+			removeListeners(divs[i].parentNode.parentNode);
+			for (var j=0; j<divs.length; j++) {
+				if (divs[j].getAttribute("podcast-feed-url") != null) {
+					rss = divs[j].getAttribute("podcast-feed-url");
+					console.log("rss:"+rss);
+				}
+			}
+			divs[i].addEventListener('click', function () {console.log(rss);location.href = rss});
+		}
 	}
 
 	//Mouse-over tooltip for ellipsized title...
