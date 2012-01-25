@@ -10,6 +10,7 @@ import logging
 
 import gtk
 
+from constants import TV_PATH
 
 def run():
 	"""Runs the basic configuration procedure."""
@@ -37,20 +38,19 @@ def run():
 def setdefault():
 	"""Sets this as the default protocol opener."""
 	try:
-		file("/usr/bin/tunesviewer")
+		file(TV_PATH)
 	except IOError:
 		msg = gtk.MessageDialog(None,
 					gtk.DIALOG_MODAL,
 					gtk.MESSAGE_ERROR,
 					gtk.BUTTONS_CLOSE,
-					"The link /usr/bin/tunesviewer does not exist.")
+					"The link %s does not exist." % TV_PATH)
 		msg.run()
 		msg.destroy()
 		return
 
-	tv_path = "/usr/bin/tunesviewer"
 	tv_args = "%s"
-	tv_call = tv_path + " " + tv_args
+	tv_call = "%s %s" % (TV_PATH, tv_args)
 
 	# Try setting the protocol defaults:
 	err = 0
