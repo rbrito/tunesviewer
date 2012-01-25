@@ -1,5 +1,6 @@
 *~
 *.debhelper
+*.html
 *.log
 *.pyc
 *.pyo
