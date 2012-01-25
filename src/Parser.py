@@ -249,7 +249,7 @@ class Parser:
 				try:
 					self.Title = (dom.xpath("/rss/channel/title")[0].text)
 				except IndexError as e:
-					pass
+					logging.warn('Error using index ' + str(e))
 		else:
 			out = " > ".join(location) + "\n"
 			self.Title = (out[:-1])
@@ -261,6 +261,7 @@ class Parser:
 				try:
 					self.Title = dom.xpath("/html/head/title")[0].text_content()
 				except IndexError as e:
+					logging.warn('Error extracting title: ' + str(e))
 					self.Title = "TunesViewer"
 		self.HTML = "<html><body bgcolor=\"" + self.bgcolor + "\">" + self.HTML + "</body></html>"
 
@@ -312,7 +313,7 @@ class Parser:
 
 		logging.debug("Parse took " + str(time.time()-sttime) + "s.")
 
-		#Done with this:
+		# Done with this:
 		del dom
 		# avoid possible memory leak: http://faq.pygtk.org/index.py?req=show&file=faq08.004.htp
 		gc.collect()
