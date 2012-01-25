@@ -164,50 +164,50 @@ class Parser:
 					id = ""
 					for j in i:
 						if j.tag == "key": # get each piece of data:
-							if (j.text == "songName" or j.text == "itemName"):
+							if j.text in ["songName", "itemName"]:
 								t = j.getnext().text
 								if t:
 									name = t
-							elif (j.text == "artistName"):
+							elif j.text == "artistName":
 								t = j.getnext().text
 								if t:
 									artist = t
-							elif (j.text == "duration"):
+							elif j.text == "duration":
 								t = j.getnext().text
 								if t:
 									duration = t
-							elif (j.text == "comments" or j.text == "description" or j.text == "longDescription"):
+							elif j.text in ["comments", "description", "longDescription"]:
 								t = j.getnext().text
 								if t:
 									comments = t
-							elif (j.text=="url"):
+							elif j.text == "url":
 								t = j.getnext().text
 								if t:
 									url = t
 							# Added Capital "URL", for the special case end page after html link.
-							elif (j.text == "URL" or j.text == "previewURL" or j.text == "episodeURL" or j.text == "preview-url"):
+							elif j.text in ["URL", "previewURL", "episodeURL", "preview-url"]:
 								t = j.getnext().text
 								if t:
 									directurl = t
-							elif (j.text == "explicit"):
+							elif j.text == "explicit":
 								el = j.getnext()
 								if el.text == "1":
 									rtype = "[Explicit] "
 								if el.text == "2":
 									rtype = "[Clean] "
-							elif (j.text == "releaseDate"):
+							elif j.text == "releaseDate":
 								t = j.getnext().text
 								if t:
 									releaseDate = t
-							elif (j.text == "dateModified"):
+							elif j.text == "dateModified":
 								t = j.getnext().text
 								if t:
 									modifiedDate = t
-							elif (j.text == "itemId"):
+							elif j.text == "itemId":
 								t = j.getnext().text
 								if t:
 									id = t
-							elif (j.text == "metadata"): # for the special case end page after html link
+							elif j.text == "metadata": # for the special case end page after html link
 								i.extend(j.getnext().getchildren()) # look inside this <dict><key></key><string></string>... also.
 					self.addItem(name,
 						     artist,
@@ -273,7 +273,7 @@ class Parser:
 			self.podcast = self.url
 		elif hasmedia:
 			for i in keys:
-				if (i.text == "feedURL"):
+				if i.text == "feedURL":
 					self.podcast = i.getnext().text # Get next text node's text.
 					logging.debug("Podcast: " + self.podcast)
 					break
@@ -481,22 +481,17 @@ class Parser:
 				gotou = ""
 				price = "0"
 				comment = ""
-				if ('itemName' in data):
+				try:
 					title = data['itemName']
-				if ('artistName' in data):
 					artist = data['artistName']
-				if ('duration' in data):
 					duration = time_convert(data['duration'])
-				if ('preview-url' in data):
 					url = data['preview-url']
-				if ('playlistName' in data):
 					comment = data['playlistName']
-				if ('url' in data):
 					gotou = data['url']
-				if ('price' in data):
 					price = data['price']
-				if ('itemId' in data):
 					itemid = data['itemId']
+				except KeyError as e:
+					logging.warn('Error getting attribute: ' + str(e))
 				self.addItem(title,
 					     artist,
 					     duration,
