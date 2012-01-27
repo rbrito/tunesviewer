@@ -12,6 +12,7 @@ class ConfigBox:
 	Initialize variable defaults, as these variables are directly
 	accessed by the other classes.
 	"""
+	downloadfolder = os.path.expanduser("~")
 	downloadsafe = True
 	toolbar = True
 	statusbar = False
@@ -248,7 +249,14 @@ class ConfigBox:
 		config.set(sec, "modifiedCol", self.modifiedCol)
 		config.set(sec, "zoomAll", self.zoomAll)
 		config.set(sec, "zoom", self.mainwin.descView.get_zoom_level())
-		config.write(open(PREFS_FILE, "w"))
+		try:
+			os.mkdir(os.path.dirname(PREFS_FILE))
+		except OSError as e:
+			pass
+		try:
+			config.write(open(PREFS_FILE, "w"))
+		except OSError as e:
+			logging.error(str(e))
 		self.setVisibility()
 
 

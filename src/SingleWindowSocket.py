@@ -19,6 +19,7 @@ class SingleWindowSocket:
 	def __init__(self, url, main):
 		self.caller = main
 		self.RUN = False # When true, start program.
+		print TV_SOCKET
 		if os.path.exists(TV_SOCKET):
 			try:
 				self.sendUrl(url)
@@ -48,6 +49,10 @@ class SingleWindowSocket:
 		"""
 		s = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
 		s.settimeout(None) # important! Otherwise default timeout will apply.
+		try:
+			os.mkdir(os.path.dirname(TV_SOCKET))
+		except OSError as e:
+			pass
 		s.bind(TV_SOCKET)
 		while True:
 			url = s.recv(65536) # Wait for a url to load.
