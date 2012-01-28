@@ -5,7 +5,7 @@ import os
 import gtk
 
 import firstsetup
-from constants import DEFAULT_OPENER, HOME_URL, DOWNLOADS_DIR, PREFS_FILE
+from constants import DEFAULT_OPENER, HOME_URL, DOWNLOADS_DIR, PREFS_DIR, PREFS_FILE
 
 class ConfigBox:
 	"""
@@ -38,6 +38,7 @@ class ConfigBox:
 	zoomAll = True
 	releasedCol = False
 	modifiedCol = False
+	downloadfolder = DOWNLOADS_DIR
 
 
 	def __init__(self, mw):
@@ -248,6 +249,17 @@ class ConfigBox:
 		config.set(sec, "modifiedCol", self.modifiedCol)
 		config.set(sec, "zoomAll", self.zoomAll)
 		config.set(sec, "zoom", self.mainwin.descView.get_zoom_level())
+
+		# Move this to another, better place
+		try:
+			os.makedirs(PREFS_DIR)
+		except OSError as e:
+			if e.errno == 17:
+				pass # directory already exists
+			else:
+				logging.error('Error creating configuration directory: %s'
+					      % str(e))
+
 		config.write(open(PREFS_FILE, "w"))
 		self.setVisibility()
 
