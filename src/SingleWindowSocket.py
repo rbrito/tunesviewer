@@ -50,7 +50,16 @@ class SingleWindowSocket:
 		"""
 		s = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
 		s.settimeout(None) # important! Otherwise default timeout will apply.
-		s.bind(DATA_SOCKET)
+
+		try:
+			os.mkdir(DATA_DIR)
+		except OSError as e:
+			if e.errno == 17:
+				pass
+			else:
+				logging.error('Error creating socket: %s.' % str(e))
+		s.bind(TV_SOCKET)
+
 		while True:
 			url = s.recv(65536) # Wait for a url to load.
 			if url == 'EXIT':

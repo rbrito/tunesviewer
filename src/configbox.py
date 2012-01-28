@@ -12,6 +12,7 @@ class ConfigBox:
 	Initialize variable defaults, as these variables are directly
 	accessed by the other classes.
 	"""
+	downloadfolder = os.path.expanduser("~")
 	downloadsafe = True
 	toolbar = True
 	statusbar = False
@@ -259,8 +260,11 @@ class ConfigBox:
 			else:
 				logging.error('Error creating configuration directory: %s'
 					      % str(e))
-
-		config.write(open(PREFS_FILE, "w"))
+		try:
+			config.write(open(PREFS_FILE, "w"))
+		except OSError as e:
+			logging.error('Error creating configuration file: %s' % str(e))
+				
 		self.setVisibility()
 
 
