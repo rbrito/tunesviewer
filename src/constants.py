@@ -9,6 +9,7 @@ import glib
 
 # Path of the program
 TV_PATH = "/usr/bin/tunesviewer"
+TV_VERSION = "1.5" #also needs changing in debian conf file somewhere
 
 # Directory under which we write configuration files
 USER_CONF_DIR = glib.get_user_config_dir()
@@ -31,6 +32,8 @@ DEFAULT_OPENER = "/usr/bin/vlc --http-user-agent=%s --http-caching=10000" % (USE
 # URLs
 HOME_URL = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewGrouping?id=27753"
 
+SEARCH_U = "http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&restrict=true&term=%s&media=cobalt"
+SEARCH_P = "http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&term=%s&media=podcast"
 SEARCH_URL1 = "http://phobos.apple.com/WebObjects/MZSearch.woa/wa/advancedSearch?media=iTunesU&searchButton=submit&allTitle=%s&descriptionTerm=%s&institutionTerm=%s"
 SEARCH_URL2 = "http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/advancedSearch?media=podcast&titleTerm=%s&authorTerm=%s&descriptionTerm=%s&genreIndex=&languageTerm="
 

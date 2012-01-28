@@ -53,6 +53,7 @@ from webkitview import WebKitView
 from Parser import Parser
 from SingleWindowSocket import SingleWindowSocket
 from common import *
+from constants import TV_VERSION, SEARCH_U, SEARCH_P
 
 # Start logging messages
 logging.basicConfig(level=logging.DEBUG)
@@ -85,7 +86,7 @@ class TunesViewer:
 		self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 		self.window.set_title("TunesViewer")
 		self.window.set_size_request(350, 350) #minimum
-		self.window.resize(610, 520)
+		self.window.resize(750, 750) #default
 		self.window.connect("delete_event", self.delete_event)
 		# set add drag-drop, based on:
 		# http://stackoverflow.com/questions/1219863/python-gtk-drag-and-drop-get-url
@@ -898,9 +899,9 @@ class TunesViewer:
 					gtk.DIALOG_MODAL,
 					gtk.MESSAGE_INFO,
 					gtk.BUTTONS_CLOSE,
-					"TunesViewer - Easy iTunesU access in Linux\n"
-					"Version 1.4 by Luke Bryan\n"
-					"This is open source software, distributed 'as is'")
+					"TunesViewer - Easy iTunesU access\n"
+					"Version %s, (c) 2009-2012, Tunesviewer authors.\n"
+					"This is open source software, distributed 'as is'." % (TV_VERSION,))
 		msg.run()
 		msg.destroy()
 
@@ -1019,11 +1020,9 @@ class TunesViewer:
 		if ind == 0:
 			self.gotoURL(self.locationentry.get_text(), True)
 		elif ind == 1:
-			self.gotoURL('http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&restrict=true&term='+
-			self.locationentry.get_text()+'&media=cobalt', True)
+			self.gotoURL(SEARCH_U % self.locationentry.get_text(), True)
 		else:
-			self.gotoURL('http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&term=' +
-				     self.locationentry.get_text() + '&media=podcast', True)
+			self.gotoURL(SEARCH_P % self.locationentry.get_text(), True)
 
 	def followlink(self, obj):
 		"""
@@ -1570,13 +1569,13 @@ if __name__ == "__main__":
 	args = sys.argv[1:]
 	url = ""
 	if len(args) > 1 and args[0] == "-s":
-		url = 'http://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?media=iTunesU&submit=media&term=' + args[1]
+		url = SEARCH_U % args[1]
 	elif len(args) > 0:
 		url = args[0]
 
 	# Create the TunesViewer instance and run it. If an instance is
 	# already running, send the url to such instance.
-	logging.info("TunesViewer 1.4")
+	logging.info("TunesViewer "+TV_VERSION)
 	prog = TunesViewer()
 	prog.sock = SingleWindowSocket(url, prog)
 
