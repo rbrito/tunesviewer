@@ -1,5 +1,116 @@
-tunesviewer (1.4-0.1) UNRELEASED; urgency=low
+tunesviewer (1.4-157~1.gbpf06cf0-1) UNRELEASED; urgency=medium
 
+  ** SNAPSHOT build @f06cf08060702d5e36c440e9f57f398d85c36c1b **
+
+  [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
+  * TunesViewer: Some readability/PEP-8 fixes.
+  * TunesViewer: Import `lxml` directly, not bombing at runtime.
+  * TunesViewer: Reduce one level of identation of the code.
+  * TunesViewer: Rename variable to avoid collision with Python's keyword.
+  * webkitview: Avoid collision with Python builtins.
+  * webview: Avoid potential errors testing variable against False.
+  * Some (minor) refactoring for readability.
+  * downloader: Don't catch every exception under the sun.
 
- -- Rogério Brito <rbrito@ime.usp.br>  Sat, 31 Dec 2011 15:21:10 -0200
+  [ lb1programmer ]
+  * Fixed infinte dialog-boxes when clicking 'i'.
+  * Adding some basic unit-tests.
+
+  [ Rogério Brito ]
+  * Add instructions on building Debian packages to the `README.md` file.
+  * Refactor the unittests for `common.py`
+  * common: Make timeFind more robust against input values.
+  * common: Some minor readability/cosmetics and PEP-8 changes.
+  * common: Make HTML decoding more robust.
+  * testParser: Rework the way the tests work for future extensibility.
+  * testCommon: Remove a silly leftover `import`.
+  * configbox: Minor cosmetic changes.
+  * configbox: Remove commented out code.
+  * {configbox,firstsetup}: Make firstsetup methods into regular functions.
+  * icon: Fix missing green upper left corner on the border of the U.
+  * desktop file: Translate comment to pt_BR.
+  * desktop file: Reorganize the file slightly.
+  * desktop file: Don't hardcode paths to allow for flexible installation.
+  * desktop file: Make some translated strings in pt_BR available in pt.
+  * README.md: Give more detailed instructions about Debian packages.
+  * Reorganize the project directories for modularity.
+  * tests: Adapt the tests to the new directory structure.
+  * tests: Adapt the tests to the new directory structure.
+  * README.md: Update instructions on how to build Debian packages.
+  * debian: Reinclude missing changes of paths to build the package.
+  * TunesViewer: Make the contents of the time column right-aligned.
+  * common: Rework the `timeFind` function for consist look with iTunes U.
+
+  [ lb1programmer ]
+  * Modified desktop file, added test-cases
+
+  [ Rogério Brito ]
+  * Rename the `timeFind` function to `time_convert`.
+
+  [ lb1programmer ]
+  * Modify desktop file
+  * Add test-cases
+
+  [ Rogério Brito ]
+  * Remove some commented code.
+  * cosmetics: Remove whitespace from the end of lines.
+  * testParser: cosmetics: Whitespace work.
+  * testParser: Use unittest's assertEqual method.
+  * tests: Make the tests work from root or `tests` directories.
+  * Tidy up some of the docstrings a bit.
+  * TunesViewer: Rework the code for modularity.
+  * Use more the `logging` module around the project.
+  * Minor formatting changes.
+  * Use a bit more of the `logging` module.
+  * TunesViewer: Don't redefine Python's `type` word.
+  * TunesViewer: Use a shorter variable name.
+  * TunesViewer: Reduce excessive/incorrect indentation level.
+  * common: Add stronger URL unquoting of strings.
+  * testParser: Add a test of decoding an XML feed.
+  * testParser: Mark some tests as broken by changes in iTunes.
+  * cosmetics: Minor cosmetic fixes.
+  * Parser: Fix breakage with logging. Thanks Luke for the eagle eyes.
+  * SingleWindowSocket: Tweak a little bit the docstrings.
+  * Change some parts of the code for compliance with Python 3.
+  * help.txt: Spell check the contents of the file.
+  * cosmetics: Change some strings a bit and remove commented code.
+  * Use the `logging` module more extensively.
+  * configbox: Define some "constants" for frequently used values.
+
+  [ lb1programmer ]
+  * Fixed search url, fixed crash caused by logging module.
+  * Quick fix for the download buttons in upper panel.
+  * JS work
+  * More Javascript
+
+  [ Rogério Brito ]
+  * downloader: Don't put multiple commands in one line.
+  * Use a better icon for the program.
+  * Remove files that were moved already.
+  * testParser: Remove duplicate tests originating from a bad merge.
+  * testParser: Use `logging.debug` instead of `logging.warn`.
+  * tests: Incorporate `test.py` into `testParser.py`.
+  * testParser: Fix the expected result of a test.
+  * Javascript: Remove some commented out code.
+  * Parser: Try to simplify some of the code of the parser.
+  * Parser: Add more information on exceptional circumstances.
+  * gitignore: Ignore HTML files that some tests may leave around.
+  * First try at creating a module for holding constants.
+
+  [ lb1programmer ]
+  * JS subscribe
+
+  [ Rogério Brito ]
+  * debian/rules: Tell debhelper to build in parallel whenever possible.
+
+  [ lb1programmer ]
+  * Fixed crash on first initialization, due to missing folders.
+  * More constants
+
+  [ Rogério Brito ]
+  * Fix breakage when XDG directories are not present.
+  * constants: Mark that assuming a particular path for the program is bad.
+  * SingleWindowSocket: Fix constant that was renamed.
+
+ -- Rogério Brito <rbrito@ime.usp.br>  Sat, 28 Jan 2012 00:31:07 -0200
