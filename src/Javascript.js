@@ -26,6 +26,27 @@ function player() {
 		document.getElementById("previewPlayer").play();
 		return "not 0";
 	};
+	
+	this.showMediaPlayer = function(url,showtype,title) {
+		obj = function () {};
+		obj.url = url;
+		this.playURL(obj);
+	};
+	
+	this.openURL = function(url) {
+		location.href = url;
+	};
+	
+	this.addProtocol = function (xml) {
+		console.log(xml);
+		xml = new DOMParser().parseFromString(xml, "text/xml");
+		keys = xml.getElementsByTagName('key');
+		for (var i=0; i<keys.length; i++) {
+			if (keys[i].textContent=="URL") {//Goto the download url.
+				document.location = keys[i].nextSibling.textContent;
+			}
+		}
+	};
 
 	this.stop = function () {
 		//document.getElementById("previewPlayer").pause();
@@ -35,25 +56,13 @@ function player() {
 
 	this.doPodcastDownload = function (obj, number) {
 		alert("podcastdownload");
-		//alert(obj.innerHTML)//getAttribute("episode-url"))
 		keys = obj.getElementsByTagName('key');
-		//alert(keys)
-		/*name = ''; url='';
-		for (i=0; i<keys.length; i++) {
-			if (keys[i].textContent=="longDescription") {
-				name = keys[i].nextSibling.textContent;
-			} else if (keys[i].textContent = "episodeUrl") {
-				url = keys[i].nextSibling.textContent;
-			}
-		}
-		alert(name+"\n"+url);*/
 	};
 
 	this.doAnonymousDownload = function (obj) {
-		//alert(obj.itemName + "\n"+obj.url);
-		//location.href="download://"+encodeURI(obj.itemName)+" "+encodeURI(obj.url);
 		location.href = obj.url;
-		//It has the url... just needs a way to tell the main program to download it (webkit transaction?)
+		// It has the url... just needs a way to tell the main
+		// program to download it (webkit transaction?)
 	};
 
 	this.getUserDSID = function () {//no user id.
@@ -79,14 +88,10 @@ function fixTransparent(objects) {
 			objects[i].style.color = "inherit";
 		}
 
-		//Fix odd background box on iTunesU main page
+		// Fix odd background box on iTunesU main page
 		if (objects[i].parentNode.getAttribute("class") == "title") {
 			objects[i].style.background = "transparent";
 		}
-		/*if (window.getComputedStyle(headings[i]).backgroundImage
-			.indexOf("-webkit-gradient(linear,") > -1) {
-			headings[i].style.background = "transparent";
-		}*/
 	}
 }
 
@@ -97,7 +102,7 @@ document.onpageshow = new function () {
 		return "AppleWebKit/531.1";
 	};
 
-	//Fix <a target="external" etc.
+	// Fix <a target="external" etc.
 	as = document.getElementsByTagName("a");
 	for (a in as) {
 		if (as[a].target == "_blank") {
@@ -109,17 +114,44 @@ document.onpageshow = new function () {
 	}
 
 	/* This fixes the color=transparent style on some headings.
-	 * Unfortunately, you can't use document.styleSheets' CSSRules/rules property, since it's cross-domain:
+	 * Unfortunately, you can't use document.styleSheets' CSSRules/rules
+	 * property, since it's cross-domain:
+	 *
 	 * http://stackoverflow.com/questions/5678040/cssrules-rules-are-null-in-chrome
+	 *
 	 * So, it manually checks for elements with the style:
 	 */
 	fixTransparent(document.getElementsByTagName("h1"));
 	fixTransparent(document.getElementsByTagName("h2"));
 	fixTransparent(document.getElementsByTagName("div"));
 	fixTransparent(as);
+	
+	divs = document.getElementsByTagName("div");
+	for (var i=0; i<divs.length; i++) { // fix free-download links, mobile
+		if (divs[i].getAttribute("download-url") != null && divs[i].textContent.indexOf("FREE")!=-1) {
+			console.log(divs[i].getAttribute("download-url"));
+			removeListeners(divs[i].childNodes);
+			divs[i].innerHTML = "<button onclick='window.event.stopPropagation();location.href=\""+divs[i].getAttribute("download-url")+"\";'>Download</button>";
+			divs[i].addEventListener('mouseDown',function () {console.log('opening'+this.getAttribute('download-url'));
+			                                              location.href = this.getAttribute('download-url'); })
+		}
+		if (divs[i].getAttribute("role")=="button" && divs[i].getAttribute("aria-label")=="SUBSCRIBE FREE") {
+			rss = "";
+			console.log("subscribe-button");
+			removeListeners(divs[i].parentNode);
+			removeListeners(divs[i].parentNode.parentNode);
+			for (var j=0; j<divs.length; j++) {
+				if (divs[j].getAttribute("podcast-feed-url") != null) {
+					rss = divs[j].getAttribute("podcast-feed-url");
+					console.log("rss:"+rss);
+				}
+			}
+			divs[i].addEventListener('click', function () {console.log(rss);location.href = rss});
+		}
+	}
 
-	//Mouse-over tooltip for ellipsized title...
-	//Unfortunately it seems this may cause X window error!
+	// Mouse-over tooltip for ellipsized title...
+	// Unfortunately it seems this may cause X window error!
 	/*titles = document.getElementsByClassName('name')
 	for (i=0; i<titles.length; i++) {
 		titles[i].title = titles[i].textContent
@@ -129,7 +161,7 @@ document.onpageshow = new function () {
 		titles[i].title = titles[i].textContent
 	}*/
 
-	//Fix non-working preview buttons:
+	// Fix non-working preview buttons:
 	previews = document.getElementsByClassName('podcast-episode');
 	console.log(previews.length);
 	for (i = 0; i < previews.length; i++) {
@@ -142,10 +174,7 @@ document.onpageshow = new function () {
 		previews = document.getElementsByClassName('circular-preview-control');
 		console.log('previews' + previews.length);
 		for (i = 0; i < previews.length; i++) {
-			//if (previews[i].tagName=='div') {
-
 			previews[i].parentNode.parentNode.addEventListener('click', previewClick);
-			//}
 		}
 	}, 10000);
 
@@ -154,20 +183,25 @@ document.onpageshow = new function () {
 		if (buttons[i].getAttribute('subscribe-podcast-url') != null) {
 			buttons[i].addEventListener('click', function () { location.href = this.getAttribute('subscribe-podcast-url'); }, true);
 		}
-		/*if (buttons[i].getAttribute('episode-url')!=null) {
-			buttons[i].addEventListener('click',function () {alert(this.getAttribute('episode-url'))},true);
-		}*/
 	}
+
+        //Fix 100% height
 	if (document.getElementById('search-itunes-u') != null) {
-		//Fix 100% height
 		document.getElementById('search-itunes-u').style.height = 90;
 	}
 	if (document.getElementById('search-podcast') != null) {
-		//Fix 100% height
 		document.getElementById('search-podcast').style.height = 90;
 	}
 	console.log("JS OnPageShow Ran Successfully.");
 };
+
+function removeListeners(objects) {
+	for (var i=0; i<objects.length; i++) {
+		objects[i].onmouseover = (function () {});
+		objects[i].onclick = (function () {});
+		objects[i].onmousedown = (function () {});
+	}
+}
 
 function previewClick(el) {
 	console.log('previewclick');
@@ -177,6 +211,6 @@ function previewClick(el) {
 	} else if (tr.hasAttribute('audio-preview-url')) {
 		preview = tr.getAttribute('audio-preview-url');
 	}
-	a = new function () { this.url = preview; }//this.url="http://deimos3.apple.com/WebObjects/Core.woa/DownloadTrackPreview/matcmadison.edu-dz.5408889333.05408889335.5408889393/enclosure.mp4"}
+	a = new function () { this.url = preview; }
 	new player().playURL(a);
 };

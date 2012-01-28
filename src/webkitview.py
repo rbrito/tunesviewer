@@ -2,6 +2,7 @@ import logging
 import os
 
 import webkit
+from constants import USER_AGENT
 
 from inspector import Inspector
 
@@ -29,9 +30,9 @@ class WebKitView(webkit.WebView):
 			# errors on item mouseover, TypeError: Result of
 			# expression 'a' [null] is not an object.  in
 			# its.webkitVersion
-			self.ua = 'iTunes/10.5 ' + self.ua[self.ua.find("AppleWebKit"):]
+			self.ua = USER_AGENT+' ' + self.ua[self.ua.find("AppleWebKit"):]
 		else:
-			self.ua = 'iTunes/10.5'
+			self.ua = USER_AGENT
 		settings.set_property('user-agent', self.ua)
 		# Enable inspector:
 		settings.set_property("enable-developer-extras", True)
@@ -64,6 +65,7 @@ class WebKitView(webkit.WebView):
 
 	def webkitGo(self, view, frame, net_req, nav_act, pol_dec):
 		logging.debug("webkit-request.")
+		logging.debug(str(net_req))
 		if not self.webkitLoading:
 			# Don't load in browser, let this program download/convert it...
 			logging.debug("Noload")

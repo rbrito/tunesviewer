@@ -30,6 +30,6 @@ class FindInPageBox(gtk.Dialog):
 	def response(self, obj, value):
 		if value == 0:
 			self.hide()
-		elif value == 1:
+		else:
 			text = self.findText.get_text().lower()
 			self.emit('find', text)

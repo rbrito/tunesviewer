@@ -2,6 +2,8 @@ import logging
 
 import gtk
 
+import constants
+
 class FindBox:
 	"""
 	Advanced search based on
@@ -75,7 +77,6 @@ class FindBox:
 		elif value == 1:
 			#Use the search
 			if self.notebook.get_current_page() == 0:
-				#&titleTerm= was changed to &allTitle=,this fixes searching, for example title at Yale
-				self.mainwin.gotoURL("http://phobos.apple.com/WebObjects/MZSearch.woa/wa/advancedSearch?media=iTunesU&searchButton=submit&allTitle=%s&descriptionTerm=%s&institutionTerm=%s" % (self.title.get_text(), self.description.get_text(), self.institution.get_text()), True)
+				self.mainwin.gotoURL(constants.SEARCH_URL1 % (self.title.get_text(), self.description.get_text(), self.institution.get_text()), True)
 			else:
-				self.mainwin.gotoURL("http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/advancedSearch?media=podcast&titleTerm=%s&authorTerm=%s&descriptionTerm=%s&genreIndex=&languageTerm=" % (self.podtitle.get_text(), self.podauthor.get_text(), self.poddesc.get_text()), True)
+				self.mainwin.gotoURL(constants.SEARCH_URL2 % (self.podtitle.get_text(), self.podauthor.get_text(), self.poddesc.get_text()), True)

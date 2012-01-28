@@ -330,7 +330,7 @@ class TunesViewer:
 		viewmenu.append(self.htmlmode)
 
 		self.mobilemode = gtk.CheckMenuItem("Mobile Mode")
-		#viewmenu.append(self.mobilemode)
+		viewmenu.append(self.mobilemode)
 
 		viewmenu.append(gtk.SeparatorMenuItem())
 
@@ -1019,8 +1019,8 @@ class TunesViewer:
 		if ind == 0:
 			self.gotoURL(self.locationentry.get_text(), True)
 		elif ind == 1:
-			self.gotoURL('http://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?media=iTunesU&submit=media&term=' +
-					self.locationentry.get_text(), True)
+			self.gotoURL('http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&restrict=true&term='+
+			self.locationentry.get_text()+'&media=cobalt', True)
 		else:
 			self.gotoURL('http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&term=' +
 				     self.locationentry.get_text() + '&media=podcast', True)

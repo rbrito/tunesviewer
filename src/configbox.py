@@ -5,39 +5,37 @@ import os
 import gtk
 
 import firstsetup
-
-
-DOWNLOAD_FOLDER = os.path.expanduser("~")
-PREFS_FILE = os.path.expanduser("~/.tunesviewerprefs")
+from constants import DEFAULT_OPENER, HOME_URL, DOWNLOADS_DIR, PREFS_FILE
 
 class ConfigBox:
 	"""
 	Initialize variable defaults, as these variables are directly
 	accessed by the other classes.
 	"""
+	downloadfolder = os.path.expanduser("~")
 	downloadsafe = True
 	toolbar = True
 	statusbar = False
 	throbber = True
 	downloadfile = "%a/%p/%n %l%t"
 	openers = {
-		".mp3" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000",
-		".m4a" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000",
-		".mov" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000",
-		".mp4" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000",
-		".m4v" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000",
-		".m4p" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000",
-		".aiff" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000",
-		".aif" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000",
-		".aifc" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000",
-		".3gp" : "/usr/bin/vlc --http-user-agent=iTunes/10.5 --http-caching=10000",
+		".mp3" : DEFAULT_OPENER,
+		".m4a" : DEFAULT_OPENER,
+		".mov" : DEFAULT_OPENER,
+		".mp4" : DEFAULT_OPENER,
+		".m4v" : DEFAULT_OPENER,
+		".m4p" : DEFAULT_OPENER,
+		".aiff" : DEFAULT_OPENER,
+		".aif" : DEFAULT_OPENER,
+		".aifc" : DEFAULT_OPENER,
+		".3gp" : DEFAULT_OPENER,
 		}
 	podcastprog = "rhythmbox %i"
 	defaultcommand = 2
 	notifyseconds = 7
 	iconsizeN = 16
 	imagesizeN = 48
-	home = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewGrouping?id=27753"
+	home = HOME_URL
 	zoomAll = True
 	releasedCol = False
 	modifiedCol = False
@@ -220,7 +218,7 @@ class ConfigBox:
 		self.modifiedCol = self.checkModifiedCol.get_active()
 		self.zoomAll = self.checkZoomAll.get_active()
 		if self.downloadfolder == None:
-			self.downloadfolder = DOWNLOAD_FOLDER
+			self.downloadfolder = DOWNLOADS_DIR
 		self.defaultcommand = self.combo.get_active()
 		self.notifyseconds = int(self.notifyEntry.get_text())
 		self.podcastprog = self.podcastprogbox.child.get_text()
@@ -251,7 +249,14 @@ class ConfigBox:
 		config.set(sec, "modifiedCol", self.modifiedCol)
 		config.set(sec, "zoomAll", self.zoomAll)
 		config.set(sec, "zoom", self.mainwin.descView.get_zoom_level())
-		config.write(open(PREFS_FILE, "w"))
+		try:
+			os.mkdir(os.path.dirname(PREFS_FILE))
+		except OSError as e:
+			pass
+		try:
+			config.write(open(PREFS_FILE, "w"))
+		except OSError as e:
+			logging.error(str(e))
 		self.setVisibility()
 
 
