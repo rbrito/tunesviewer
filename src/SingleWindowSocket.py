@@ -58,7 +58,7 @@ class SingleWindowSocket:
 				pass
 			else:
 				logging.error('Error creating socket: %s.' % str(e))
-		s.bind(TV_SOCKET)
+		s.bind(DATA_SOCKET)
 
 		while True:
 			url = s.recv(65536) # Wait for a url to load.
