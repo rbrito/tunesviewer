@@ -589,7 +589,7 @@ class TunesViewer:
 
 		# adjustable panel with description box above listing:
 		vpaned = gtk.VPaned()
-		vpaned.set_position(260)
+		vpaned.set_position(500)
 		sw = gtk.ScrolledWindow()
 		sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		self.descView = WebKitView(self)
