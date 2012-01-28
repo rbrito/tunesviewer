@@ -6,7 +6,7 @@ from threading import Thread
 
 import gobject
 
-from constants import TV_SOCKET
+from constants import DATA_SOCKET, DATA_DIR
 
 class SingleWindowSocket:
 	"""
@@ -19,14 +19,16 @@ class SingleWindowSocket:
 	def __init__(self, url, main):
 		self.caller = main
 		self.RUN = False # When true, start program.
-		if os.path.exists(TV_SOCKET):
+		try:
+			os.makedirs(DATA_DIR)
+		except OSError as e:
+			logging.warn('Error creating data directory: ' + str(e))
+		if os.path.exists(DATA_SOCKET):
 			try:
 				self.sendUrl(url)
 			except socket.error as msg:
-				logging.error("Error:")
-				logging.error(msg)
-				logging.error("Previous program crashed? Starting server.")
-				os.remove(TV_SOCKET)
+				logging.error("Possible stale socket (%s). Starting server." % str(msg))
+				os.remove(DATA_SOCKET)
 				self.RUN = True
 				Thread(target=self.server).start()
 		else:
@@ -38,7 +40,7 @@ class SingleWindowSocket:
 		Sends to currently running instance.
 		"""
 		s = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
-		s.connect(TV_SOCKET)
+		s.connect(DATA_SOCKET)
 		s.send(url)
 		s.close()
 
@@ -48,11 +50,11 @@ class SingleWindowSocket:
 		"""
 		s = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
 		s.settimeout(None) # important! Otherwise default timeout will apply.
-		s.bind(TV_SOCKET)
+		s.bind(DATA_SOCKET)
 		while True:
 			url = s.recv(65536) # Wait for a url to load.
 			if url == 'EXIT':
-				os.remove(TV_SOCKET)
+				os.remove(DATA_SOCKET)
 				return # End this thread to let program exit normally.
 			gobject.idle_add(self.caller.gotoURL, url, True)
 			gobject.idle_add(self.caller.window.present)
