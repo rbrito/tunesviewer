@@ -482,17 +482,22 @@ class Parser:
 				gotou = ""
 				price = "0"
 				comment = ""
-				try:
+				if ('itemName' in data):
 					title = data['itemName']
+				if ('artistName' in data):
 					artist = data['artistName']
+				if ('duration' in data):
 					duration = time_convert(data['duration'])
+				if ('preview-url' in data):
 					url = data['preview-url']
+				if ('playlistName' in data):
 					comment = data['playlistName']
+				if ('url' in data):
 					gotou = data['url']
+				if ('price' in data):
 					price = data['price']
+				if ('itemId' in data):
 					itemid = data['itemId']
-				except KeyError as e:
-					logging.warn('Error getting attribute: ' + str(e))
 				self.addItem(title,
 					     artist,
 					     duration,
