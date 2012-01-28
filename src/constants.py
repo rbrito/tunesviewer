@@ -7,7 +7,7 @@ import os.path
 
 import glib
 
-# Path of the program
+# Path of the program (bad assumption)
 TV_PATH = "/usr/bin/tunesviewer"
 
 # Directory under which we write configuration files
