@@ -9,6 +9,7 @@ sys.path.append('src')
 sys.path.append('../src')
 
 from Parser import Parser
+from constants import USER_AGENT
 
 
 # Test the parser class - Requires network!
@@ -18,7 +19,7 @@ class TestParser(unittest.TestCase):
 		Take care of the preparation of the tests.
 		"""
 		self.o = urllib2.build_opener()
-		self.o.addheaders = [('User-agent', 'iTunes/10.5')]
+		self.o.addheaders = [('User-agent', USER_AGENT)]
 
 
 	def testParseAgriculture(self):
@@ -44,6 +45,19 @@ class TestParser(unittest.TestCase):
 		self.assertEqual(parsed_html.Redirect, '')
 		self.assertEqual(parsed_html.Title, 'iTunes U > Top Downloads')
 		self.assertEqual(len(parsed_html.mediaItems), 0) # Not sure where the bogus element is coming from in the gui...
+
+		# FIXME: The following should be made into proper tests
+		for line in parsed_html.mediaItems:
+			logging.debug(line)
+			
+	def testMain(self):
+		url = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewGrouping?id=27753"
+		text = self.o.open(url).read()
+		parsed_html = Parser(url, "text/HTML", text)
+
+		# FIXME: Maybe it could be smarter about finding the title...
+		self.assertEqual(parsed_html.Redirect, '')
+		self.assertEqual(parsed_html.Title, 'iTunes U')
 
 		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
