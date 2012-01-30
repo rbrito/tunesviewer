@@ -151,5 +151,14 @@ def super_unquote(s):
 	return new_s
 
 
-def type_of(name):
-	return super_unquote(os.path.splitext(name)[1])
+def type_of(url):
+	ext = super_unquote(url)
+	if ext.find("?") != -1:
+		ext = ext[:ext.find("?")]
+	if ext.find("%") != -1:
+		ext = ext[:ext.find("%")]
+	if ext.rfind(".") != -1:
+		ext = ext[ext.rfind("."):]
+	if ext.find("/") != -1:
+		ext = ext[:ext.find("/")]
+	return ext
