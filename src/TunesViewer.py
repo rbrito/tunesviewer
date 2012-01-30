@@ -1197,9 +1197,7 @@ class TunesViewer:
 				if len(local) > 100:
 					local = local[-99:]
 
-		self.downloadbox.newDownload(self.iconOfType(extType), url,
-					     final_file,
-					     self.opener)
+		self.downloadbox.newDownload(self.iconOfType(extType), url, final_file, self.opener)
 		logging.debug("Starting download of " + local +
 			      " to " + final_file)
 		self.downloadbox.window.show()
