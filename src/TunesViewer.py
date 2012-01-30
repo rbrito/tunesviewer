@@ -1170,6 +1170,8 @@ class TunesViewer:
 		name = safeFilename(name, self.config.downloadsafe)
 		artist = safeFilename(artist, self.config.downloadsafe)
 		duration = safeFilename(duration, self.config.downloadsafe)
+		if duration == "(unknown)":
+			duration = "" #not specified in many files, pdfs etc.
 		extType = safeFilename(extType, self.config.downloadsafe)
 		comment = safeFilename(comment, self.config.downloadsafe)
 		title = safeFilename(self.window.get_title(), self.config.downloadsafe)
@@ -1289,9 +1291,24 @@ class TunesViewer:
 			xml = urllib.unquote(url)[11:]
 			dom = etree.fromstring(xml)
 			keys = dom.xpath("//key")
-			
+			name = ""
+			artist = ""
+			duration = ""
+			extType = ""
+			comment = ""
+			url = ""
 			for key in keys:
 				print key.text, key.getnext().text
+				if key.text == "URL" and key.getnext() is not None:
+					url = key.getnext().text
+				elif key.text == "artistName" and key.getnext() is not None:
+					artist = key.getnext().text
+				elif key.text == "fileExtension" and key.getnext() is not None:
+					extType = "."+key.getnext().text
+				elif key.text == "songName" and key.getnext() is not None:
+					name = key.getnext().text
+			self.downloadFile(name, artist, duration, extType, comment, url)
+			return
 		if self.downloading:
 			return
 		elif url.startswith("web"):
