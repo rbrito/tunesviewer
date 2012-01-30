@@ -53,6 +53,7 @@ from webkitview import WebKitView
 from Parser import Parser
 from SingleWindowSocket import SingleWindowSocket
 from common import *
+from constants import TV_VERSION, SEARCH_U, SEARCH_P
 
 # Start logging messages
 logging.basicConfig(level=logging.DEBUG)
@@ -85,7 +86,7 @@ class TunesViewer:
 		self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 		self.window.set_title("TunesViewer")
 		self.window.set_size_request(350, 350) #minimum
-		self.window.resize(610, 520)
+		self.window.resize(750, 750) #default
 		self.window.connect("delete_event", self.delete_event)
 		# set add drag-drop, based on:
 		# http://stackoverflow.com/questions/1219863/python-gtk-drag-and-drop-get-url
@@ -588,7 +589,7 @@ class TunesViewer:
 
 		# adjustable panel with description box above listing:
 		vpaned = gtk.VPaned()
-		vpaned.set_position(260)
+		vpaned.set_position(500)
 		sw = gtk.ScrolledWindow()
 		sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		self.descView = WebKitView(self)
@@ -898,9 +899,9 @@ class TunesViewer:
 					gtk.DIALOG_MODAL,
 					gtk.MESSAGE_INFO,
 					gtk.BUTTONS_CLOSE,
-					"TunesViewer - Easy iTunesU access in Linux\n"
-					"Version 1.4 by Luke Bryan\n"
-					"This is open source software, distributed 'as is'")
+					"TunesViewer - Easy iTunesU access\n"
+					"Version %s, (c) 2009-2012, Tunesviewer authors.\n"
+					"This is open source software, distributed 'as is'." % (TV_VERSION,))
 		msg.run()
 		msg.destroy()
 
@@ -1019,11 +1020,9 @@ class TunesViewer:
 		if ind == 0:
 			self.gotoURL(self.locationentry.get_text(), True)
 		elif ind == 1:
-			self.gotoURL('http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&restrict=true&term='+
-			self.locationentry.get_text()+'&media=cobalt', True)
+			self.gotoURL(SEARCH_U % self.locationentry.get_text(), True)
 		else:
-			self.gotoURL('http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&term=' +
-				     self.locationentry.get_text() + '&media=podcast', True)
+			self.gotoURL(SEARCH_P % self.locationentry.get_text(), True)
 
 	def followlink(self, obj):
 		"""
@@ -1151,7 +1150,7 @@ class TunesViewer:
 		name = htmlentitydecode(properties[1])
 		artist = properties[2]
 		duration = properties[3]
-		type = properties[4]
+		extType = properties[4]
 		comment = properties[5]
 		url = properties[9]
 		if url == "":
@@ -1165,16 +1164,20 @@ class TunesViewer:
 			return
 		if properties[10] != "0" and properties[10] != "":
 			return
+		self.downloadFile(name, artist, duration, extType, comment, url)
 
+	def downloadFile(self, name, artist, duration, extType, comment, url):
 		name = safeFilename(name, self.config.downloadsafe)
 		artist = safeFilename(artist, self.config.downloadsafe)
 		duration = safeFilename(duration, self.config.downloadsafe)
-		type = safeFilename(type, self.config.downloadsafe)
+		if duration == "(unknown)":
+			duration = "" #not specified in many files, pdfs etc.
+		extType = safeFilename(extType, self.config.downloadsafe)
 		comment = safeFilename(comment, self.config.downloadsafe)
 		title = safeFilename(self.window.get_title(), self.config.downloadsafe)
 		# Now make an appropriate local-file name:
 		local = self.config.downloadfile \
-		  .replace("%n", name).replace("%a", artist).replace("%p", title).replace("%c", comment).replace("%t", type).replace("%l", duration)#.replace(os.sep, "-")
+		  .replace("%n", name).replace("%a", artist).replace("%p", title).replace("%c", comment).replace("%t", extType).replace("%l", duration)#.replace(os.sep, "-")
 		logging.debug("LOCAL=" + local)
 
 		final_file = os.path.join(self.config.downloadfolder, local)
@@ -1194,9 +1197,7 @@ class TunesViewer:
 				if len(local) > 100:
 					local = local[-99:]
 
-		self.downloadbox.newDownload(properties[0], url,
-					     final_file,
-					     self.opener)
+		self.downloadbox.newDownload(self.iconOfType(extType), url, final_file, self.opener)
 		logging.debug("Starting download of " + local +
 			      " to " + final_file)
 		self.downloadbox.window.show()
@@ -1283,6 +1284,29 @@ class TunesViewer:
 		If newurl is true, forward is cleared.
 		"""
 		oldurl = self.url # previous url, to add to back stack.
+		if url.startswith("download://"):
+			logging.debug("DOWNLOAD:// interface called with xml:"+urllib.unquote(url))
+			xml = urllib.unquote(url)[11:]
+			dom = etree.fromstring(xml)
+			keys = dom.xpath("//key")
+			name = ""
+			artist = ""
+			duration = ""
+			extType = ""
+			comment = ""
+			url = ""
+			for key in keys:
+				print key.text, key.getnext().text
+				if key.text == "URL" and key.getnext() is not None:
+					url = key.getnext().text
+				elif key.text == "artistName" and key.getnext() is not None:
+					artist = key.getnext().text
+				elif key.text == "fileExtension" and key.getnext() is not None:
+					extType = "."+key.getnext().text
+				elif key.text == "songName" and key.getnext() is not None:
+					name = key.getnext().text
+			self.downloadFile(name, artist, duration, extType, comment, url)
+			return
 		if self.downloading:
 			return
 		elif url.startswith("web"):
@@ -1523,27 +1547,28 @@ class TunesViewer:
 		except Exception as e:
 			logging.debug("Exception:" + str(e))
 
-		audio_types = [".mp3", ".m4a", ".amr", ".m4p", ".aiff", ".aif",
-			       ".aifc"]
-		video_types = [".mp4", ".m4v", ".mov", ".m4b", ".3gp"]
 
 		for row in self.liststore:
 			content_type = row[4].lower()
 
-			if content_type in audio_types:
-				self.liststore.set(row.iter, 0,
-						   self.icon_audio)
-			elif content_type in video_types:
-				self.liststore.set(row.iter, 0,
-						   self.icon_video)
-			elif content_type != "":
-				self.liststore.set(row.iter, 0,
-						   self.icon_other)
-			elif row[8]: #it's a link
-				self.liststore.set(row.iter, 0,
-						   self.icon_link)
+			self.liststore.set(row.iter, 0,
+				self.iconOfType(content_type))
+			#elif row[8]: #it's a link
+			#	self.liststore.set(row.iter, 0,
+			#			   self.icon_link)
 
 			url = row[10]
+			
+	def iconOfType(self,content_type):
+		audio_types = [".mp3", ".m4a", ".amr", ".m4p", ".aiff", ".aif",
+			       ".aifc"]
+		video_types = [".mp4", ".m4v", ".mov", ".m4b", ".3gp"]
+		if content_type in audio_types:
+			return self.icon_audio
+		elif content_type in video_types:
+			return self.icon_video;
+		elif content_type != "":
+			return self.icon_other
 
 class VWin:
 	def __init__(self, title, source):
@@ -1570,13 +1595,13 @@ if __name__ == "__main__":
 	args = sys.argv[1:]
 	url = ""
 	if len(args) > 1 and args[0] == "-s":
-		url = 'http://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?media=iTunesU&submit=media&term=' + args[1]
+		url = SEARCH_U % args[1]
 	elif len(args) > 0:
 		url = args[0]
 
 	# Create the TunesViewer instance and run it. If an instance is
 	# already running, send the url to such instance.
-	logging.info("TunesViewer 1.4")
+	logging.info("TunesViewer "+TV_VERSION)
 	prog = TunesViewer()
 	prog.sock = SingleWindowSocket(url, prog)
 
