@@ -39,13 +39,14 @@ function player() {
 	
 	this.addProtocol = function (xml) {
 		console.log(xml);
-		xml = new DOMParser().parseFromString(xml, "text/xml");
+		location.href="download://"+xml
+		/*xml = new DOMParser().parseFromString(xml, "text/xml");
 		keys = xml.getElementsByTagName('key');
 		for (var i=0; i<keys.length; i++) {
 			if (keys[i].textContent=="URL") {//Goto the download url.
 				document.location = keys[i].nextSibling.textContent;
 			}
-		}
+		}*/
 	};
 
 	this.stop = function () {
@@ -192,6 +193,10 @@ document.onpageshow = new function () {
 	if (document.getElementById('search-podcast') != null) {
 		document.getElementById('search-podcast').style.height = 90;
 	}
+	var css = document.createElement("style");
+	css.type = "text/css";
+	css.innerHTML = "body, html, div, ul, ol, li, a, img, embed, h1, h2, h3, h4, h5, h6 { -webkit-user-select: initial !important }";
+	document.body.appendChild(css);
 	console.log("JS OnPageShow Ran Successfully.");
 };
 

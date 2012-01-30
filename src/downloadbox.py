@@ -2,6 +2,7 @@ import logging
 import os
 
 import gobject
+import gio
 import gtk
 
 from downloader import Downloader
@@ -99,6 +100,8 @@ class DownloadBox:
 				n.set_timeout(1000 * self.Wopener.config.notifyseconds)
 				n.show()
 			except ImportError as e:
+				logging.warn("Notification failed: " + str(e))
+			except gio.Error as e:
 				logging.warn("Notification failed: " + str(e))
 
 	def newDownload(self, icon, url, localfile, opener):
