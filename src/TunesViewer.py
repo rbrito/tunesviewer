@@ -1150,7 +1150,7 @@ class TunesViewer:
 		name = htmlentitydecode(properties[1])
 		artist = properties[2]
 		duration = properties[3]
-		type = properties[4]
+		extType = properties[4]
 		comment = properties[5]
 		url = properties[9]
 		if url == "":
@@ -1164,16 +1164,18 @@ class TunesViewer:
 			return
 		if properties[10] != "0" and properties[10] != "":
 			return
+		self.downloadFile(name, artist, duration, extType, comment, url)
 
+	def downloadFile(self, name, artist, duration, extType, comment, url):
 		name = safeFilename(name, self.config.downloadsafe)
 		artist = safeFilename(artist, self.config.downloadsafe)
 		duration = safeFilename(duration, self.config.downloadsafe)
-		type = safeFilename(type, self.config.downloadsafe)
+		extType = safeFilename(extType, self.config.downloadsafe)
 		comment = safeFilename(comment, self.config.downloadsafe)
 		title = safeFilename(self.window.get_title(), self.config.downloadsafe)
 		# Now make an appropriate local-file name:
 		local = self.config.downloadfile \
-		  .replace("%n", name).replace("%a", artist).replace("%p", title).replace("%c", comment).replace("%t", type).replace("%l", duration)#.replace(os.sep, "-")
+		  .replace("%n", name).replace("%a", artist).replace("%p", title).replace("%c", comment).replace("%t", extType).replace("%l", duration)#.replace(os.sep, "-")
 		logging.debug("LOCAL=" + local)
 
 		final_file = os.path.join(self.config.downloadfolder, local)
@@ -1193,7 +1195,7 @@ class TunesViewer:
 				if len(local) > 100:
 					local = local[-99:]
 
-		self.downloadbox.newDownload(properties[0], url,
+		self.downloadbox.newDownload(self.iconOfType(extType), url,
 					     final_file,
 					     self.opener)
 		logging.debug("Starting download of " + local +
@@ -1282,6 +1284,14 @@ class TunesViewer:
 		If newurl is true, forward is cleared.
 		"""
 		oldurl = self.url # previous url, to add to back stack.
+		if url.startswith("download://"):
+			logging.debug("DOWNLOAD:// interface called with xml:"+urllib.unquote(url))
+			xml = urllib.unquote(url)[11:]
+			dom = etree.fromstring(xml)
+			keys = dom.xpath("//key")
+			
+			for key in keys:
+				print key.text, key.getnext().text
 		if self.downloading:
 			return
 		elif url.startswith("web"):
@@ -1522,27 +1532,28 @@ class TunesViewer:
 		except Exception as e:
 			logging.debug("Exception:" + str(e))
 
-		audio_types = [".mp3", ".m4a", ".amr", ".m4p", ".aiff", ".aif",
-			       ".aifc"]
-		video_types = [".mp4", ".m4v", ".mov", ".m4b", ".3gp"]
 
 		for row in self.liststore:
 			content_type = row[4].lower()
 
-			if content_type in audio_types:
-				self.liststore.set(row.iter, 0,
-						   self.icon_audio)
-			elif content_type in video_types:
-				self.liststore.set(row.iter, 0,
-						   self.icon_video)
-			elif content_type != "":
-				self.liststore.set(row.iter, 0,
-						   self.icon_other)
-			elif row[8]: #it's a link
-				self.liststore.set(row.iter, 0,
-						   self.icon_link)
+			self.liststore.set(row.iter, 0,
+				self.iconOfType(content_type))
+			#elif row[8]: #it's a link
+			#	self.liststore.set(row.iter, 0,
+			#			   self.icon_link)
 
 			url = row[10]
+			
+	def iconOfType(self,content_type):
+		audio_types = [".mp3", ".m4a", ".amr", ".m4p", ".aiff", ".aif",
+			       ".aifc"]
+		video_types = [".mp4", ".m4v", ".mov", ".m4b", ".3gp"]
+		if content_type in audio_types:
+			return self.icon_audio
+		elif content_type in video_types:
+			return self.icon_video;
+		elif content_type != "":
+			return self.icon_other
 
 class VWin:
 	def __init__(self, title, source):
