@@ -1,6 +1,6 @@
-tunesviewer (1.4-157~1.gbpf06cf0-1) UNRELEASED; urgency=medium
+tunesviewer (1.4-172~1.gbp0f98da) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @f06cf08060702d5e36c440e9f57f398d85c36c1b **
+  ** SNAPSHOT build @0f98da4c32bd978e214a7f46d4499923bfa946cc **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
@@ -112,5 +112,16 @@ tunesviewer (1.4-157~1.gbpf06cf0-1) UNRELEASED; urgency=medium
   * Fix breakage when XDG directories are not present.
   * constants: Mark that assuming a particular path for the program is bad.
   * SingleWindowSocket: Fix constant that was renamed.
+  * debian/changelog: Update.
 
- -- Rogério Brito <rbrito@ime.usp.br>  Sat, 28 Jan 2012 00:31:07 -0200
+  [ Luke Bryan ]
+  * More work on constants.
+  * Revert parser code to catch any/all attributes.
+  * Change splitter
+  * Fixed file extension function, unit-testing.
+  * Separate some downloading and icon functions.
+  * Made text selectable
+  * Added download:// interface
+  * Fixed another possible error in notification, too many notifications gio.error.
+
+ -- Rogério Brito <rbrito@ime.usp.br>  Mon, 30 Jan 2012 19:07:43 -0200
