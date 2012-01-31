@@ -7,20 +7,20 @@ import os.path
 
 import glib
 
-# Path of the program
+# Path of the program (bad assumption)
 TV_PATH = "/usr/bin/tunesviewer"
 TV_VERSION = "1.5" #also needs changing in debian conf file somewhere
 
 # Directory under which we write configuration files
-USER_CONF_DIR = glib.get_user_config_dir()
-TV_CONFIG_DIR = os.path.join(USER_CONF_DIR, "tunesviewer")
-PREFS_FILE = os.path.join(TV_CONFIG_DIR, "tunesviewer.conf")
+USER_PREFS_DIR = glib.get_user_config_dir()
+PREFS_DIR = os.path.join(USER_PREFS_DIR, "tunesviewer")
+PREFS_FILE = os.path.join(PREFS_DIR, "tunesviewer.conf")
 
 # Directory under which we write state data
 USER_DATA_DIR = glib.get_user_data_dir()
-TV_DATA_DIR = os.path.join(USER_DATA_DIR, "tunesviewer")
-STATE_FILE = os.path.join(TV_DATA_DIR, "state")
-TV_SOCKET = os.path.join(TV_DATA_DIR, "tunesviewerLOCK")
+DATA_DIR = os.path.join(USER_DATA_DIR, "tunesviewer")
+DATA_FILE = os.path.join(DATA_DIR, "state")
+DATA_SOCKET = os.path.join(DATA_DIR, "tunesviewerLOCK")
 
 # Directory under which we write downloaded files
 DOWNLOADS_DIR = os.path.expanduser("~")
