@@ -24,7 +24,6 @@ import logging
 import os
 import socket
 import subprocess
-import sys
 import time
 import urllib
 import urllib2
@@ -1592,6 +1591,8 @@ class VWin:
 
 
 if __name__ == "__main__":
+	import sys
+
 	args = sys.argv[1:]
 	url = ""
 	if len(args) > 1 and args[0] == "-s":
