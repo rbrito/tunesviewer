@@ -54,10 +54,6 @@ from SingleWindowSocket import SingleWindowSocket
 from common import *
 from constants import TV_VERSION, SEARCH_U, SEARCH_P
 
-# Start logging messages
-logging.basicConfig(level=logging.DEBUG)
-
-
 class TunesViewer:
 	source = ""  # full html/xml source
 	url = ""  # page url
@@ -1590,16 +1586,31 @@ class VWin:
 		self.window.show_all()
 
 
-if __name__ == "__main__":
-	import sys
+def parse_cli():
+	import optparse
+	parser = optparse.OptionParser()
 
-	args = sys.argv[1:]
-	url = ""
-	if len(args) > 1 and args[0] == "-s":
-		url = SEARCH_U % args[1]
+	parser.add_option('-s', '--search', help='Give terms to use as a search.')
+	parser.add_option('-v', '--verbose', help='Output debug information.', action='store_true', default=False)
+
+	opts, args = parser.parse_args()
+
+	if opts.search is not None:
+		url = SEARCH_U % opts.search
 	elif len(args) > 0:
 		url = args[0]
+	else:
+		url = ''
 
+	if opts.verbose:
+		logging.basicConfig(level=logging.DEBUG)
+
+	return url
+
+
+if __name__ == "__main__":
+
+	url = parse_cli()
 	# Create the TunesViewer instance and run it. If an instance is
 	# already running, send the url to such instance.
 	logging.info("TunesViewer "+TV_VERSION)
