@@ -1553,7 +1553,7 @@ class TunesViewer:
 			#			   self.icon_link)
 
 			url = row[10]
-			
+
 	def iconOfType(self,content_type):
 		audio_types = [".mp3", ".m4a", ".amr", ".m4p", ".aiff", ".aif",
 			       ".aifc"]
@@ -1613,7 +1613,7 @@ if __name__ == "__main__":
 	url = parse_cli()
 	# Create the TunesViewer instance and run it. If an instance is
 	# already running, send the url to such instance.
-	logging.info("TunesViewer "+TV_VERSION)
+	logging.info("TunesViewer " + TV_VERSION)
 	prog = TunesViewer()
 	prog.sock = SingleWindowSocket(url, prog)
 
