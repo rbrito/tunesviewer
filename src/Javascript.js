@@ -195,7 +195,7 @@ document.onpageshow = new function () {
 	}
 	var css = document.createElement("style");
 	css.type = "text/css";
-	css.innerHTML = "body, html, div, ul, ol, li, a, img, embed, h1, h2, h3, h4, h5, h6 { -webkit-user-select: initial !important }";
+	css.innerHTML = "* { -webkit-user-select: initial !important }";
 	document.body.appendChild(css);
 	console.log("JS OnPageShow Ran Successfully.");
 };
