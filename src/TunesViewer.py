@@ -24,7 +24,6 @@ import logging
 import os
 import socket
 import subprocess
-import sys
 import time
 import urllib
 import urllib2
@@ -54,10 +53,6 @@ from Parser import Parser
 from SingleWindowSocket import SingleWindowSocket
 from common import *
 from constants import TV_VERSION, SEARCH_U, SEARCH_P
-
-# Start logging messages
-logging.basicConfig(level=logging.DEBUG)
-
 
 class TunesViewer:
 	source = ""  # full html/xml source
@@ -1307,6 +1302,11 @@ class TunesViewer:
 					name = key.getnext().text
 			self.downloadFile(name, artist, duration, extType, comment, url)
 			return
+		elif url.startswith("copyurl://"):
+			tocopy = urllib.unquote(url[10:].replace("[http:]","http:").replace("[https:]","https:"))
+			gtk.Clipboard().set_text(tocopy)
+			logging.debug("copied "+tocopy)
+			return
 		if self.downloading:
 			return
 		elif url.startswith("web"):
@@ -1558,7 +1558,7 @@ class TunesViewer:
 			#			   self.icon_link)
 
 			url = row[10]
-			
+
 	def iconOfType(self,content_type):
 		audio_types = [".mp3", ".m4a", ".amr", ".m4p", ".aiff", ".aif",
 			       ".aifc"]
@@ -1591,17 +1591,34 @@ class VWin:
 		self.window.show_all()
 
 
-if __name__ == "__main__":
-	args = sys.argv[1:]
-	url = ""
-	if len(args) > 1 and args[0] == "-s":
-		url = SEARCH_U % args[1]
+def parse_cli():
+	import optparse
+	parser = optparse.OptionParser()
+
+	parser.add_option('-s', '--search', help='Give terms to use as a search.')
+	parser.add_option('-v', '--verbose', help='Output debug information.', action='store_true', default=False)
+
+	opts, args = parser.parse_args()
+
+	if opts.search is not None:
+		url = SEARCH_U % opts.search
 	elif len(args) > 0:
 		url = args[0]
+	else:
+		url = ''
 
+	if opts.verbose:
+		logging.basicConfig(level=logging.DEBUG)
+
+	return url
+
+
+if __name__ == "__main__":
+
+	url = parse_cli()
 	# Create the TunesViewer instance and run it. If an instance is
 	# already running, send the url to such instance.
-	logging.info("TunesViewer "+TV_VERSION)
+	logging.info("TunesViewer " + TV_VERSION)
 	prog = TunesViewer()
 	prog.sock = SingleWindowSocket(url, prog)
 
