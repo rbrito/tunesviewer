@@ -143,5 +143,5 @@ class DownloadBox:
 			#this won't make cpu work too much.
 			gobject.timeout_add(250, self.updateLoop)
 		d.start()
-		f = open(constants.STATE_FILE, 'a')
+		f = open(constants.DATA_FILE, 'a')
 		f.write("#### url and localfile name: ####\n" + url + "\n" + localfile + "\n")
