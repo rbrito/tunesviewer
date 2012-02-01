@@ -19,8 +19,8 @@ PREFS_FILE = os.path.join(PREFS_DIR, "tunesviewer.conf")
 # Directory under which we write state data
 USER_DATA_DIR = glib.get_user_data_dir()
 DATA_DIR = os.path.join(USER_DATA_DIR, "tunesviewer")
-DATA_FILE = os.path.join(DATA_DIR, "state")
-DATA_SOCKET = os.path.join(DATA_DIR, "tunesviewerLOCK")
+DATA_FILE = os.path.join(DATA_DIR, "state") # Holds current downloads, in case of crash, resumes.
+DATA_SOCKET = os.path.join(DATA_DIR, "tunesviewerLOCK") # Holds socket, so second app calls first instance with url.
 
 # Directory under which we write downloaded files
 DOWNLOADS_DIR = os.path.expanduser("~")
