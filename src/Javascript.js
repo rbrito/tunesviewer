@@ -69,6 +69,10 @@ function player() {
 	this.getUserDSID = function () {//no user id.
 		return 0;
 	};
+	
+	this.putURLOnPasteboard = function(a,bool) {
+		location.href = "copyurl://"+escape(a)
+	};
 }
 
 function defined(something) {
