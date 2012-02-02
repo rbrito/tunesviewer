@@ -1302,6 +1302,11 @@ class TunesViewer:
 					name = key.getnext().text
 			self.downloadFile(name, artist, duration, extType, comment, url)
 			return
+		elif url.startswith("copyurl://"):
+			tocopy = urllib.unquote(url[10:].replace("[http:]","http:").replace("[https:]","https:"))
+			gtk.Clipboard().set_text(tocopy)
+			logging.debug("copied "+tocopy)
+			return
 		if self.downloading:
 			return
 		elif url.startswith("web"):
