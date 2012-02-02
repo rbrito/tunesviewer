@@ -1,6 +1,6 @@
-tunesviewer (1.4-172~1.gbp0f98da) UNRELEASED; urgency=medium
+tunesviewer (1.4-172~2.gbp250f89) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @0f98da4c32bd978e214a7f46d4499923bfa946cc **
+  ** SNAPSHOT build @250f89627dca3c370beb94dd31dc428ea5cbac62 **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
@@ -124,4 +124,15 @@ tunesviewer (1.4-172~1.gbp0f98da) UNRELEASED; urgency=medium
   * Added download:// interface
   * Fixed another possible error in notification, too many notifications gio.error.
 
- -- Rogério Brito <rbrito@ime.usp.br>  Mon, 30 Jan 2012 19:07:43 -0200
+  [ Rogério Brito ]
+  * Update the changelog.
+  * TunesViewer: Move loading the `sys` module only when used.
+  * TunesViewer: Use `optparse` to parse command line options.
+  * TunesViewer: Minor cosmetic stuff.
+
+  [ Luke Bryan ]
+  * Fixed misnamed variable, added comments.
+  * Make ALL selectable.
+  * Added copy to clipboard from top panel.
+
+ -- Rogério Brito <rbrito@ime.usp.br>  Wed, 01 Feb 2012 22:41:33 -0200
