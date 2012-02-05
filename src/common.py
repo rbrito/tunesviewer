@@ -19,8 +19,9 @@ def time_convert(ms):
 	This is done for consistency with the rest of the iTunes Store.
 	"""
 	try:
-		seconds = int(ms)/1000
-	except (ValueError, TypeError):
+		seconds = int(ms) / 1000
+	except (ValueError, TypeError) as e:
+		logging.debug("Couldn't format %s as time." % str(e))
 		return ms
 
 	hour = seconds / 3600
