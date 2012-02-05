@@ -45,6 +45,18 @@ class TestCommon(unittest.TestCase):
 				 '. Automated Testing')
 		self.assertEqual(super_unquote('.%2520Automated%2520Testing'),
 				 '. Automated Testing')
+	def test_desc(self):
+		self.assertEqual(desc(1), '1.0 B')
+		self.assertEqual(desc(512), '512.0 B')
+		self.assertEqual(desc(1023), '1023.0 B')
+		self.assertEqual(desc(1024), '1.0 KB')
+		self.assertEqual(desc(1025), '1.0 KB')
+		self.assertEqual(desc(512 * 1024), '512.0 KB')
+		self.assertEqual(desc(1023 * 1024), '1023.0 KB')
+		self.assertEqual(desc(1024 * 1024), '1.0 MB')
+		self.assertEqual(desc(1025 * 1024), '1.0 MB')
+		self.assertEqual(desc(0.5 * 1024 * 1024 * 1024), '512.0 MB')
+
 
 if __name__ == "__main__":
 	unittest.main()
