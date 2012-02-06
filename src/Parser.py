@@ -561,6 +561,35 @@ class Parser:
 					     "",
 					     "",
 					     element.get("adam-id"))
+			elif (element.tag == "button" and
+			     element.get("episode-url")):
+				title = ""
+				artist = ""
+				url = ""
+				itemid=""
+				if element.get("aria-label"):
+					title = element.get("aria-label")
+					if title.startswith("Free Episode, "):
+						title = title[14:]
+				if element.get("artist-name"):
+					artist = element.get("artist-name")
+				if element.get("episode-url"):
+					url = element.get("episode-url")
+				mytype = type_of(url)
+				if element.get("disabled") is not None:
+					mytype = ".zip" # wrong ext. fix it.
+				self.addItem(title,
+					     artist,
+					     "",
+					     mytype,
+					     "",
+					     "",
+					     "",
+					     "",
+					     url,
+					     "",
+					     itemid)
+				
 			else: # go through the childnodes.
 				for i in element:
 					self.seeHTMLElement(i)

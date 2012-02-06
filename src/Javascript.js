@@ -188,6 +188,16 @@ document.onpageshow = new function () {
 		if (buttons[i].getAttribute('subscribe-podcast-url') != null) {
 			buttons[i].addEventListener('click', function () { location.href = this.getAttribute('subscribe-podcast-url'); }, true);
 		}
+		if (buttons[i].hasAttribute("disabled")) {
+			removeListeners(buttons[i])
+			buttons[i].addEventListener('click', function() {
+				location.href="download://<xml><key>URL</key><value><![CDATA["+this.getAttribute("episode-url")+"]]></value>"+
+				"<key>artistName</key><value><![CDATA["+this.getAttribute("artist-name")+"]]></value>"+
+				"<key>fileExtension</key><value>zip</value>"+
+				"<key>songName</key><value><![CDATA["+this.getAttribute('item-name')+"]]></value></xml>";
+			} );
+			buttons[i].removeAttribute("disabled");
+		}
 	}
 
         //Fix 100% height
@@ -197,9 +207,11 @@ document.onpageshow = new function () {
 	if (document.getElementById('search-podcast') != null) {
 		document.getElementById('search-podcast').style.height = 90;
 	}
+	
+	// Fix selectable text, and search form height
 	var css = document.createElement("style");
 	css.type = "text/css";
-	css.innerHTML = "* { -webkit-user-select: initial !important }";
+	css.innerHTML = "* { -webkit-user-select: initial !important } div.search-form {height: 90}";
 	document.body.appendChild(css);
 	console.log("JS OnPageShow Ran Successfully.");
 };
