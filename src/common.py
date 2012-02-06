@@ -9,6 +9,9 @@ import urllib2
 import glib
 import gtk
 
+SUFFIXES = ['', 'K', 'M', 'G', 'T', 'P']
+
+
 def time_convert(ms):
 	"""
 	Given time in milliseconds, returns it as a string:
@@ -19,8 +22,9 @@ def time_convert(ms):
 	This is done for consistency with the rest of the iTunes Store.
 	"""
 	try:
-		seconds = int(ms)/1000
-	except (ValueError, TypeError):
+		seconds = int(ms) / 1000
+	except (ValueError, TypeError) as e:
+		logging.debug("Couldn't format %s as time." % str(e))
 		return ms
 
 	hour = seconds / 3600
@@ -109,14 +113,13 @@ def desc(length):
 	"""
 	Describes length in kb or mb, given a number of bytes.
 	"""
-	kb = 1024.0
-	mb = 1048576.0
-	if (length >= mb):
-		return str(round(length/mb, 1)) + " MB"
-	elif (len >= kb):
-		return str(round(length/kb, 1)) + " KB"
-	else:
-		return str(length) + " B"
+	divisions = 0
+	remainder = length
+	while remainder >= 1024:
+		remainder /= 1024.0
+		divisions += 1
+	suffix = SUFFIXES[divisions]
+	return "%.1f %sB" % (remainder, suffix)
 
 
 def start(program, arg):

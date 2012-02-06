@@ -4,7 +4,7 @@ Upstream-Name: TunesViewer
 Source: https://sf.net/projects/tunesviewer
 
 Files: *
-Copyright: © 2009-2011 Luke Bryan <lb1programmer@users.sourceforge.net>
+Copyright: © 2009-2012 Luke Bryan <lb1programmer@users.sourceforge.net>
            © 2011-2012 Rogério Theodoro de Brito <rbrito@ime.usp.br>
 License: Apache
  Unless required by applicable law or agreed to in writing, software
@@ -17,7 +17,7 @@ License: Apache
  License can be found in `/usr/share/common-licenses/Apache-2.0'.
 
 Files: debian/*
-Copyright: © 2009-2011 Luke Bryan <lb1programmer@users.sourceforge.net>
+Copyright: © 2009-2012 Luke Bryan <lb1programmer@users.sourceforge.net>
            © 2011-2012 Rogério Theodoro de Brito <rbrito@ime.usp.br>
 License: Apache
  Unless required by applicable law or agreed to in writing, software
