@@ -236,9 +236,9 @@ document.onpageshow = new function () {
 function removeListeners(objects) {
 	var i;
 	for (i = 0; i < objects.length; i++) {
-		objects[i].onmouseover = (function () {});
-		objects[i].onclick = (function () {});
-		objects[i].onmousedown = (function () {});
+		objects[i].onmouseover = function () {};
+		objects[i].onclick = function () {};
+		objects[i].onmousedown = function () {};
 	}
 }
 
