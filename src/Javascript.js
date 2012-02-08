@@ -11,17 +11,20 @@ function player() {
 		div.setAttribute("class", "quick-view video movie active activity-video-dialog");
 		div.setAttribute("style", "width:50%; height:auto; position:fixed; left: 25%; float: top ; top:10px");
 		div.setAttribute("id", "previewer-container");
-		a = document.createElement("a");
-		a.setAttribute("class", "close-preview");
-		a.addEventListener("click", function () {
+
+		var anchor = document.createElement("a");
+		anchor.setAttribute("class", "close-preview");
+		anchor.addEventListener("click", function () {
 			this.parentNode.parentNode.removeChild(this.parentNode);
 		});
-		div.appendChild(a);
-		var vid = document.createElement("video");
-		vid.id = "previewPlayer";
-		vid.setAttribute("controls", "true");
-		div.appendChild(vid);
+		div.appendChild(anchor);
+
+		var video = document.createElement("video");
+		video.id = "previewPlayer";
+		video.setAttribute("controls", "true");
+		div.appendChild(video);
 		document.body.appendChild(div);
+
 		// Start the media:
 		document.getElementById("previewPlayer").src = input.url;
 		document.getElementById("previewPlayer").play();
