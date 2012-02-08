@@ -1,6 +1,6 @@
-tunesviewer (1.4-172~2.gbp250f89) UNRELEASED; urgency=medium
+tunesviewer (1.4-205~3.gbp1120d2) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @250f89627dca3c370beb94dd31dc428ea5cbac62 **
+  ** SNAPSHOT build @1120d28a7a59fc17062ec47f2902348038b760a3 **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
@@ -135,4 +135,30 @@ tunesviewer (1.4-172~2.gbp250f89) UNRELEASED; urgency=medium
   * Make ALL selectable.
   * Added copy to clipboard from top panel.
 
- -- Rogério Brito <rbrito@ime.usp.br>  Wed, 01 Feb 2012 22:41:33 -0200
+  [ programmin1 ]
+  * Update debian/copyright
+  * Revised icon to not look flat, added white outline for visibility in darker-colored themes.
+
+  [ Luke Bryan ]
+  * Set one-directory deep default download directory.
+
+  [ Rogério Brito ]
+  * common: Be more paranoid and inform what raised the exception.
+  * common: Use a more general 'human readable' conversion in `desc`.
+
+  [ Luke Bryan ]
+  * Fixed download problem and display error
+
+  [ Rogério Brito ]
+  * Javascript.js: Remove some commented out code.
+  * Javscript: Fix some whitespace problems detected by jslint.com.
+  * Javscript: Fix some missing semicolons detected by jslint.com.
+  * Javascript: Refactor slightly for legibility.
+  * Javascript: Move variable declarations to top of function.
+  * Javascript: Fix some variable declarations pointed out by jslint.com.
+  * Javascript: Break some long lines.
+  * Javascript: Fix some whitespace characters.
+  * Javascript: As per jslint.com, don't use parens for lambda function definitions.
+  * TunesViewer: Be more resistant agains missing icon.
+
+ -- Rogério Brito <rbrito@ime.usp.br>  Wed, 08 Feb 2012 00:14:00 -0200
