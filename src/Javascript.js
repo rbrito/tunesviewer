@@ -3,50 +3,52 @@
  * Catches iTunes-api calls from pages, such as
  * http://r.mzstatic.com/htmlResources/6018/dt-storefront-base.jsz
  */
+
 function player() {
 	this.playURL = function (input) {
 		// Construct the preview display:
-		var div = document.createElement("div");
+		var div, anchor, video;
+
+		// First, create the div element
+		div = document.createElement("div");
 		div.setAttribute("class", "quick-view video movie active activity-video-dialog");
 		div.setAttribute("style", "width:50%; height:auto; position:fixed; left: 25%; float: top ; top:10px");
 		div.setAttribute("id", "previewer-container");
-		a = document.createElement("a");
-		a.setAttribute("class", "close-preview");
-		a.addEventListener("click", function () {
+
+		// Create the anchor and tie it with the div element
+		anchor = document.createElement("a");
+		anchor.setAttribute("class", "close-preview");
+		anchor.addEventListener("click", function () {
 			this.parentNode.parentNode.removeChild(this.parentNode);
 		});
-		div.appendChild(a);
-		var vid = document.createElement("video");
-		vid.id = "previewPlayer";
-		vid.setAttribute("controls", "true");
-		div.appendChild(vid);
+		div.appendChild(anchor);
+
+		// Create a video element and tie it with the div element
+		video = document.createElement("video");
+		video.id = "previewPlayer";
+		video.setAttribute("controls", "true");
+		div.appendChild(video);
 		document.body.appendChild(div);
+
 		// Start the media:
 		document.getElementById("previewPlayer").src = input.url;
 		document.getElementById("previewPlayer").play();
 		return "not 0";
 	};
-	
-	this.showMediaPlayer = function(url,showtype,title) {
+
+	this.showMediaPlayer = function (url, showtype, title) {
 		obj = function () {};
 		obj.url = url;
 		this.playURL(obj);
 	};
-	
-	this.openURL = function(url) {
+
+	this.openURL = function (url) {
 		location.href = url;
 	};
-	
+
 	this.addProtocol = function (xml) {
 		console.log(xml);
-		location.href="download://"+xml
-		/*xml = new DOMParser().parseFromString(xml, "text/xml");
-		keys = xml.getElementsByTagName('key');
-		for (var i=0; i<keys.length; i++) {
-			if (keys[i].textContent=="URL") {//Goto the download url.
-				document.location = keys[i].nextSibling.textContent;
-			}
-		}*/
+		location.href = "download://" + xml;
 	};
 
 	this.stop = function () {
@@ -69,9 +71,9 @@ function player() {
 	this.getUserDSID = function () {//no user id.
 		return 0;
 	};
-	
-	this.putURLOnPasteboard = function(a,bool) {
-		location.href = "copyurl://"+escape(a)
+
+	this.putURLOnPasteboard = function (a, bool) {
+		location.href = "copyurl://" + escape(a);
 	};
 }
 
@@ -87,6 +89,7 @@ function iTSVideoPreviewWithObject(obj) {
 }
 
 function fixTransparent(objects) {
+	var i;
 	for (i = 0; i < objects.length; i++) {
 		// If the heading is transparent, show it.
 		if (window.getComputedStyle(objects[i]).color == "rgba(0, 0, 0, 0)") {
@@ -102,12 +105,16 @@ function fixTransparent(objects) {
 
 
 document.onpageshow = new function () {
+	var as, a, css, divs, i, j, rss;
 	iTunes = new player();
 	its.webkitVersion = function webkitVersion() {
 		return "AppleWebKit/531.1";
 	};
 
 	// Fix <a target="external" etc.
+
+	// Here, the variable `as` is a list of anchors, while `a` iterates
+	// over the list.
 	as = document.getElementsByTagName("a");
 	for (a in as) {
 		if (as[a].target == "_blank") {
@@ -130,40 +137,46 @@ document.onpageshow = new function () {
 	fixTransparent(document.getElementsByTagName("h2"));
 	fixTransparent(document.getElementsByTagName("div"));
 	fixTransparent(as);
-	
+
 	divs = document.getElementsByTagName("div");
-	for (var i=0; i<divs.length; i++) { // fix free-download links, mobile
-		if (divs[i].getAttribute("download-url") != null && divs[i].textContent.indexOf("FREE")!=-1) {
+	for (i = 0; i < divs.length; i++) { // fix free-download links, mobile
+		if (divs[i].getAttribute("download-url") != null && divs[i].textContent.indexOf("FREE") != -1) {
 			console.log(divs[i].getAttribute("download-url"));
 			removeListeners(divs[i].childNodes);
-			divs[i].innerHTML = "<button onclick='window.event.stopPropagation();location.href=\""+divs[i].getAttribute("download-url")+"\";'>Download</button>";
-			divs[i].addEventListener('mouseDown',function () {console.log('opening'+this.getAttribute('download-url'));
-			                                              location.href = this.getAttribute('download-url'); })
+			divs[i].innerHTML = "<button onclick='window.event.stopPropagation();location.href=\"" + divs[i].getAttribute("download-url") + "\";'>Download</button>";
+			divs[i].addEventListener('mouseDown',
+						 function () { console.log('opening' + this.getAttribute('download-url'));
+			                                       location.href = this.getAttribute('download-url'); })
 		}
-		if (divs[i].getAttribute("role")=="button" && divs[i].getAttribute("aria-label")=="SUBSCRIBE FREE") {
+		if (divs[i].getAttribute("role") == "button" &&
+		    divs[i].getAttribute("aria-label") == "SUBSCRIBE FREE") {
 			rss = "";
 			console.log("subscribe-button");
 			removeListeners(divs[i].parentNode);
 			removeListeners(divs[i].parentNode.parentNode);
-			for (var j=0; j<divs.length; j++) {
+			for (j = 0; j < divs.length; j++) {
 				if (divs[j].getAttribute("podcast-feed-url") != null) {
 					rss = divs[j].getAttribute("podcast-feed-url");
-					console.log("rss:"+rss);
+					console.log("rss:" + rss);
 				}
 			}
-			divs[i].addEventListener('click', function () {console.log(rss);location.href = rss});
+			divs[i].addEventListener('click',
+						 function () {
+						     console.log(rss);
+						     location.href = rss;
+						 });
 		}
 	}
 
 	// Mouse-over tooltip for ellipsized title...
 	// Unfortunately it seems this may cause X window error!
-	/*titles = document.getElementsByClassName('name')
+	/*titles = document.getElementsByClassName('name');
 	for (i=0; i<titles.length; i++) {
-		titles[i].title = titles[i].textContent
+		titles[i].title = titles[i].textContent;
 	}
-	titles = document.getElementsByClassName('artist')
+	titles = document.getElementsByClassName('artist');
 	for (i=0; i<titles.length; i++) {
-		titles[i].title = titles[i].textContent
+		titles[i].title = titles[i].textContent;
 	}*/
 
 	// Fix non-working preview buttons:
@@ -176,6 +189,7 @@ document.onpageshow = new function () {
 		}
 	}
 	window.setTimeout(function () {
+		var i;
 		previews = document.getElementsByClassName('circular-preview-control');
 		console.log('previews' + previews.length);
 		for (i = 0; i < previews.length; i++) {
@@ -186,15 +200,18 @@ document.onpageshow = new function () {
 	buttons = document.getElementsByTagName('button');
 	for (i = 0; i < buttons.length; i++) {
 		if (buttons[i].getAttribute('subscribe-podcast-url') != null) {
-			buttons[i].addEventListener('click', function () { location.href = this.getAttribute('subscribe-podcast-url'); }, true);
+			buttons[i].addEventListener('click',
+						    function () {
+							location.href = this.getAttribute('subscribe-podcast-url'); },
+						    true);
 		}
 		if (buttons[i].hasAttribute("disabled")) {
-			removeListeners(buttons[i])
+			removeListeners(buttons[i]);
 			buttons[i].addEventListener('click', function() {
-				location.href="download://<xml><key>URL</key><value><![CDATA["+this.getAttribute("episode-url")+"]]></value>"+
-				"<key>artistName</key><value><![CDATA["+this.getAttribute("artist-name")+"]]></value>"+
-				"<key>fileExtension</key><value>zip</value>"+
-				"<key>songName</key><value><![CDATA["+this.getAttribute('item-name')+"]]></value></xml>";
+				location.href = "download://<xml><key>URL</key><value><![CDATA[" + this.getAttribute("episode-url") + "]]></value>" +
+				"<key>artistName</key><value><![CDATA[" + this.getAttribute("artist-name") + "]]></value>" +
+				"<key>fileExtension</key><value>zip</value>" +
+				"<key>songName</key><value><![CDATA[" + this.getAttribute('item-name') + "]]></value></xml>";
 			} );
 			buttons[i].removeAttribute("disabled");
 		}
@@ -207,9 +224,9 @@ document.onpageshow = new function () {
 	if (document.getElementById('search-podcast') != null) {
 		document.getElementById('search-podcast').style.height = 90;
 	}
-	
+
 	// Fix selectable text, and search form height
-	var css = document.createElement("style");
+	css = document.createElement("style");
 	css.type = "text/css";
 	css.innerHTML = "* { -webkit-user-select: initial !important } div.search-form {height: 90}";
 	document.body.appendChild(css);
@@ -217,14 +234,16 @@ document.onpageshow = new function () {
 };
 
 function removeListeners(objects) {
-	for (var i=0; i<objects.length; i++) {
-		objects[i].onmouseover = (function () {});
-		objects[i].onclick = (function () {});
-		objects[i].onmousedown = (function () {});
+	var i;
+	for (i = 0; i < objects.length; i++) {
+		objects[i].onmouseover = function () {};
+		objects[i].onclick = function () {};
+		objects[i].onmousedown = function () {};
 	}
 }
 
 function previewClick(el) {
+	var a, tr;
 	console.log('previewclick');
 	tr = el.parentNodel;
 	if (tr.hasAttribute('video-preview-url')) {
@@ -232,6 +251,6 @@ function previewClick(el) {
 	} else if (tr.hasAttribute('audio-preview-url')) {
 		preview = tr.getAttribute('audio-preview-url');
 	}
-	a = new function () { this.url = preview; }
-	new player().playURL(a);
-};
+	a = function () { this.url = preview; };
+	player().playURL(a);
+}
