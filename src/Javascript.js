@@ -40,7 +40,7 @@ function player() {
 
 	this.addProtocol = function (xml) {
 		console.log(xml);
-		location.href = "download://" + xml
+		location.href = "download://" + xml;
 	};
 
 	this.stop = function () {
@@ -65,7 +65,7 @@ function player() {
 	};
 
 	this.putURLOnPasteboard = function (a, bool) {
-		location.href = "copyurl://" + escape(a)
+		location.href = "copyurl://" + escape(a);
 	};
 }
 
@@ -145,19 +145,19 @@ document.onpageshow = new function () {
 					console.log("rss:" + rss);
 				}
 			}
-			divs[i].addEventListener('click', function () {console.log(rss); location.href = rss});
+			divs[i].addEventListener('click', function () {console.log(rss); location.href = rss; });
 		}
 	}
 
 	// Mouse-over tooltip for ellipsized title...
 	// Unfortunately it seems this may cause X window error!
-	/*titles = document.getElementsByClassName('name')
+	/*titles = document.getElementsByClassName('name');
 	for (i=0; i<titles.length; i++) {
-		titles[i].title = titles[i].textContent
+		titles[i].title = titles[i].textContent;
 	}
-	titles = document.getElementsByClassName('artist')
+	titles = document.getElementsByClassName('artist');
 	for (i=0; i<titles.length; i++) {
-		titles[i].title = titles[i].textContent
+		titles[i].title = titles[i].textContent;
 	}*/
 
 	// Fix non-working preview buttons:
@@ -183,7 +183,7 @@ document.onpageshow = new function () {
 			buttons[i].addEventListener('click', function () { location.href = this.getAttribute('subscribe-podcast-url'); }, true);
 		}
 		if (buttons[i].hasAttribute("disabled")) {
-			removeListeners(buttons[i])
+			removeListeners(buttons[i]);
 			buttons[i].addEventListener('click', function() {
 				location.href="download://<xml><key>URL</key><value><![CDATA[" + this.getAttribute("episode-url") + "]]></value>" +
 				"<key>artistName</key><value><![CDATA[" + this.getAttribute("artist-name") + "]]></value>" +
