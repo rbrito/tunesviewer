@@ -47,12 +47,11 @@ function player() {
 	};
 
 	this.addProtocol = function (xml) {
-		console.log(xml);
+		console.log("TunesViewer: adding download protocol to: " + xml);
 		location.href = "download://" + xml;
 	};
 
 	this.stop = function () {
-		//document.getElementById("previewPlayer").pause();
 		document.getElementById("previewer-container").parentNode.removeChild(document.getElementById("previewer-container"));
 		return true;
 	};
@@ -139,30 +138,32 @@ document.onpageshow = new function () {
 	fixTransparent(as);
 
 	divs = document.getElementsByTagName("div");
-	for (i = 0; i < divs.length; i++) { // fix free-download links, mobile
+
+	// fix free-download links, mobile
+	for (i = 0; i < divs.length; i++) {
 		if (divs[i].getAttribute("download-url") != null && divs[i].textContent.indexOf("FREE") != -1) {
-			console.log(divs[i].getAttribute("download-url"));
+			console.log("TunesViewer: getting attribute: " + divs[i].getAttribute("download-url"));
 			removeListeners(divs[i].childNodes);
 			divs[i].innerHTML = "<button onclick='window.event.stopPropagation();location.href=\"" + divs[i].getAttribute("download-url") + "\";'>Download</button>";
 			divs[i].addEventListener('mouseDown',
-						 function () { console.log('opening' + this.getAttribute('download-url'));
+						 function () { console.log('TunesViewer: opening: ' + this.getAttribute('download-url'));
 			                                       location.href = this.getAttribute('download-url'); })
 		}
 		if (divs[i].getAttribute("role") == "button" &&
 		    divs[i].getAttribute("aria-label") == "SUBSCRIBE FREE") {
 			rss = "";
-			console.log("subscribe-button");
+			console.log("TunesViewer: subscribe-button");
 			removeListeners(divs[i].parentNode);
 			removeListeners(divs[i].parentNode.parentNode);
 			for (j = 0; j < divs.length; j++) {
 				if (divs[j].getAttribute("podcast-feed-url") != null) {
 					rss = divs[j].getAttribute("podcast-feed-url");
-					console.log("rss:" + rss);
+					console.log("TunesViewer: RSS:" + rss);
 				}
 			}
 			divs[i].addEventListener('click',
 						 function () {
-						     console.log(rss);
+						     console.log("TunesViewer: click event listener: " + rss);
 						     location.href = rss;
 						 });
 		}
@@ -181,17 +182,17 @@ document.onpageshow = new function () {
 
 	// Fix non-working preview buttons:
 	previews = document.getElementsByClassName('podcast-episode');
-	console.log(previews.length);
+	console.log("TunesViewer: number of previews: " + previews.length);
 	for (i = 0; i < previews.length; i++) {
 		if (previews[i].tagName == 'tr') {
-			console.log(previews[i].tagName);
+			console.log("TunesViewer: adding listener for preview: " + previews[i].tagName);
 			previews[i].childNodes[0].addEventListener('click', previewClick);
 		}
 	}
 	window.setTimeout(function () {
 		var i;
 		previews = document.getElementsByClassName('circular-preview-control');
-		console.log('previews' + previews.length);
+		console.log("TunesViewer: number of previews: " + previews.length);
 		for (i = 0; i < previews.length; i++) {
 			previews[i].parentNode.parentNode.addEventListener('click', previewClick);
 		}
@@ -230,7 +231,7 @@ document.onpageshow = new function () {
 	css.type = "text/css";
 	css.innerHTML = "* { -webkit-user-select: initial !important } div.search-form {height: 90}";
 	document.body.appendChild(css);
-	console.log("JS OnPageShow Ran Successfully.");
+	console.log("TunesViewer: JS OnPageShow Ran Successfully.");
 };
 
 function removeListeners(objects) {
@@ -244,7 +245,7 @@ function removeListeners(objects) {
 
 function previewClick(el) {
 	var a, tr;
-	console.log('previewclick');
+	console.log("TunesViewer: in previewClick.");
 	tr = el.parentNodel;
 	if (tr.hasAttribute('video-preview-url')) {
 		preview = tr.getAttribute('video-preview-url');
