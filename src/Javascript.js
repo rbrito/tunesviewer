@@ -52,7 +52,6 @@ function player() {
 	};
 
 	this.stop = function () {
-		//document.getElementById("previewPlayer").pause();
 		document.getElementById("previewer-container").parentNode.removeChild(document.getElementById("previewer-container"));
 		return true;
 	};
@@ -139,7 +138,9 @@ document.onpageshow = new function () {
 	fixTransparent(as);
 
 	divs = document.getElementsByTagName("div");
-	for (i = 0; i < divs.length; i++) { // fix free-download links, mobile
+
+	// fix free-download links, mobile
+	for (i = 0; i < divs.length; i++) {
 		if (divs[i].getAttribute("download-url") != null && divs[i].textContent.indexOf("FREE") != -1) {
 			console.log("TunesViewer: getting attribute: " + divs[i].getAttribute("download-url"));
 			removeListeners(divs[i].childNodes);
