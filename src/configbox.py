@@ -17,7 +17,7 @@ class ConfigBox:
 	toolbar = True
 	statusbar = False
 	throbber = True
-	downloadfile = "%a/%p/%n %l%t"
+	downloadfile = "%p/%n %l%t"
 	openers = {
 		".mp3" : DEFAULT_OPENER,
 		".m4a" : DEFAULT_OPENER,
