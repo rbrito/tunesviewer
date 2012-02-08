@@ -7,19 +7,24 @@
 function player() {
 	this.playURL = function (input) {
 		// Construct the preview display:
-		var div = document.createElement("div");
+		var div, anchor, video;
+
+		// First, create the div element
+		div = document.createElement("div");
 		div.setAttribute("class", "quick-view video movie active activity-video-dialog");
 		div.setAttribute("style", "width:50%; height:auto; position:fixed; left: 25%; float: top ; top:10px");
 		div.setAttribute("id", "previewer-container");
 
-		var anchor = document.createElement("a");
+		// Create the anchor and tie it with the div element
+		anchor = document.createElement("a");
 		anchor.setAttribute("class", "close-preview");
 		anchor.addEventListener("click", function () {
 			this.parentNode.parentNode.removeChild(this.parentNode);
 		});
 		div.appendChild(anchor);
 
-		var video = document.createElement("video");
+		// Create a video element and tie it with the div element
+		video = document.createElement("video");
 		video.id = "previewPlayer";
 		video.setAttribute("controls", "true");
 		div.appendChild(video);
