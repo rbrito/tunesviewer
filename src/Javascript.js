@@ -3,6 +3,7 @@
  * Catches iTunes-api calls from pages, such as
  * http://r.mzstatic.com/htmlResources/6018/dt-storefront-base.jsz
  */
+
 function player() {
 	this.playURL = function (input) {
 		// Construct the preview display:
@@ -26,20 +27,20 @@ function player() {
 		document.getElementById("previewPlayer").play();
 		return "not 0";
 	};
-	
-	this.showMediaPlayer = function(url,showtype,title) {
+
+	this.showMediaPlayer = function (url, showtype, title) {
 		obj = function () {};
 		obj.url = url;
 		this.playURL(obj);
 	};
-	
-	this.openURL = function(url) {
+
+	this.openURL = function (url) {
 		location.href = url;
 	};
-	
+
 	this.addProtocol = function (xml) {
 		console.log(xml);
-		location.href="download://"+xml
+		location.href = "download://" + xml
 	};
 
 	this.stop = function () {
@@ -62,9 +63,9 @@ function player() {
 	this.getUserDSID = function () {//no user id.
 		return 0;
 	};
-	
-	this.putURLOnPasteboard = function(a,bool) {
-		location.href = "copyurl://"+escape(a)
+
+	this.putURLOnPasteboard = function (a, bool) {
+		location.href = "copyurl://" + escape(a)
 	};
 }
 
@@ -123,28 +124,28 @@ document.onpageshow = new function () {
 	fixTransparent(document.getElementsByTagName("h2"));
 	fixTransparent(document.getElementsByTagName("div"));
 	fixTransparent(as);
-	
+
 	divs = document.getElementsByTagName("div");
-	for (var i=0; i<divs.length; i++) { // fix free-download links, mobile
-		if (divs[i].getAttribute("download-url") != null && divs[i].textContent.indexOf("FREE")!=-1) {
+	for (var i = 0; i < divs.length; i++) { // fix free-download links, mobile
+		if (divs[i].getAttribute("download-url") != null && divs[i].textContent.indexOf("FREE") != -1) {
 			console.log(divs[i].getAttribute("download-url"));
 			removeListeners(divs[i].childNodes);
-			divs[i].innerHTML = "<button onclick='window.event.stopPropagation();location.href=\""+divs[i].getAttribute("download-url")+"\";'>Download</button>";
-			divs[i].addEventListener('mouseDown',function () {console.log('opening'+this.getAttribute('download-url'));
+			divs[i].innerHTML = "<button onclick='window.event.stopPropagation();location.href=\"" + divs[i].getAttribute("download-url") + "\";'>Download</button>";
+			divs[i].addEventListener('mouseDown', function () {console.log('opening' + this.getAttribute('download-url'));
 			                                              location.href = this.getAttribute('download-url'); })
 		}
-		if (divs[i].getAttribute("role")=="button" && divs[i].getAttribute("aria-label")=="SUBSCRIBE FREE") {
+		if (divs[i].getAttribute("role") == "button" && divs[i].getAttribute("aria-label") == "SUBSCRIBE FREE") {
 			rss = "";
 			console.log("subscribe-button");
 			removeListeners(divs[i].parentNode);
 			removeListeners(divs[i].parentNode.parentNode);
-			for (var j=0; j<divs.length; j++) {
+			for (var j=0; j < divs.length; j++) {
 				if (divs[j].getAttribute("podcast-feed-url") != null) {
 					rss = divs[j].getAttribute("podcast-feed-url");
-					console.log("rss:"+rss);
+					console.log("rss:" + rss);
 				}
 			}
-			divs[i].addEventListener('click', function () {console.log(rss);location.href = rss});
+			divs[i].addEventListener('click', function () {console.log(rss); location.href = rss});
 		}
 	}
 
@@ -184,10 +185,10 @@ document.onpageshow = new function () {
 		if (buttons[i].hasAttribute("disabled")) {
 			removeListeners(buttons[i])
 			buttons[i].addEventListener('click', function() {
-				location.href="download://<xml><key>URL</key><value><![CDATA["+this.getAttribute("episode-url")+"]]></value>"+
-				"<key>artistName</key><value><![CDATA["+this.getAttribute("artist-name")+"]]></value>"+
-				"<key>fileExtension</key><value>zip</value>"+
-				"<key>songName</key><value><![CDATA["+this.getAttribute('item-name')+"]]></value></xml>";
+				location.href="download://<xml><key>URL</key><value><![CDATA[" + this.getAttribute("episode-url") + "]]></value>" +
+				"<key>artistName</key><value><![CDATA[" + this.getAttribute("artist-name") + "]]></value>" +
+				"<key>fileExtension</key><value>zip</value>" +
+				"<key>songName</key><value><![CDATA[" + this.getAttribute('item-name') + "]]></value></xml>";
 			} );
 			buttons[i].removeAttribute("disabled");
 		}
@@ -200,7 +201,7 @@ document.onpageshow = new function () {
 	if (document.getElementById('search-podcast') != null) {
 		document.getElementById('search-podcast').style.height = 90;
 	}
-	
+
 	// Fix selectable text, and search form height
 	var css = document.createElement("style");
 	css.type = "text/css";
@@ -210,7 +211,7 @@ document.onpageshow = new function () {
 };
 
 function removeListeners(objects) {
-	for (var i=0; i<objects.length; i++) {
+	for (var i = 0; i < objects.length; i++) {
 		objects[i].onmouseover = (function () {});
 		objects[i].onclick = (function () {});
 		objects[i].onmousedown = (function () {});
