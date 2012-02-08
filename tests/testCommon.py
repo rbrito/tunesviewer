@@ -56,6 +56,7 @@ class TestCommon(unittest.TestCase):
 		self.assertEqual(desc(1024 * 1024), '1.0 MB')
 		self.assertEqual(desc(1025 * 1024), '1.0 MB')
 		self.assertEqual(desc(0.5 * 1024 * 1024 * 1024), '512.0 MB')
+		self.assertEqual(desc(10000000000000000000),"(way too big)")
 
 
 if __name__ == "__main__":
