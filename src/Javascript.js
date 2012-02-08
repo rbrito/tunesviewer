@@ -89,6 +89,7 @@ function iTSVideoPreviewWithObject(obj) {
 }
 
 function fixTransparent(objects) {
+	var i;
 	for (i = 0; i < objects.length; i++) {
 		// If the heading is transparent, show it.
 		if (window.getComputedStyle(objects[i]).color == "rgba(0, 0, 0, 0)") {
@@ -104,6 +105,7 @@ function fixTransparent(objects) {
 
 
 document.onpageshow = new function () {
+	var css, i, j;
 	iTunes = new player();
 	its.webkitVersion = function webkitVersion() {
 		return "AppleWebKit/531.1";
@@ -134,7 +136,7 @@ document.onpageshow = new function () {
 	fixTransparent(as);
 
 	divs = document.getElementsByTagName("div");
-	for (var i = 0; i < divs.length; i++) { // fix free-download links, mobile
+	for (i = 0; i < divs.length; i++) { // fix free-download links, mobile
 		if (divs[i].getAttribute("download-url") != null && divs[i].textContent.indexOf("FREE") != -1) {
 			console.log(divs[i].getAttribute("download-url"));
 			removeListeners(divs[i].childNodes);
@@ -147,7 +149,7 @@ document.onpageshow = new function () {
 			console.log("subscribe-button");
 			removeListeners(divs[i].parentNode);
 			removeListeners(divs[i].parentNode.parentNode);
-			for (var j=0; j < divs.length; j++) {
+			for (j = 0; j < divs.length; j++) {
 				if (divs[j].getAttribute("podcast-feed-url") != null) {
 					rss = divs[j].getAttribute("podcast-feed-url");
 					console.log("rss:" + rss);
@@ -211,7 +213,7 @@ document.onpageshow = new function () {
 	}
 
 	// Fix selectable text, and search form height
-	var css = document.createElement("style");
+	css = document.createElement("style");
 	css.type = "text/css";
 	css.innerHTML = "* { -webkit-user-select: initial !important } div.search-form {height: 90}";
 	document.body.appendChild(css);
@@ -219,7 +221,8 @@ document.onpageshow = new function () {
 };
 
 function removeListeners(objects) {
-	for (var i = 0; i < objects.length; i++) {
+	var i;
+	for (i = 0; i < objects.length; i++) {
 		objects[i].onmouseover = (function () {});
 		objects[i].onclick = (function () {});
 		objects[i].onmousedown = (function () {});
