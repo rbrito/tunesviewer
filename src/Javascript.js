@@ -208,7 +208,7 @@ document.onpageshow = new function () {
 		if (buttons[i].hasAttribute("disabled")) {
 			removeListeners(buttons[i]);
 			buttons[i].addEventListener('click', function() {
-				location.href="download://<xml><key>URL</key><value><![CDATA[" + this.getAttribute("episode-url") + "]]></value>" +
+				location.href = "download://<xml><key>URL</key><value><![CDATA[" + this.getAttribute("episode-url") + "]]></value>" +
 				"<key>artistName</key><value><![CDATA[" + this.getAttribute("artist-name") + "]]></value>" +
 				"<key>fileExtension</key><value>zip</value>" +
 				"<key>songName</key><value><![CDATA[" + this.getAttribute('item-name') + "]]></value></xml>";
