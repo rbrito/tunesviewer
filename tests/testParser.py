@@ -28,6 +28,12 @@ class TestParser(unittest.TestCase):
 		for tag in ["td","tr","div"]:
 			#print tag, html.count("<%s>" % tag)+html.count("<%s "), html.count("</%s>" % tag)
 			self.assertEqual(html.count("<%s>" % tag)+html.count("<%s "),html.count("</%s>" % tag))
+			
+	def checkItems(self,mediaItems):
+		for line in mediaItems:
+			self.assertEqual(len(line[4]), 4) # test 4-char extension.
+			self.assertEqual(line[4][0], ".")
+			self.assertEqual(len(line[3]), 7) # test h:mm:ss time length.
 
 	def testParseAgriculture(self):
 		url = "http://itunes.apple.com/WebObjects/DZR.woa/wa/viewPodcast?cc=us&id=387961518"
@@ -52,10 +58,7 @@ class TestParser(unittest.TestCase):
 		self.assertEqual(parsed_html.Redirect, '')
 		self.assertEqual(parsed_html.Title, 'iTunes U > Top Downloads')
 		self.assertEqual(len(parsed_html.mediaItems), 0) # Not sure where the bogus element is coming from in the gui...
-
-		# FIXME: The following should be made into proper tests
-		for line in parsed_html.mediaItems:
-			logging.debug(line)
+		self.checkItems(parsed_html.mediaItems)
 			
 	def testMain(self):
 		url = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewGrouping?id=27753"
@@ -65,10 +68,7 @@ class TestParser(unittest.TestCase):
 		# FIXME: Maybe it could be smarter about finding the title...
 		self.assertEqual(parsed_html.Redirect, '')
 		self.assertEqual(parsed_html.Title, 'iTunes U')
-
-		# FIXME: The following should be made into proper tests
-		for line in parsed_html.mediaItems:
-			logging.debug(line)
+		self.checkItems(parsed_html.mediaItems)
 
 
 	def testParseFHSU(self):
@@ -80,10 +80,7 @@ class TestParser(unittest.TestCase):
 		self.assertEqual(parsed_html.Redirect, '')
 		self.assertEqual(parsed_html.Title, 'iTunes U')
 		self.assertEqual(len(parsed_html.mediaItems), 0)
-
-		# FIXME: The following should be made into proper tests
-		for line in parsed_html.mediaItems:
-			logging.debug(line)
+		self.checkItems(parsed_html.mediaItems)
 
 
 	def testParseFHSUPresident(self):
@@ -98,7 +95,6 @@ class TestParser(unittest.TestCase):
 				 'FHSU News > From the President - '
 				 'President Hammond')
 		self.assertEqual(len(parsed_html.mediaItems), 28)
-
 		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
 			logging.debug(line)
@@ -119,8 +115,7 @@ class TestParser(unittest.TestCase):
 		self.assertEqual(parsed_html.HTML.count("<tr>"),parsed_html.HTML.count("</tr>"))
 
 		# FIXME: The following should be made into proper tests
-		for line in parsed_html.mediaItems:
-			logging.debug(line)
+		self.checkItems(parsed_html.mediaItems)
 
 
 	def testParseSJSU(self):
@@ -132,10 +127,7 @@ class TestParser(unittest.TestCase):
 		self.assertEqual(parsed_html.Redirect, '')
 		self.assertEqual(parsed_html.Title, 'iTunes U')
 		self.assertEqual(len(parsed_html.mediaItems), 0)
-
-		# FIXME: The following should be made into proper tests
-		for line in parsed_html.mediaItems:
-			logging.debug(line)
+		self.checkItems(parsed_html.mediaItems)
 
 
 	def testParseWithTabs(self):
@@ -173,7 +165,6 @@ class TestParser(unittest.TestCase):
 		parsed_html = Parser(url, "text/HTML", text)
 		assert parsed_html.Redirect.startswith('itmss://deimos.apple.com/WebObjects/Core.woa/BrowsePrivately/ohlone.edu')
 
-
 	def test_XML_feed(self):
 		url = "https://deimos.apple.com/WebObjects/Core.woa/Feed/itunes.stanford.edu-dz.11153667080.011153667082"
 		text = self.o.open(url).read()
@@ -182,17 +173,25 @@ class TestParser(unittest.TestCase):
 		self.assertEqual(parsed_html.Redirect, '')
 		self.assertEqual(parsed_html.Title, 'iPad and iPhone Application Development (SD)')
 		self.assertEqual(len(parsed_html.mediaItems), 43)
+		self.checkItems(parsed_html.mediaItems)
+
+	def testMulticorePage(self):
+		url = "http://itunes.apple.com/us/course/multicore-programming-primer/id495066021"
+		text = self.o.open(url).read()
+		parsed_html = Parser(url, "text/html", text)
+
+		self.assertEqual(parsed_html.Redirect, '')
+		self.assertEqual(parsed_html.Title, 'Multicore Programming Primer')
+		self.assertEqual(len(parsed_html.mediaItems), 82)
 		for line in parsed_html.mediaItems:
 			self.assertEqual(len(line[4]), 4) # test 4-char extension.
-			self.assertEqual(line[4][0], ".")
-			self.assertEqual(len(line[3]), 7) # test h:mm:ss time length.
-
 
 	def testDumpParsedHTML(self):
 		url = "http://deimos3.apple.com/WebObjects/Core.woa/Browse/georgefox.edu.8155705810.08155705816.8223066656?i=1688428005"
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text).HTML
 		file("parsed_test.html", "w").write(parsed_html)
+		
 
 
 if __name__ == "__main__":

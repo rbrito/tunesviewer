@@ -118,8 +118,11 @@ def desc(length):
 	while remainder >= 1024:
 		remainder /= 1024.0
 		divisions += 1
-	suffix = SUFFIXES[divisions]
-	return "%.1f %sB" % (remainder, suffix)
+	if divisions < len(SUFFIXES):
+		suffix = SUFFIXES[divisions]
+		return "%.1f %sB" % (remainder, suffix)
+	else:
+		return "(way too big)"
 
 
 def start(program, arg):
