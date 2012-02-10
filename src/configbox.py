@@ -16,7 +16,7 @@ class ConfigBox:
 	downloadsafe = True
 	toolbar = True
 	statusbar = False
-	throbber = True
+	throbber = False
 	downloadfile = "%p/%n %l%t"
 	openers = {
 		".mp3" : DEFAULT_OPENER,
