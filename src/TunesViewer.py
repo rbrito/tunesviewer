@@ -247,9 +247,12 @@ class TunesViewer:
 		self.throbber = gtk.Image()
 
 		throbber_path = '/usr/share/tunesviewer/Throbber.gif'
-		self.throbber.set_from_animation(gtk.gdk.PixbufAnimation(throbber_path))
+		try:
+			self.throbber.set_from_animation(gtk.gdk.PixbufAnimation(throbber_path))
+			menubox.pack_start(self.throbber, expand=False)
+		except glib.GError as e:
+			logging.error('Could not set the throbber: %s' % str(e))
 
-		menubox.pack_start(self.throbber, expand=False)
 
 		### Top level 'File' menu
 		filemenu = gtk.Menu()

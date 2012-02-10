@@ -99,9 +99,7 @@ class DownloadBox:
 					"%s/%s download%s completed successfully." % (self.downloaded, self.total, s), gtk.STOCK_GO_DOWN)
 				n.set_timeout(1000 * self.Wopener.config.notifyseconds)
 				n.show()
-			except ImportError as e:
-				logging.warn("Notification failed: " + str(e))
-			except gio.Error as e:
+			except (ImportError, gio.Error, glib.GError) as e:
 				logging.warn("Notification failed: " + str(e))
 
 	def newDownload(self, icon, url, localfile, opener):

@@ -22,7 +22,15 @@ class SingleWindowSocket:
 		try:
 			os.makedirs(DATA_DIR)
 		except OSError as e:
-			logging.warn('Error creating data directory: ' + str(e))
+			# Errno 17 means something already exists
+			if e.errno == 17 and os.path.isdir(DATA_DIR):
+				# No problem
+				pass
+			elif e.errno == 17 and not os.path.isdir(DATA_DIR):
+				logging.warn('%s already exists, but is not a directory: ' + str(e))
+			else:
+				logging.warn('Error creating data directory: ' + str(e))
+
 		if os.path.exists(DATA_SOCKET):
 			try:
 				self.sendUrl(url)
