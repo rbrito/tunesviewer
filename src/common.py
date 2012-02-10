@@ -23,7 +23,13 @@ def time_convert(ms):
 	"""
 	try:
 		seconds = int(ms) / 1000
-	except (ValueError, TypeError) as e:
+	except ValueError:
+		m = re.search(r'^(\d+)\.\d+$', ms)
+		if m is None:
+			return ms
+		else:
+			seconds = int(m.group(1)) / 1000
+	except TypeError as e:
 		logging.debug("Couldn't format %s as time." % str(e))
 		return ms
 
