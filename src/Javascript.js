@@ -77,10 +77,14 @@ function player() {
 }
 
 function defined(something) {
+	"use strict";
+	console.log("TunesViewer: Entering the function <defined>.");
 	return true;
 }
 
 function iTSVideoPreviewWithObject(obj) {
+	"use strict";
+	console.log("TunesViewer: Entering the function <iTSVideoPreviewWithObject>.");
 	// This was meant to figure out how to get non-working previews to play.
 	// Unfortunately it gets called many times when you click 'i' on course icon,
 	// freezing the application.
@@ -88,7 +92,9 @@ function iTSVideoPreviewWithObject(obj) {
 }
 
 function fixTransparent(objects) {
+	"use strict";
 	var i;
+	console.log("TunesViewer: Entering the function <fixTransparent>.");
 	for (i = 0; i < objects.length; i++) {
 		// If the heading is transparent, show it.
 		if (window.getComputedStyle(objects[i]).color == "rgba(0, 0, 0, 0)") {
@@ -240,7 +246,9 @@ function TunesViewerEmptyFunction () {
 }
 
 function removeListeners(objects) {
+	"use strict";
 	var i;
+	console.log("TunesViewer: Entering the function <removeListeners>.");
 	for (i = 0; i < objects.length; i++) {
 		objects[i].onmouseover = TunesViewerEmptyFunction;
 		objects[i].onclick = TunesViewerEmptyFunction;
