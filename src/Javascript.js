@@ -20,7 +20,7 @@ function player() {
 		anchor.setAttribute("class", "close-preview");
 		anchor.addEventListener("click", function () {
 			this.parentNode.parentNode.removeChild(this.parentNode);
-		});
+		}, false);
 		div.appendChild(anchor);
 
 		// Create a video element and tie it with the div element
@@ -147,7 +147,7 @@ document.onpageshow = new function () {
 			divs[i].innerHTML = "<button onclick='window.event.stopPropagation();location.href=\"" + divs[i].getAttribute("download-url") + "\";'>Download</button>";
 			divs[i].addEventListener('mouseDown',
 						 function () { console.log('TunesViewer: opening: ' + this.getAttribute('download-url'));
-			                                       location.href = this.getAttribute('download-url'); })
+							       location.href = this.getAttribute('download-url'); }, false);
 		}
 		if (divs[i].getAttribute("role") == "button" &&
 		    divs[i].getAttribute("aria-label") == "SUBSCRIBE FREE") {
@@ -165,7 +165,7 @@ document.onpageshow = new function () {
 						 function () {
 						     console.log("TunesViewer: click event listener: " + rss);
 						     location.href = rss;
-						 });
+						 }, false);
 		}
 	}
 
@@ -186,7 +186,7 @@ document.onpageshow = new function () {
 	for (i = 0; i < previews.length; i++) {
 		if (previews[i].tagName == 'tr') {
 			console.log("TunesViewer: adding listener for preview: " + previews[i].tagName);
-			previews[i].childNodes[0].addEventListener('click', previewClick);
+			previews[i].childNodes[0].addEventListener('click', previewClick, false);
 		}
 	}
 	window.setTimeout(function () {
@@ -194,7 +194,7 @@ document.onpageshow = new function () {
 		previews = document.getElementsByClassName('circular-preview-control');
 		console.log("TunesViewer: number of previews: " + previews.length);
 		for (i = 0; i < previews.length; i++) {
-			previews[i].parentNode.parentNode.addEventListener('click', previewClick);
+			previews[i].parentNode.parentNode.addEventListener('click', previewClick, false);
 		}
 	}, 10000);
 
@@ -213,7 +213,7 @@ document.onpageshow = new function () {
 				"<key>artistName</key><value><![CDATA[" + this.getAttribute("artist-name") + "]]></value>" +
 				"<key>fileExtension</key><value>zip</value>" +
 				"<key>songName</key><value><![CDATA[" + this.getAttribute('item-name') + "]]></value></xml>";
-			} );
+			}, false);
 			buttons[i].removeAttribute("disabled");
 		}
 	}
