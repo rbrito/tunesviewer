@@ -1545,6 +1545,7 @@ class TunesViewer:
 			icon_theme = gtk.icon_theme_get_default() #Access theme's icons:
 			self.icon_audio = icon_theme.load_icon("sound", self.config.iconsizeN, 0)
 			self.icon_video = icon_theme.load_icon("video", self.config.iconsizeN, 0)
+			self.icon_book = icon_theme.load_icon("pdf", self.config.iconsizeN, 0)
 			self.icon_other = icon_theme.load_icon("gnome-fs-regular", self.config.iconsizeN, 0)
 			self.icon_link = icon_theme.load_icon("gtk-jump-to-ltr", self.config.iconsizeN, 0)
 		except Exception as e:
@@ -1566,11 +1567,14 @@ class TunesViewer:
 		audio_types = [".mp3", ".m4a", ".amr", ".m4p", ".aiff", ".aif",
 			       ".aifc"]
 		video_types = [".mp4", ".m4v", ".mov", ".m4b", ".3gp"]
+		book_types = [".pdf", ".epub"]
 		if content_type in audio_types:
 			return self.icon_audio
 		elif content_type in video_types:
-			return self.icon_video;
-		elif content_type != "":
+			return self.icon_video
+		elif content_type in book_types:
+			return self.icon_book
+		else:
 			return self.icon_other
 
 class VWin:
