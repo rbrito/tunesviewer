@@ -234,12 +234,17 @@ document.onpageshow = new function () {
 	console.log("TunesViewer: JS OnPageShow Ran Successfully.");
 };
 
+
+function TunesViewerEmptyFunction () {
+	"use strict";
+}
+
 function removeListeners(objects) {
 	var i;
 	for (i = 0; i < objects.length; i++) {
-		objects[i].onmouseover = function () {};
-		objects[i].onclick = function () {};
-		objects[i].onmousedown = function () {};
+		objects[i].onmouseover = TunesViewerEmptyFunction;
+		objects[i].onclick = TunesViewerEmptyFunction;
+		objects[i].onmousedown = TunesViewerEmptyFunction;
 	}
 }
 
