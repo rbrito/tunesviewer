@@ -52,7 +52,7 @@ from webkitview import WebKitView
 from Parser import Parser
 from SingleWindowSocket import SingleWindowSocket
 from common import *
-from constants import TV_VERSION, SEARCH_U, SEARCH_P
+from constants import TV_VERSION, SEARCH_U, SEARCH_P, USER_AGENT
 
 class TunesViewer:
 	source = ""  # full html/xml source
@@ -1545,6 +1545,7 @@ class TunesViewer:
 			icon_theme = gtk.icon_theme_get_default() #Access theme's icons:
 			self.icon_audio = icon_theme.load_icon("sound", self.config.iconsizeN, 0)
 			self.icon_video = icon_theme.load_icon("video", self.config.iconsizeN, 0)
+			self.icon_book = icon_theme.load_icon("pdf", self.config.iconsizeN, 0)
 			self.icon_other = icon_theme.load_icon("gnome-fs-regular", self.config.iconsizeN, 0)
 			self.icon_link = icon_theme.load_icon("gtk-jump-to-ltr", self.config.iconsizeN, 0)
 		except Exception as e:
@@ -1566,11 +1567,14 @@ class TunesViewer:
 		audio_types = [".mp3", ".m4a", ".amr", ".m4p", ".aiff", ".aif",
 			       ".aifc"]
 		video_types = [".mp4", ".m4v", ".mov", ".m4b", ".3gp"]
+		book_types = [".pdf", ".epub"]
 		if content_type in audio_types:
 			return self.icon_audio
 		elif content_type in video_types:
-			return self.icon_video;
-		elif content_type != "":
+			return self.icon_video
+		elif content_type in book_types:
+			return self.icon_book
+		else:
 			return self.icon_other
 
 class VWin:
@@ -1598,20 +1602,41 @@ def parse_cli():
 	import optparse
 	parser = optparse.OptionParser()
 
-	parser.add_option('-s', '--search', help='Give terms to use as a search.')
-	parser.add_option('-v', '--verbose', help='Output debug information.', action='store_true', default=False)
+	parser.add_option('-s', '--search', help='Give terms to search for university media')
+	parser.add_option('-p','--search-podcast', help='Give terms to search podcasts',metavar='SEARCH', dest="podcastsearch")
+	parser.add_option('-d','--download', help='download html only, no GUI', metavar='DOWNLOADFILE')
+	parser.add_option('-v', '--verbose', help='Output debug information', action='store_true', default=False)
+	parser.add_option('-V', '--version', help='Output version number and exit', action='store_true', default=False, dest="version")
 
 	opts, args = parser.parse_args()
 
 	if opts.search is not None:
 		url = SEARCH_U % opts.search
+	elif opts.podcastsearch is not None:
+		url = SEARCH_P % opts.podcastsearch
 	elif len(args) > 0:
 		url = args[0]
 	else:
 		url = ''
 
+	if opts.version:
+		print ("TunesViewer " + TV_VERSION)
+		import sys
+		sys.exit(0)
 	if opts.verbose:
 		logging.basicConfig(level=logging.DEBUG)
+	if opts.download:
+		if url:
+			opener = urllib2.build_opener()
+			opener.addheaders = [('User-agent', USER_AGENT)]
+			text = opener.open(url).read()
+			parsed = Parser(url, "text/HTML", text)
+			open(opts.download,'w').write(parsed.HTML)
+			print "Wrote file to",opts.download
+			import sys
+			sys.exit(0)
+		else:
+			print "No url specified. Starting normally."
 
 	return url
 
@@ -1621,7 +1646,6 @@ if __name__ == "__main__":
 	url = parse_cli()
 	# Create the TunesViewer instance and run it. If an instance is
 	# already running, send the url to such instance.
-	logging.info("TunesViewer " + TV_VERSION)
 	prog = TunesViewer()
 	prog.sock = SingleWindowSocket(url, prog)
 
