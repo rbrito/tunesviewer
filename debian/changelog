@@ -1,6 +1,6 @@
-tunesviewer (1.4-205~3.gbp1120d2-1) UNRELEASED; urgency=medium
+tunesviewer (1.4-236~4.gbp5d5d53) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @1120d28a7a59fc17062ec47f2902348038b760a3 **
+  ** SNAPSHOT build @5d5d53f39066049dbe141fd7e5bd2ec3e93ce88f **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
@@ -161,4 +161,31 @@ tunesviewer (1.4-205~3.gbp1120d2-1) UNRELEASED; urgency=medium
   * Javascript: As per jslint.com, don't use parens for lambda function definitions.
   * TunesViewer: Be more resistant agains missing icon.
 
- -- Rogério Brito <rbrito@ime.usp.br>  Wed, 08 Feb 2012 00:14:00 -0200
+  [ Luke Bryan ]
+  * Fixed possible index-out-of-range, and reworked unit tests.
+
+  [ Rogério Brito ]
+  * Update the changelog for upload to the PPA.
+  * Javascript: Make clear the messages that come from TunesViewer.
+  * Javascript: Change some comments for legibility.
+  * downloadbox: Catch exception when DBUS is not available for some reason.
+  * SingleWindowSocket: Don't bother the user if everything is set.
+
+  [ Luke Bryan ]
+  * Set no-loading-icon by default, it makes the window shift down on Ubuntu Unity.
+
+  [ Rogério Brito ]
+  * common: Try harder to convert strings with times in milliseconds.
+  * UI: Add support for showing icons for reading material.
+  * Javascript: Provide a third argument for calls to `addEventListener`.
+  * Javascript: Add an empty function to avoid creating too many objects.
+  * Javascript: Add `use strict` to some functions.
+
+  [ Luke Bryan ]
+  * Improved command-line arguments.
+
+  [ Rogério Brito ]
+  * TunesViewer: Initialize the icon_book variable.
+  * TunesViewer: Use an icon for books that is more probable to exist.
+
+ -- Rogério Brito <rbrito@ime.usp.br>  Sat, 11 Feb 2012 22:37:58 -0200
