@@ -1539,17 +1539,18 @@ class TunesViewer:
 		"""
 		self.icon_audio = None
 		self.icon_video = None
+		self.icon_book = None
 		self.icon_other = None
 		self.icon_link = None
 		try:
 			icon_theme = gtk.icon_theme_get_default() #Access theme's icons:
 			self.icon_audio = icon_theme.load_icon("sound", self.config.iconsizeN, 0)
 			self.icon_video = icon_theme.load_icon("video", self.config.iconsizeN, 0)
-			self.icon_book = icon_theme.load_icon("pdf", self.config.iconsizeN, 0)
+			self.icon_book = icon_theme.load_icon("gnome-mime-application-pdf", self.config.iconsizeN, 0)
 			self.icon_other = icon_theme.load_icon("gnome-fs-regular", self.config.iconsizeN, 0)
 			self.icon_link = icon_theme.load_icon("gtk-jump-to-ltr", self.config.iconsizeN, 0)
 		except Exception as e:
-			logging.debug("Exception:" + str(e))
+			logging.warn("Could not set up all the icons: " + str(e))
 
 
 		for row in self.liststore:
