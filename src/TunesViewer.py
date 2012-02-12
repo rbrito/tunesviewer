@@ -1539,6 +1539,7 @@ class TunesViewer:
 		"""
 		self.icon_audio = None
 		self.icon_video = None
+		self.icon_book = None
 		self.icon_other = None
 		self.icon_link = None
 		try:
