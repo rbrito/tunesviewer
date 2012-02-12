@@ -1,6 +1,6 @@
-tunesviewer (1.4-236~4.gbp5d5d53) UNRELEASED; urgency=medium
+tunesviewer (1.4-239~5.gbpf19035) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @5d5d53f39066049dbe141fd7e5bd2ec3e93ce88f **
+  ** SNAPSHOT build @f19035fb63186d9c2c67ab18ea3f4fe41d95a3fc **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
@@ -187,5 +187,6 @@ tunesviewer (1.4-236~4.gbp5d5d53) UNRELEASED; urgency=medium
   [ Rogério Brito ]
   * TunesViewer: Initialize the icon_book variable.
   * TunesViewer: Use an icon for books that is more probable to exist.
+  * TunesViewer: Make an error message more descriptive of the error.
 
- -- Rogério Brito <rbrito@ime.usp.br>  Sat, 11 Feb 2012 22:37:58 -0200
+ -- Rogério Brito <rbrito@ime.usp.br>  Sat, 11 Feb 2012 22:42:31 -0200
