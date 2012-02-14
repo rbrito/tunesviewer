@@ -1540,6 +1540,7 @@ class TunesViewer:
 		self.icon_audio = None
 		self.icon_video = None
 		self.icon_book = None
+		self.icon_zip = None
 		self.icon_other = None
 		self.icon_link = None
 		try:
@@ -1547,6 +1548,7 @@ class TunesViewer:
 			self.icon_audio = icon_theme.load_icon("sound", self.config.iconsizeN, 0)
 			self.icon_video = icon_theme.load_icon("video", self.config.iconsizeN, 0)
 			self.icon_book = icon_theme.load_icon("gnome-mime-application-pdf", self.config.iconsizeN, 0)
+			self.icon_zip = icon_theme.load_icon("gnome-mime-application-zip", self.config.iconsizeN, 0)
 			self.icon_other = icon_theme.load_icon("gnome-fs-regular", self.config.iconsizeN, 0)
 			self.icon_link = icon_theme.load_icon("gtk-jump-to-ltr", self.config.iconsizeN, 0)
 		except Exception as e:
@@ -1573,8 +1575,10 @@ class TunesViewer:
 			return self.icon_audio
 		elif content_type in video_types:
 			return self.icon_video
-		elif content_type in book_types:
-			return self.icon_book
+		#elif content_type in book_types: These aren't all pdf, so the "paper" icon (icon_other) may be better.
+			#return self.icon_book
+		elif content_type == ".zip":
+			return self.icon_zip
 		else:
 			return self.icon_other
 
