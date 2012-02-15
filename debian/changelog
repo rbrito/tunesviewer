@@ -1,6 +1,6 @@
-tunesviewer (1.4-239~5.gbpf19035) UNRELEASED; urgency=medium
+tunesviewer (1.4-239~6.gbp6350ba) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @f19035fb63186d9c2c67ab18ea3f4fe41d95a3fc **
+  ** SNAPSHOT build @6350baa90a31e2e25a5f4cf51874e464512b8300 **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
@@ -189,4 +189,10 @@ tunesviewer (1.4-239~5.gbpf19035) UNRELEASED; urgency=medium
   * TunesViewer: Use an icon for books that is more probable to exist.
   * TunesViewer: Make an error message more descriptive of the error.
 
- -- Rogério Brito <rbrito@ime.usp.br>  Sat, 11 Feb 2012 22:42:31 -0200
+  [ Luke Bryan ]
+  * Icon modifications
+
+  [ Rogério Brito ]
+  * TunesViewer: Take a more general approach to providing icons.
+
+ -- Rogério Brito <rbrito@ime.usp.br>  Wed, 15 Feb 2012 02:00:39 -0200
