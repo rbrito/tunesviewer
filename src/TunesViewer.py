@@ -1535,7 +1535,8 @@ class TunesViewer:
 
 	def updateListIcons(self):
 		"""
-		Sets the icons in the liststore based on the media type.
+		Sets the icons in the liststore/bottom panel based on the
+		media type.
 		"""
 		self.icon_audio = None
 		self.icon_video = None
@@ -1547,7 +1548,7 @@ class TunesViewer:
 			icon_theme = gtk.icon_theme_get_default() #Access theme's icons:
 			self.icon_audio = icon_theme.load_icon("sound", self.config.iconsizeN, 0)
 			self.icon_video = icon_theme.load_icon("video", self.config.iconsizeN, 0)
-			self.icon_book = icon_theme.load_icon("gnome-mime-application-pdf", self.config.iconsizeN, 0)
+			self.icon_pdf = icon_theme.load_icon("gnome-mime-application-pdf", self.config.iconsizeN, 0)
 			self.icon_zip = icon_theme.load_icon("gnome-mime-application-zip", self.config.iconsizeN, 0)
 			self.icon_other = icon_theme.load_icon("gnome-fs-regular", self.config.iconsizeN, 0)
 			self.icon_link = icon_theme.load_icon("gtk-jump-to-ltr", self.config.iconsizeN, 0)
@@ -1559,27 +1560,36 @@ class TunesViewer:
 			content_type = row[4].lower()
 
 			self.liststore.set(row.iter, 0,
-				self.iconOfType(content_type))
-			#elif row[8]: #it's a link
-			#	self.liststore.set(row.iter, 0,
-			#			   self.icon_link)
+					   self.iconOfType(content_type))
 
 			url = row[10]
 
-	def iconOfType(self,content_type):
-		audio_types = [".mp3", ".m4a", ".amr", ".m4p", ".aiff", ".aif",
-			       ".aifc"]
-		video_types = [".mp4", ".m4v", ".mov", ".m4b", ".3gp"]
-		book_types = [".pdf", ".epub"]
-		if content_type in audio_types:
-			return self.icon_audio
-		elif content_type in video_types:
-			return self.icon_video
-		#elif content_type in book_types: These aren't all pdf, so the "paper" icon (icon_other) may be better.
-			#return self.icon_book
-		elif content_type == ".zip":
-			return self.icon_zip
-		else:
+	def iconOfType(self, content_type):
+		icon_of_type = {
+			'.aif': self.icon_audio,
+			'.aiff': self.icon_audio,
+			'.amr': self.icon_audio,
+			'.m4a': self.icon_audio,
+			'.m4p': self.icon_audio,
+			'.mp3': self.icon_audio,
+
+			'.3gp': self.icon_video,
+			'.m4b': self.icon_video,
+			'.m4v': self.icon_video,
+			'.mov': self.icon_video,
+			'.mp4': self.icon_video,
+
+			'.pdf': self.icon_pdf,
+
+			'.epub': self.icon_other,
+
+			'.zip': self.icon_zip,
+			}
+
+		try:
+			return icon_of_type[content_type]
+		except KeyError as e:
+			logging.debug("Couldn't find specific icon for type %s" % str(e))
 			return self.icon_other
 
 class VWin:
