@@ -22,6 +22,8 @@ class TestCommon(unittest.TestCase):
 		self.assertEqual(time_convert(1000 * 3661), "1:01:01")
 		self.assertEqual(time_convert(1000 * 7200), "2:00:00")
 
+		self.assertEqual(time_convert('30000.0'), "0:30")
+
 		self.assertEqual(time_convert("bogus"), "bogus")
 		self.assertEqual(time_convert([]), [])
 
@@ -56,6 +58,7 @@ class TestCommon(unittest.TestCase):
 		self.assertEqual(desc(1024 * 1024), '1.0 MB')
 		self.assertEqual(desc(1025 * 1024), '1.0 MB')
 		self.assertEqual(desc(0.5 * 1024 * 1024 * 1024), '512.0 MB')
+		self.assertEqual(desc(10000000000000000000),"(way too big)")
 
 
 if __name__ == "__main__":

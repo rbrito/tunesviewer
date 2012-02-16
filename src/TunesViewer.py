@@ -52,7 +52,7 @@ from webkitview import WebKitView
 from Parser import Parser
 from SingleWindowSocket import SingleWindowSocket
 from common import *
-from constants import TV_VERSION, SEARCH_U, SEARCH_P
+from constants import TV_VERSION, SEARCH_U, SEARCH_P, USER_AGENT
 
 class TunesViewer:
 	source = ""  # full html/xml source
@@ -247,9 +247,12 @@ class TunesViewer:
 		self.throbber = gtk.Image()
 
 		throbber_path = '/usr/share/tunesviewer/Throbber.gif'
-		self.throbber.set_from_animation(gtk.gdk.PixbufAnimation(throbber_path))
+		try:
+			self.throbber.set_from_animation(gtk.gdk.PixbufAnimation(throbber_path))
+			menubox.pack_start(self.throbber, expand=False)
+		except glib.GError as e:
+			logging.error('Could not set the throbber: %s' % str(e))
 
-		menubox.pack_start(self.throbber, expand=False)
 
 		### Top level 'File' menu
 		filemenu = gtk.Menu()
@@ -1532,42 +1535,61 @@ class TunesViewer:
 
 	def updateListIcons(self):
 		"""
-		Sets the icons in the liststore based on the media type.
+		Sets the icons in the liststore/bottom panel based on the
+		media type.
 		"""
 		self.icon_audio = None
 		self.icon_video = None
+		self.icon_book = None
+		self.icon_zip = None
 		self.icon_other = None
 		self.icon_link = None
 		try:
 			icon_theme = gtk.icon_theme_get_default() #Access theme's icons:
 			self.icon_audio = icon_theme.load_icon("sound", self.config.iconsizeN, 0)
 			self.icon_video = icon_theme.load_icon("video", self.config.iconsizeN, 0)
+			self.icon_pdf = icon_theme.load_icon("gnome-mime-application-pdf", self.config.iconsizeN, 0)
+			self.icon_zip = icon_theme.load_icon("gnome-mime-application-zip", self.config.iconsizeN, 0)
 			self.icon_other = icon_theme.load_icon("gnome-fs-regular", self.config.iconsizeN, 0)
 			self.icon_link = icon_theme.load_icon("gtk-jump-to-ltr", self.config.iconsizeN, 0)
 		except Exception as e:
-			logging.debug("Exception:" + str(e))
+			logging.warn("Could not set up all the icons: " + str(e))
 
 
 		for row in self.liststore:
 			content_type = row[4].lower()
 
 			self.liststore.set(row.iter, 0,
-				self.iconOfType(content_type))
-			#elif row[8]: #it's a link
-			#	self.liststore.set(row.iter, 0,
-			#			   self.icon_link)
+					   self.iconOfType(content_type))
 
 			url = row[10]
 
-	def iconOfType(self,content_type):
-		audio_types = [".mp3", ".m4a", ".amr", ".m4p", ".aiff", ".aif",
-			       ".aifc"]
-		video_types = [".mp4", ".m4v", ".mov", ".m4b", ".3gp"]
-		if content_type in audio_types:
-			return self.icon_audio
-		elif content_type in video_types:
-			return self.icon_video;
-		elif content_type != "":
+	def iconOfType(self, content_type):
+		icon_of_type = {
+			'.aif': self.icon_audio,
+			'.aiff': self.icon_audio,
+			'.amr': self.icon_audio,
+			'.m4a': self.icon_audio,
+			'.m4p': self.icon_audio,
+			'.mp3': self.icon_audio,
+
+			'.3gp': self.icon_video,
+			'.m4b': self.icon_video,
+			'.m4v': self.icon_video,
+			'.mov': self.icon_video,
+			'.mp4': self.icon_video,
+
+			'.pdf': self.icon_pdf,
+
+			'.epub': self.icon_other,
+
+			'.zip': self.icon_zip,
+			}
+
+		try:
+			return icon_of_type[content_type]
+		except KeyError as e:
+			logging.debug("Couldn't find specific icon for type %s" % str(e))
 			return self.icon_other
 
 class VWin:
@@ -1595,20 +1617,41 @@ def parse_cli():
 	import optparse
 	parser = optparse.OptionParser()
 
-	parser.add_option('-s', '--search', help='Give terms to use as a search.')
-	parser.add_option('-v', '--verbose', help='Output debug information.', action='store_true', default=False)
+	parser.add_option('-s', '--search', help='Give terms to search for university media')
+	parser.add_option('-p','--search-podcast', help='Give terms to search podcasts',metavar='SEARCH', dest="podcastsearch")
+	parser.add_option('-d','--download', help='download html only, no GUI', metavar='DOWNLOADFILE')
+	parser.add_option('-v', '--verbose', help='Output debug information', action='store_true', default=False)
+	parser.add_option('-V', '--version', help='Output version number and exit', action='store_true', default=False, dest="version")
 
 	opts, args = parser.parse_args()
 
 	if opts.search is not None:
 		url = SEARCH_U % opts.search
+	elif opts.podcastsearch is not None:
+		url = SEARCH_P % opts.podcastsearch
 	elif len(args) > 0:
 		url = args[0]
 	else:
 		url = ''
 
+	if opts.version:
+		print ("TunesViewer " + TV_VERSION)
+		import sys
+		sys.exit(0)
 	if opts.verbose:
 		logging.basicConfig(level=logging.DEBUG)
+	if opts.download:
+		if url:
+			opener = urllib2.build_opener()
+			opener.addheaders = [('User-agent', USER_AGENT)]
+			text = opener.open(url).read()
+			parsed = Parser(url, "text/HTML", text)
+			open(opts.download,'w').write(parsed.HTML)
+			print "Wrote file to",opts.download
+			import sys
+			sys.exit(0)
+		else:
+			print "No url specified. Starting normally."
 
 	return url
 
@@ -1618,7 +1661,6 @@ if __name__ == "__main__":
 	url = parse_cli()
 	# Create the TunesViewer instance and run it. If an instance is
 	# already running, send the url to such instance.
-	logging.info("TunesViewer " + TV_VERSION)
 	prog = TunesViewer()
 	prog.sock = SingleWindowSocket(url, prog)
 
