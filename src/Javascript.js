@@ -188,12 +188,12 @@ document.onpageshow = (function () {
 
 	clickEvent = function (rss) {
 		console.log("TunesViewer: click event listener: " + rss);
-	    location.href = rss;
+		location.href = rss;
 	};
 
 	downloadMouseDownEvent = function (downloadUrl) {
 		console.log('TunesViewer: opening: ' + downloadUrl);
-	    location.href = downloadUrl;
+		location.href = downloadUrl;
 	};
 
 	// fix free-download links, mobile
@@ -282,12 +282,17 @@ document.onpageshow = (function () {
 
 	for (i = 0; i < buttons.length; i++) {
 		if (buttons[i].getAttribute('subscribe-podcast-url') !== null) {
-			buttons[i].addEventListener('click', subscribePodcastClickEvent(this.getAttribute('subscribe-podcast-url')), true);
+			buttons[i].addEventListener('click',
+						    subscribePodcastClickEvent(this.getAttribute('subscribe-podcast-url')),
+						    true);
 		}
 		if (buttons[i].hasAttribute("disabled")) {
 			removeListeners(buttons[i]);
 			buttons[i].addEventListener('click',
-					disabledButtonClickEvent(this.getAttribute("episode-url"), this.getAttribute("artist-name"), this.getAttribute('item-name')), false);
+						    disabledButtonClickEvent(this.getAttribute("episode-url"),
+									     this.getAttribute("artist-name"),
+									     this.getAttribute('item-name')),
+						    false);
 			buttons[i].removeAttribute("disabled");
 		}
 	}
@@ -311,7 +316,9 @@ document.onpageshow = (function () {
 var previewClick = function (el) {
 	"use strict";
 	var a, tr, preview;
+
 	console.log("TunesViewer: in previewClick.");
+
 	tr = el.parentNodel;
 	preview = null;
 	if (tr.hasAttribute('video-preview-url')) {
