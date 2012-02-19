@@ -137,9 +137,9 @@ class DownloadBox:
 			# instead of updating every kb or mb, update regularly.
 			# This should work well no matter what the download speed is.
 			logging.debug("STARTING TIMEOUT")
-			#Only update the progress bar only about 4x a second,
-			#this won't make cpu work too much.
-			gobject.timeout_add(250, self.updateLoop)
+			# Only update the progress bar about once a second,
+			# to lower the CPU load.
+			gobject.timeout_add(1000, self.updateLoop)
 		d.start()
 		f = open(constants.DATA_FILE, 'a')
 		f.write("#### url and localfile name: ####\n" + url + "\n" + localfile + "\n")
