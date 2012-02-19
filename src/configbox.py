@@ -29,6 +29,7 @@ class ConfigBox:
 		".aif" : DEFAULT_OPENER,
 		".aifc" : DEFAULT_OPENER,
 		".3gp" : DEFAULT_OPENER,
+		".pdf": "xdg-open",
 		}
 	podcastprog = "rhythmbox %i"
 	defaultcommand = 2
