@@ -19,16 +19,16 @@ class ConfigBox:
 	throbber = False
 	downloadfile = "%p/%n %l%t"
 	openers = {
-		".mp3" : DEFAULT_OPENER,
-		".m4a" : DEFAULT_OPENER,
-		".mov" : DEFAULT_OPENER,
-		".mp4" : DEFAULT_OPENER,
-		".m4v" : DEFAULT_OPENER,
-		".m4p" : DEFAULT_OPENER,
-		".aiff" : DEFAULT_OPENER,
-		".aif" : DEFAULT_OPENER,
-		".aifc" : DEFAULT_OPENER,
-		".3gp" : DEFAULT_OPENER,
+		".3gp": DEFAULT_OPENER,
+		".aif": DEFAULT_OPENER,
+		".aifc": DEFAULT_OPENER,
+		".aiff": DEFAULT_OPENER,
+		".m4a": DEFAULT_OPENER,
+		".m4p": DEFAULT_OPENER,
+		".m4v": DEFAULT_OPENER,
+		".mov": DEFAULT_OPENER,
+		".mp3": DEFAULT_OPENER,
+		".mp4": DEFAULT_OPENER,
 		".pdf": "xdg-open",
 		}
 	podcastprog = "rhythmbox %i"
