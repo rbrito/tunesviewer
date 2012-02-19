@@ -6,103 +6,133 @@
 
 /*global window */
 
-function Player() {
-	"use strict";
-}
+iTunes = { // All called from the page js:
+	getMachineID: function () {
+		"use strict";
+		// FIXME: Apple's javscript tries to identify what machine we are
+		// when we click on the "Subscribe Free" button of a given course to
+		// create an URL.
+		//
+		// We should see what are some valid values and use those.
+		console.log("TunesViewer: In function <getMachineID>");
 
-Player.prototype.playURL = function (input) {
-	"use strict";
+		return "";
+	},
 
-	// Construct the preview display:
-	var div, anchor, video;
 
-	// First, create the div element
-	div = document.createElement("div");
-	div.setAttribute("class", "quick-view video movie active activity-video-dialog");
-	div.setAttribute("style", "width:50%; height:auto; position:fixed; left: 25%; float: top ; top:10px");
-	div.setAttribute("id", "previewer-container");
+	doDialogXML: function (b, d) {
+		"use strict";
+		/*
+		// FIXME: This seems to be called for the creation of a
+		// confirmation / license agreement dialog.
+		//
+		// Not yet sure how exactly this should work.
+		var i;
+		console.log("TunesViewer: In function <doDialogXML>, b:" + b);
+		console.log("TunesViewer: In function <doDialogXML>, d:" + d);
 
-	// Create the anchor and tie it with the div element
-	anchor = document.createElement("a");
-	anchor.setAttribute("class", "close-preview");
-	anchor.addEventListener("click", function () {
-		this.parentNode.parentNode.removeChild(this.parentNode);
-	}, false);
-	div.appendChild(anchor);
+		for (i in d) {
+		console.log("TunesViewer: " + i + " " + d[i]);
+		}
 
-	// Create a video element and tie it with the div element
-	video = document.createElement("video");
-	video.id = "previewPlayer";
-	video.setAttribute("controls", "true");
-	div.appendChild(video);
-	document.body.appendChild(div);
+		return d.okButtonAction(); */
+	},
 
-	// Start the media:
-	document.getElementById("previewPlayer").src = input.url;
-	document.getElementById("previewPlayer").play();
-	return "not 0";
+	playURL: function (input) {
+		"use strict";
+
+		// Construct the preview display:
+		var div, anchor, video;
+
+		// First, create the div element
+		div = document.createElement("div");
+		div.setAttribute("class", "quick-view video movie active activity-video-dialog");
+		div.setAttribute("style", "width:50%; height:auto; position:fixed; left: 25%; float: top ; top:10px");
+		div.setAttribute("id", "previewer-container");
+
+		// Create the anchor and tie it with the div element
+		anchor = document.createElement("a");
+		anchor.setAttribute("class", "close-preview");
+		anchor.addEventListener("click", function () {
+			this.parentNode.parentNode.removeChild(this.parentNode);
+		}, false);
+		div.appendChild(anchor);
+
+		// Create a video element and tie it with the div element
+		video = document.createElement("video");
+		video.id = "previewPlayer";
+		video.setAttribute("controls", "true");
+		div.appendChild(video);
+		document.body.appendChild(div);
+
+		// Start the media:
+		document.getElementById("previewPlayer").src = input.url;
+		document.getElementById("previewPlayer").play();
+		return "not 0";
+	},
+
+	showMediaPlayer: function (url_, showtype, title) {
+		"use strict";
+		playURL({url: url_});
+	},
+
+	openURL: function (url) {
+		"use strict";
+		location.href = url;
+	},
+
+	/** Download a file described as xml.*/
+	addProtocol: function (xml) {
+		"use strict";
+		console.log("TunesViewer: adding download: " + xml);
+		location.href = "download://" + xml;
+	},
+
+	/** Stops the preview player*/
+	stop: function () {
+		"use strict";
+		document.getElementById("previewer-container").parentNode.removeChild(document.getElementById("previewer-container"));
+		return true;
+	},
+
+	doPodcastDownload: function (obj, number) {
+		"use strict";
+		alert("podcastdownload");
+		//var keys = obj.getElementsByTagName('key');
+	},
+
+	doAnonymousDownload: function (obj) {
+		"use strict";
+		location.href = obj.url;
+		// It has the url... just needs a way to tell the main
+		// program to download it (webkit transaction?)
+	},
+
+	getUserDSID: function () {//no user id.
+		"use strict";
+		return 0;
+	},
+
+	putURLOnPasteboard: function (a, bool) {
+		"use strict";
+		location.href = "copyurl://" + encodeURI(a);
+	},
+
+	/** What version of webkit we're using, eg 'AppleWebKit/531.2' */
+	webkitVersion: function () {
+		"use strict";
+		return (/AppleWebKit\/([\d.]+)/).exec(navigator.userAgent)[0];
+	}
+
 };
 
-/*jslint unparam: true*/
-Player.prototype.showMediaPlayer = function (url, showtype, title) {
-	"use strict";
-	var obj = function () {};
-	obj.url = url;
-	this.playURL(obj);
-};
+
 /*jslint unparam: false*/
-
-Player.prototype.openURL = function (url) {
-	"use strict";
-	location.href = url;
-};
-
-Player.prototype.addProtocol = function (xml) {
-	"use strict";
-	console.log("TunesViewer: adding download protocol to: " + xml);
-	location.href = "download://" + xml;
-};
-
-Player.prototype.stop = function () {
-	"use strict";
-	document.getElementById("previewer-container").parentNode.removeChild(document.getElementById("previewer-container"));
-	return true;
-};
-
-/*jslint unparam: true*/
-Player.prototype.doPodcastDownload = function (obj, number) {
-	"use strict";
-	alert("podcastdownload");
-	//var keys = obj.getElementsByTagName('key');
-};
-/*jslint unparam: false*/
-
-Player.prototype.doAnonymousDownload = function (obj) {
-	"use strict";
-	location.href = obj.url;
-	// It has the url... just needs a way to tell the main
-	// program to download it (webkit transaction?)
-};
-
-Player.prototype.getUserDSID = function () {//no user id.
-	"use strict";
-	return 0;
-};
-
-/*jslint unparam: true*/
-Player.prototype.putURLOnPasteboard = function (a, bool) {
-	"use strict";
-	location.href = "copyurl://" + encodeURI(a);
-};
-/*jslint unparam: false*/
-
-/*jslint unparam: true*/
 function defined(something) {
 	"use strict";
 	console.log("TunesViewer: Entering the function <defined>.");
 	return true;
 }
-/*jslint unparam: false*/
 
 /*jslint unparam: true*/
 function iTSVideoPreviewWithObject(obj) {
@@ -148,12 +178,7 @@ var removeListeners = function (objects) {
 };
 
 document.onpageshow = (function () {
-	"use strict";
-	var as, a, css, divs, i, j, rss, previews, iTunes, buttons, clickEvent, downloadMouseDownEvent, previewClick, subscribePodcastClickEvent, disabledButtonClickEvent;
-	iTunes = new Player();
-	iTunes.webkitVersion = function webkitVersion() {
-		return "AppleWebKit/531.1";
-	};
+	var as, a, css, divs, i, j, rss, previews, buttons, clickEvent, downloadMouseDownEvent, previewClick, subscribePodcastClickEvent, disabledButtonClickEvent;
 
 	// Fix <a target="external" etc.
 
@@ -202,10 +227,10 @@ document.onpageshow = (function () {
 			console.log("TunesViewer: getting attribute: " + divs[i].getAttribute("download-url"));
 			removeListeners(divs[i].childNodes);
 			divs[i].innerHTML = "<button onclick='window.event.stopPropagation();location.href=\"" + divs[i].getAttribute("download-url") + "\";'>Download</button>";
-			divs[i].addEventListener('mouseDown', downloadMouseDownEvent(this.getAttribute('download-url')), false);
+			divs[i].addEventListener('mouseDown', downloadMouseDownEvent(getAttribute('download-url')), false);
 		}
 		if (divs[i].getAttribute("role") == "button" &&
-		        divs[i].getAttribute("aria-label") == "SUBSCRIBE FREE") {
+			divs[i].getAttribute("aria-label") == "Subscribe Free") {
 			rss = "";
 			console.log("TunesViewer: subscribe-button");
 			removeListeners(divs[i].parentNode);
@@ -220,43 +245,22 @@ document.onpageshow = (function () {
 		}
 	}
 
-	// Mouse-over tooltip for ellipsized title...
-	// Unfortunately it seems this may cause X window error!
-	/*titles = document.getElementsByClassName('name');
-	for (i=0; i<titles.length; i++) {
-		titles[i].title = titles[i].textContent;
-	}
-	titles = document.getElementsByClassName('artist');
-	for (i=0; i<titles.length; i++) {
-		titles[i].title = titles[i].textContent;
-	}*/
-
 	// Fix non-working preview buttons:
-	previews = document.getElementsByClassName('podcast-episode');
+	window.setTimeout(function() {
+		previews = document.getElementsByClassName('podcast-episode');
 
-	previewClick = function (el) {
-		var a, tr, preview;
-		console.log("TunesViewer: in previewClick.");
-		tr = el.parentNodel;
-		preview = null;
-		if (tr.hasAttribute('video-preview-url')) {
-			preview = tr.getAttribute('video-preview-url');
-		} else if (tr.hasAttribute('audio-preview-url')) {
-			preview = tr.getAttribute('audio-preview-url');
-		}
-		a = function () {
-			this.url = preview;
-		};
-		new Player().playURL(a);
-	};
+		console.log("TunesViewer: number of previews: " + previews.length);
+		for (i = 0; i < previews.length; i++) {
+			console.log(previews[i].tagName);
+			if (previews[i].tagName == 'TR') {
+				console.log("TunesViewer: adding listener for preview: " + previews[i].tagName);
+				console.log(previews[i].childNodes[1].childNodes[1].tagName);
+				previews[i].childNodes[1].childNodes[1].id = "importantnode"; //check in inspector. doesn't work.
+				previews[i].childNodes[1].childNodes[1].addEventListener('mousedown', previewClick, false);
 
-	console.log("TunesViewer: number of previews: " + previews.length);
-	for (i = 0; i < previews.length; i++) {
-		if (previews[i].tagName == 'tr') {
-			console.log("TunesViewer: adding listener for preview: " + previews[i].tagName);
-			previews[i].childNodes[0].addEventListener('click', previewClick, false);
+			}
 		}
-	}
+	}, 3000);
 
 	window.setTimeout(function () {
 		var i;
@@ -281,23 +285,23 @@ document.onpageshow = (function () {
 	};
 
 	for (i = 0; i < buttons.length; i++) {
-		if (buttons[i].getAttribute('subscribe-podcast-url') !== null) {
+		if (buttons[i].innerHTML == "Subscribe Free" && buttons[i].getAttribute('subscribe-podcast-url') !== null) {
 			buttons[i].addEventListener('click',
-						    subscribePodcastClickEvent(this.getAttribute('subscribe-podcast-url')),
+						    subscribePodcastClickEvent(buttons[i].getAttribute('subscribe-podcast-url')),
 						    true);
 		}
 		if (buttons[i].hasAttribute("disabled")) {
 			removeListeners(buttons[i]);
 			buttons[i].addEventListener('click',
-						    disabledButtonClickEvent(this.getAttribute("episode-url"),
-									     this.getAttribute("artist-name"),
-									     this.getAttribute('item-name')),
+						    disabledButtonClickEvent(buttons[i].getAttribute("episode-url"),
+									     buttons[i].getAttribute("artist-name"),
+									     buttons[i].getAttribute('item-name')),
 						    false);
 			buttons[i].removeAttribute("disabled");
 		}
 	}
 
-        //Fix 100% height
+	//Fix 100% height
 	if (document.getElementById('search-itunes-u') !== null) {
 		document.getElementById('search-itunes-u').style.height = 90;
 	}
@@ -311,23 +315,23 @@ document.onpageshow = (function () {
 	css.innerHTML = "* { -webkit-user-select: initial !important } div.search-form {height: 90}";
 	document.body.appendChild(css);
 	console.log("TunesViewer: JS OnPageShow Ran Successfully.");
-}());
 
-var previewClick = function (el) {
+}()); // end Pageshow.
+
+function previewClick (el) {
 	"use strict";
-	var a, tr, preview;
+	var tr, preview;
 
 	console.log("TunesViewer: in previewClick.");
 
-	tr = el.parentNodel;
+	tr = el.parentNode;
 	preview = null;
 	if (tr.hasAttribute('video-preview-url')) {
 		preview = tr.getAttribute('video-preview-url');
 	} else if (tr.hasAttribute('audio-preview-url')) {
 		preview = tr.getAttribute('audio-preview-url');
+	} else {
+		console.log("TunesViewer: Unhandled case in previewClick.");
 	}
-	a = function () {
-		this.url = preview;
-	};
-	new Player().playURL(a);
+	playURL({ url: preview });
 };
