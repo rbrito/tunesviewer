@@ -75,8 +75,8 @@ def safeFilename(name, dos):
 	http://msdn.microsoft.com/en-us/library/ms810456.aspx
 	"""
 	if dos:
-		unsafe_fat_chars = r'[^-a-zA-Z0-9 $%`_@{}~!#().]'
-
+		unsafe_fat_chars = r'[^-a-zA-Z0-9 $%`_@{}~!#().,;]'
+		name = name.replace(":",";")
 		name = os.path.basename(name)
 		name = re.sub(unsafe_fat_chars, '', name)
 		(root, ext) = os.path.splitext(name)
