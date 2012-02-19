@@ -1,6 +1,6 @@
-tunesviewer (1.4-239~6.gbp6350ba) UNRELEASED; urgency=medium
+tunesviewer (1.4-239~7.gbp6425c8) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @6350baa90a31e2e25a5f4cf51874e464512b8300 **
+  ** SNAPSHOT build @6425c8c7969cda0bdf58bc3794544e7ca3033830 **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
@@ -195,4 +195,17 @@ tunesviewer (1.4-239~6.gbp6350ba) UNRELEASED; urgency=medium
   [ Rogério Brito ]
   * TunesViewer: Take a more general approach to providing icons.
 
- -- Rogério Brito <rbrito@ime.usp.br>  Wed, 15 Feb 2012 02:00:39 -0200
+  [ Bruno P. Kinoshita ]
+  * Fixing JSlint errors
+
+  [ Rogério Brito ]
+  * Keep packaging information separate from the project.
+  * Keep packaging information separate from the project.
+  * Javascript: Minor whitespace fixes.
+
+  [ Luke Bryan ]
+  * Fix dos-filesystem filter, make : semicolon for compatibility.
+
+  [ Rogério Brito ]
+
+ -- Rogério Brito <rbrito@ime.usp.br>  Sun, 19 Feb 2012 01:12:31 -0200
