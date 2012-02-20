@@ -163,11 +163,11 @@ function fixTransparent(objects) {
 }
 
 /** Empty function to assign to events that we want to kill. */
-var TunesViewerEmptyFunction = function () {
+function TunesViewerEmptyFunction() {
 	"use strict";
 };
 
-var removeListeners = function (objects) {
+function removeListeners(objects) {
 	"use strict";
 	var i;
 	console.log("TunesViewer: Entering the function <removeListeners>.");
