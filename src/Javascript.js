@@ -162,11 +162,17 @@ function fixTransparent(objects) {
 	}
 }
 
-/** Empty function to assign to events that we want to kill. */
+/**
+ * Empty function to assign to events that we want to kill.
+ */
 function TunesViewerEmptyFunction() {
 	"use strict";
-};
+}
 
+/**
+ * Function to remove event listeners (onmouseover, onclick, onmousedown)
+ * of objects that we don't want to "have life".
+ */
 function removeListeners(objects) {
 	"use strict";
 	var i;
@@ -176,15 +182,14 @@ function removeListeners(objects) {
 		objects[i].onclick = TunesViewerEmptyFunction;
 		objects[i].onmousedown = TunesViewerEmptyFunction;
 	}
-};
+}
 
 document.onpageshow = (function () {
 	var as, a, css, divs, i, j, rss, previews, buttons, clickEvent, downloadMouseDownEvent, previewClick, subscribePodcastClickEvent, disabledButtonClickEvent;
 
 	// Fix <a target="external" etc.
 
-	// Here, the variable `as` is a list of anchors, while `a` iterates
-	// over the list.
+	// `as` is a list of anchors, `a` iterates over the list
 	as = document.getElementsByTagName("a");
 	for (a in as) {
 		if (as.hasOwnProperty(a)) {
@@ -212,11 +217,15 @@ document.onpageshow = (function () {
 
 	divs = document.getElementsByTagName("div");
 
+	// FIXME: Should we change this to be a separate function "attached"
+	// to an object that is, finally, assigned to the onpageshow event?
 	clickEvent = function (rss) {
 		console.log("TunesViewer: click event listener: " + rss);
 		location.href = rss;
 	};
 
+	// FIXME: Should we change this to be a separate function "attached"
+	// to an object that is, finally, assigned to the onpageshow event?
 	downloadMouseDownEvent = function (downloadUrl) {
 		console.log('TunesViewer: opening: ' + downloadUrl);
 		location.href = downloadUrl;
@@ -246,6 +255,9 @@ document.onpageshow = (function () {
 		}
 	}
 
+	// FIXME: Should we change this to be a separate, named function
+	// passed to the event?
+	//
 	// Fix non-working preview buttons:
 	window.setTimeout(function() {
 		previews = document.getElementsByClassName('podcast-episode');
@@ -263,6 +275,8 @@ document.onpageshow = (function () {
 		}
 	}, 3000);
 
+	// FIXME: Should we change this to be a separate, named function
+	// passed to the event?
 	window.setTimeout(function () {
 		var i;
 		previews = document.getElementsByClassName('circular-preview-control');
@@ -274,10 +288,14 @@ document.onpageshow = (function () {
 
 	buttons = document.getElementsByTagName('button');
 
+	// FIXME: Should we change this to be a separate function "attached"
+	// to an object that is, finally, assigned to the onpageshow event?
 	subscribePodcastClickEvent = function (subscribePodcastUrl) {
 		location.href = subscribePodcastUrl;
 	};
 
+	// FIXME: Should we change this to be a separate function "attached"
+	// to an object that is, finally, assigned to the onpageshow event?
 	disabledButtonClickEvent = function (episodeUrl, artistName, itemName) {
 		location.href = "download://<xml><key>URL</key><value><![CDATA[" + episodeUrl + "]]></value>" +
 			"<key>artistName</key><value><![CDATA[" + artistName + "]]></value>" +
