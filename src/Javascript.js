@@ -184,6 +184,33 @@ function removeListeners(objects) {
 	}
 }
 
+/**
+ * Function to create a player for preview of media.
+ */
+function previewClick (el) {
+	"use strict";
+	var tr, preview;
+
+	console.log("TunesViewer: in previewClick.");
+
+	tr = el.parentNode;
+	preview = null;
+	if (tr.hasAttribute('video-preview-url')) {
+		preview = tr.getAttribute('video-preview-url');
+	} else if (tr.hasAttribute('audio-preview-url')) {
+		preview = tr.getAttribute('audio-preview-url');
+	} else {
+		console.log("TunesViewer: Unhandled case in previewClick.");
+	}
+	playURL({ url: preview });
+}
+
+
+/* Hooking everything when the document is shown.
+ *
+ * FIXME: This huge thing has to be broken down into smaller pieces with
+ * properly named functions.
+ */
 document.onpageshow = (function () {
 	var as, a, css, divs, i, j, rss, previews, buttons, clickEvent, downloadMouseDownEvent, previewClick, subscribePodcastClickEvent, disabledButtonClickEvent;
 
@@ -336,21 +363,3 @@ document.onpageshow = (function () {
 	console.log("TunesViewer: JS OnPageShow Ran Successfully.");
 
 }()); // end Pageshow.
-
-function previewClick (el) {
-	"use strict";
-	var tr, preview;
-
-	console.log("TunesViewer: in previewClick.");
-
-	tr = el.parentNode;
-	preview = null;
-	if (tr.hasAttribute('video-preview-url')) {
-		preview = tr.getAttribute('video-preview-url');
-	} else if (tr.hasAttribute('audio-preview-url')) {
-		preview = tr.getAttribute('audio-preview-url');
-	} else {
-		console.log("TunesViewer: Unhandled case in previewClick.");
-	}
-	playURL({ url: preview });
-};
