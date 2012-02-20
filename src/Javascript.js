@@ -81,14 +81,14 @@ iTunes = { // All called from the page js:
 		location.href = url;
 	},
 
-	/** Download a file described as xml.*/
+	/** Download a file described as XML */
 	addProtocol: function (xml) {
 		"use strict";
 		console.log("TunesViewer: adding download: " + xml);
 		location.href = "download://" + xml;
 	},
 
-	/** Stops the preview player*/
+	/** Stops the preview player */
 	stop: function () {
 		"use strict";
 		document.getElementById("previewer-container").parentNode.removeChild(document.getElementById("previewer-container"));
@@ -108,7 +108,7 @@ iTunes = { // All called from the page js:
 		// program to download it (webkit transaction?)
 	},
 
-	getUserDSID: function () {//no user id.
+	getUserDSID: function () { // no user id.
 		"use strict";
 		return 0;
 	},
@@ -162,6 +162,7 @@ function fixTransparent(objects) {
 	}
 }
 
+/** Empty function to assign to events that we want to kill. */
 var TunesViewerEmptyFunction = function () {
 	"use strict";
 };
