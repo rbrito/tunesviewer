@@ -151,12 +151,12 @@ function fixTransparent(objects) {
 	console.log("TunesViewer: Entering the function <fixTransparent>.");
 	for (i = 0; i < objects.length; i++) {
 		// If the heading is transparent, show it.
-		if (window.getComputedStyle(objects[i]).color == "rgba(0, 0, 0, 0)") {
+		if (window.getComputedStyle(objects[i]).color === "rgba(0, 0, 0, 0)") {
 			objects[i].style.color = "inherit";
 		}
 
 		// Fix odd background box on iTunesU main page
-		if (objects[i].parentNode.getAttribute("class") == "title") {
+		if (objects[i].parentNode.getAttribute("class") === "title") {
 			objects[i].style.background = "transparent";
 		}
 	}
@@ -212,6 +212,7 @@ function previewClick (el) {
  * properly named functions.
  */
 document.onpageshow = (function () {
+	"use strict";
 	var as, a, css, divs, i, j, rss, previews, buttons, clickEvent, downloadMouseDownEvent, previewClick, subscribePodcastClickEvent, disabledButtonClickEvent;
 
 	// Fix <a target="external" etc.
@@ -220,7 +221,7 @@ document.onpageshow = (function () {
 	as = document.getElementsByTagName("a");
 	for (a in as) {
 		if (as.hasOwnProperty(a)) {
-			if (as[a].target == "_blank") {
+			if (as[a].target === "_blank") {
 				as[a].target = "";
 				as[a].href = "web" + as[a].href;
 			} else if (as[a].target) {
@@ -260,14 +261,15 @@ document.onpageshow = (function () {
 
 	// fix free-download links, mobile
 	for (i = 0; i < divs.length; i++) {
-		if (divs[i].getAttribute("download-url") !== null && divs[i].textContent.indexOf("FREE") != -1) {
+		if (divs[i].getAttribute("download-url") !== null &&
+		    divs[i].textContent.indexOf("FREE") !== -1) {
 			console.log("TunesViewer: getting attribute: " + divs[i].getAttribute("download-url"));
 			removeListeners(divs[i].childNodes);
 			divs[i].innerHTML = "<button onclick='window.event.stopPropagation();location.href=\"" + divs[i].getAttribute("download-url") + "\";'>Download</button>";
 			divs[i].addEventListener('mouseDown', downloadMouseDownEvent(getAttribute('download-url')), false);
 		}
-		if (divs[i].getAttribute("role") == "button" &&
-			divs[i].getAttribute("aria-label") == "Subscribe Free") {
+		if (divs[i].getAttribute("role") === "button" &&
+			divs[i].getAttribute("aria-label") === "Subscribe Free") {
 			rss = "";
 			console.log("TunesViewer: subscribe-button");
 			removeListeners(divs[i].parentNode);
@@ -292,7 +294,7 @@ document.onpageshow = (function () {
 		console.log("TunesViewer: number of previews: " + previews.length);
 		for (i = 0; i < previews.length; i++) {
 			console.log(previews[i].tagName);
-			if (previews[i].tagName == 'TR') {
+			if (previews[i].tagName === 'TR') {
 				console.log("TunesViewer: adding listener for preview: " + previews[i].tagName);
 				console.log(previews[i].childNodes[1].childNodes[1].tagName);
 				previews[i].childNodes[1].childNodes[1].id = "importantnode"; //check in inspector. doesn't work.
@@ -331,7 +333,8 @@ document.onpageshow = (function () {
 	};
 
 	for (i = 0; i < buttons.length; i++) {
-		if (buttons[i].innerHTML == "Subscribe Free" && buttons[i].getAttribute('subscribe-podcast-url') !== null) {
+		if (buttons[i].innerHTML === "Subscribe Free" &&
+		    buttons[i].getAttribute('subscribe-podcast-url') !== null) {
 			buttons[i].addEventListener('click',
 						    subscribePodcastClickEvent(buttons[i].getAttribute('subscribe-podcast-url')),
 						    true);
