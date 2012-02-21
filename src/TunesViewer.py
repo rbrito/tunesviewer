@@ -52,7 +52,7 @@ from webkitview import WebKitView
 from Parser import Parser
 from SingleWindowSocket import SingleWindowSocket
 from common import *
-from constants import TV_VERSION, SEARCH_U, SEARCH_P, USER_AGENT
+from constants import TV_VERSION, SEARCH_U, SEARCH_P, USER_AGENT, HELP_URL, BUG_URL
 
 class TunesViewer:
 	source = ""  # full html/xml source
@@ -884,12 +884,12 @@ class TunesViewer:
 
 	def bugReport(self, obj):
 		logging.debug("Opening bug")
-		openDefault("http://sourceforge.net/tracker/?group_id=305696&atid=1288143")
+		openDefault(BUG_URL)
 
 
 	def showHelp(self, obj):
 		logging.debug("Opening Help")
-		openDefault("/usr/share/tunesviewer/help.txt")
+		openDefault(HELP_URL)
 
 
 	def showAbout(self, obj):
