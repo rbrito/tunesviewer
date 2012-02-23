@@ -97,7 +97,7 @@ iTunes = { // All called from the page js:
 	/** Download a file described as XML */
 	addProtocol: function (xml) {
 		"use strict";
-		if (xml.indexOf("<key>navbar</key>") == -1) {
+		if (xml.indexOf("<key>navbar</key>") === -1) {
 			console.log("TunesViewer: adding download: " + xml);
 			location.href = "download://" + xml;
 		}
