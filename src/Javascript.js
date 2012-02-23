@@ -18,6 +18,13 @@ iTunes = { // All called from the page js:
 
 		return "";
 	},
+	
+	getPreferences: function() {
+		prefs = {
+			pingEnabled : true
+		}
+		return prefs;
+	},
 
 
 	doDialogXML: function (b, d) {
@@ -84,8 +91,10 @@ iTunes = { // All called from the page js:
 	/** Download a file described as XML */
 	addProtocol: function (xml) {
 		"use strict";
-		console.log("TunesViewer: adding download: " + xml);
-		location.href = "download://" + xml;
+		if (xml.indexOf("<key>navbar</key>")==-1) {
+			console.log("TunesViewer: adding download: " + xml);
+			location.href = "download://" + xml;
+		}
 	},
 
 	/** Stops the preview player */

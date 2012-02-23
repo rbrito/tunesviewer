@@ -760,7 +760,7 @@ class TunesViewer:
 
 	def progUpdate(self, obj):
 		"""Checks for update to the program."""
-		openDefault("http://tunesviewer.sourceforge.net/checkversion.php?version=1.4")
+		openDefault("http://tunesviewer.sourceforge.net/checkversion.php?version="+TV_VERSION)
 
 	def treesel(self, selection, model):
 		"""Called when selection changes, changes the enabled toolbar buttons."""
@@ -1295,6 +1295,8 @@ class TunesViewer:
 			url = ""
 			for key in keys:
 				print key.text, key.getnext().text
+				if key.text == "navbar":
+					return
 				if key.text == "URL" and key.getnext() is not None:
 					url = key.getnext().text
 				elif key.text == "artistName" and key.getnext() is not None:
