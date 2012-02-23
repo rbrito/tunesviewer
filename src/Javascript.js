@@ -22,7 +22,7 @@ iTunes = { // All called from the page js:
 
 	getPreferences: function() {
 		"use strict";
-		prefs = {
+		var prefs = {
 			pingEnabled : true
 		}
 		return prefs;
