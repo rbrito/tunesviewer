@@ -19,6 +19,7 @@ iTunes = { // All called from the page js:
 		return "";
 	},
 	
+
 	getPreferences: function() {
 		prefs = {
 			pingEnabled : true
@@ -44,6 +45,7 @@ iTunes = { // All called from the page js:
 
 		return d.okButtonAction(); */
 	},
+
 
 	playURL: function (input) {
 		"use strict";
@@ -78,24 +80,28 @@ iTunes = { // All called from the page js:
 		return "not 0";
 	},
 
+
 	showMediaPlayer: function (url_, showtype, title) {
 		"use strict";
 		playURL({url: url_});
 	},
+
 
 	openURL: function (url) {
 		"use strict";
 		location.href = url;
 	},
 
+
 	/** Download a file described as XML */
 	addProtocol: function (xml) {
 		"use strict";
-		if (xml.indexOf("<key>navbar</key>")==-1) {
+		if (xml.indexOf("<key>navbar</key>") == -1) {
 			console.log("TunesViewer: adding download: " + xml);
 			location.href = "download://" + xml;
 		}
 	},
+
 
 	/** Stops the preview player */
 	stop: function () {
@@ -104,11 +110,13 @@ iTunes = { // All called from the page js:
 		return true;
 	},
 
+
 	doPodcastDownload: function (obj, number) {
 		"use strict";
 		alert("podcastdownload");
 		//var keys = obj.getElementsByTagName('key');
 	},
+
 
 	doAnonymousDownload: function (obj) {
 		"use strict";
@@ -117,15 +125,18 @@ iTunes = { // All called from the page js:
 		// program to download it (webkit transaction?)
 	},
 
+
 	getUserDSID: function () { // no user id.
 		"use strict";
 		return 0;
 	},
 
+
 	putURLOnPasteboard: function (a, bool) {
 		"use strict";
 		location.href = "copyurl://" + encodeURI(a);
 	},
+
 
 	/** What version of webkit we're using, eg 'AppleWebKit/531.2' */
 	webkitVersion: function () {
@@ -143,6 +154,7 @@ function defined(something) {
 	return true;
 }
 
+
 /*jslint unparam: true*/
 function iTSVideoPreviewWithObject(obj) {
 	"use strict";
@@ -153,6 +165,7 @@ function iTSVideoPreviewWithObject(obj) {
 	//alert(obj);
 }
 /*jslint unparam: false*/
+
 
 function fixTransparent(objects) {
 	"use strict";
@@ -171,12 +184,14 @@ function fixTransparent(objects) {
 	}
 }
 
+
 /**
  * Empty function to assign to events that we want to kill.
  */
 function TunesViewerEmptyFunction() {
 	"use strict";
 }
+
 
 /**
  * Function to remove event listeners (onmouseover, onclick, onmousedown)
@@ -192,6 +207,7 @@ function removeListeners(objects) {
 		objects[i].onmousedown = TunesViewerEmptyFunction;
 	}
 }
+
 
 /**
  * Function to create a player for preview of media.
