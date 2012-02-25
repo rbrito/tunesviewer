@@ -27,7 +27,7 @@ DOWNLOADS_DIR = os.path.expanduser("~")
 
 # User agent and connection programs
 USER_AGENT = 'iTunes/10.5.3'
-DEFAULT_OPENER = "/usr/bin/vlc --http-user-agent=%s --http-caching=10000" % (USER_AGENT, )
+DEFAULT_OPENER = "vlc --http-user-agent=%s --http-caching=10000" % (USER_AGENT, )
 
 # URLs
 HOME_URL = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewGrouping?id=27753"
