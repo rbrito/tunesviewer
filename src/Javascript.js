@@ -148,12 +148,12 @@ iTunes = { // All called from the page js:
 };
 
 
-/*jslint unparam: false*/
+/*jslint unparam: false
 function defined(something) {
 	"use strict";
 	console.log("TunesViewer: Entering the function <defined>.");
 	return true;
-}
+}*/
 
 
 /*jslint unparam: true*/
@@ -212,7 +212,7 @@ function removeListeners(objects) {
 
 /**
  * Function to create a player for preview of media.
- */
+ 
 function previewClick (el) {
 	"use strict";
 	var tr, preview;
@@ -229,7 +229,7 @@ function previewClick (el) {
 		console.log("TunesViewer: Unhandled case in previewClick.");
 	}
 	playURL({ url: preview });
-}
+}*/
 
 
 /* Hooking everything when the document is shown.
@@ -239,7 +239,7 @@ function previewClick (el) {
  */
 document.onpageshow = (function () {
 	"use strict";
-	var as, a, css, divs, i, j, rss, previews, buttons, clickEvent, downloadMouseDownEvent, previewClick, subscribePodcastClickEvent, disabledButtonClickEvent;
+	var as, a, css, divs, i, j, rss, previews, buttons, clickEvent, downloadMouseDownEvent, subscribePodcastClickEvent, disabledButtonClickEvent;
 
 	// Fix <a target="external" etc.
 
@@ -309,37 +309,6 @@ document.onpageshow = (function () {
 			divs[i].addEventListener('click', clickEvent(rss), false);
 		}
 	}
-
-	// FIXME: Should we change this to be a separate, named function
-	// passed to the event?
-	//
-	// Fix non-working preview buttons:
-	window.setTimeout(function() {
-		previews = document.getElementsByClassName('podcast-episode');
-
-		console.log("TunesViewer: number of previews: " + previews.length);
-		for (i = 0; i < previews.length; i++) {
-			console.log(previews[i].tagName);
-			if (previews[i].tagName === 'TR') {
-				console.log("TunesViewer: adding listener for preview: " + previews[i].tagName);
-				console.log(previews[i].childNodes[1].childNodes[1].tagName);
-				previews[i].childNodes[1].childNodes[1].id = "importantnode"; //check in inspector. doesn't work.
-				previews[i].childNodes[1].childNodes[1].addEventListener('mousedown', previewClick, false);
-
-			}
-		}
-	}, 3000);
-
-	// FIXME: Should we change this to be a separate, named function
-	// passed to the event?
-	window.setTimeout(function () {
-		var i;
-		previews = document.getElementsByClassName('circular-preview-control');
-		console.log("TunesViewer: number of previews: " + previews.length);
-		for (i = 0; i < previews.length; i++) {
-			previews[i].parentNode.parentNode.addEventListener('click', previewClick, false);
-		}
-	}, 10000);
 
 	buttons = document.getElementsByTagName('button');
 
