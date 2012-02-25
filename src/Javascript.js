@@ -148,14 +148,6 @@ iTunes = { // All called from the page js:
 };
 
 
-/*jslint unparam: false
-function defined(something) {
-	"use strict";
-	console.log("TunesViewer: Entering the function <defined>.");
-	return true;
-}*/
-
-
 /*jslint unparam: true*/
 function iTSVideoPreviewWithObject(obj) {
 	"use strict";
