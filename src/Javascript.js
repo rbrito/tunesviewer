@@ -22,10 +22,9 @@ iTunes = { // All called from the page js:
 
 	getPreferences: function() {
 		"use strict";
-		var prefs = {
-			pingEnabled : true
-		}
-		return prefs;
+		return {
+			pingEnabled: true
+		};
 	},
 
 
@@ -148,14 +147,6 @@ iTunes = { // All called from the page js:
 };
 
 
-/*jslint unparam: false
-function defined(something) {
-	"use strict";
-	console.log("TunesViewer: Entering the function <defined>.");
-	return true;
-}*/
-
-
 /*jslint unparam: true*/
 function iTSVideoPreviewWithObject(obj) {
 	"use strict";
@@ -208,28 +199,6 @@ function removeListeners(objects) {
 		objects[i].onmousedown = TunesViewerEmptyFunction;
 	}
 }
-
-
-/**
- * Function to create a player for preview of media.
- 
-function previewClick (el) {
-	"use strict";
-	var tr, preview;
-
-	console.log("TunesViewer: in previewClick.");
-
-	tr = el.parentNode;
-	preview = null;
-	if (tr.hasAttribute('video-preview-url')) {
-		preview = tr.getAttribute('video-preview-url');
-	} else if (tr.hasAttribute('audio-preview-url')) {
-		preview = tr.getAttribute('audio-preview-url');
-	} else {
-		console.log("TunesViewer: Unhandled case in previewClick.");
-	}
-	playURL({ url: preview });
-}*/
 
 
 /* Hooking everything when the document is shown.
