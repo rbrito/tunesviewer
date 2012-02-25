@@ -202,28 +202,6 @@ function removeListeners(objects) {
 }
 
 
-/**
- * Function to create a player for preview of media.
- 
-function previewClick (el) {
-	"use strict";
-	var tr, preview;
-
-	console.log("TunesViewer: in previewClick.");
-
-	tr = el.parentNode;
-	preview = null;
-	if (tr.hasAttribute('video-preview-url')) {
-		preview = tr.getAttribute('video-preview-url');
-	} else if (tr.hasAttribute('audio-preview-url')) {
-		preview = tr.getAttribute('audio-preview-url');
-	} else {
-		console.log("TunesViewer: Unhandled case in previewClick.");
-	}
-	playURL({ url: preview });
-}*/
-
-
 /* Hooking everything when the document is shown.
  *
  * FIXME: This huge thing has to be broken down into smaller pieces with
