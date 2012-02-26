@@ -51,8 +51,7 @@ class WebKitView(webkit.WebView):
 		Onload code.
 		Note that this is run many times.
 		"""
-		# Javascript.js is executed on this page.
-		self.execute_script(self.injectJavascript)
+		pass
 
 	def loadHTML(self, html_string, url_to_load):
 		"""
@@ -72,6 +71,3 @@ class WebKitView(webkit.WebView):
 			logging.debug(net_req.get_uri())
 			self.opener.gotoURL(net_req.get_uri(), True)
 			return True
-
-	#def webkitReqStart(self, webView, webFrame, webResource, NetReq, NetResp):
-	#	pass
