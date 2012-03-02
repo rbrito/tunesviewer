@@ -148,14 +148,186 @@ iTunes = { // All called from the page js:
 
 
 /*jslint unparam: true*/
-function iTSVideoPreviewWithObject(obj) {
-	"use strict";
-	console.log("TunesViewer: Entering the function <iTSVideoPreviewWithObject>.");
-	// This was meant to figure out how to get non-working previews to play.
-	// Unfortunately it gets called many times when you click 'i' on course icon,
-	// freezing the application.
-	//alert(obj);
+function iTSVideoPreviewWithObject(a) {
+	console.log("TunesViewer: In function <iTSVideoPreviewWithObject>");
+    this.element = a;
+    this.previewWidth = a.getAttributeWithDefault("video-preview-width", "700").toInt();
+    this.previewHeight = a.getAttributeWithDefault("video-preview-height", "293").toInt()
 }
+iTSVideoPreviewWithObject.prototype = {
+    play: function () {
+    	console.log("TunesViewer: In function <iTSVideoPreviewWithObject#play>");
+        var b = this.element.getAttribute("video-preview-url");
+        var e = this.element.getAttributeWithDefault("preview-title", "");
+        var f = this.element.getAttributeWithDefault("preview-artist", "");
+        var a = this.element.getAttributeWithDefault("preview-album", "");
+        var d = this.element.getAttributeWithDefault("preview-class", "");
+        this.previewDuration = this.element.getAttributeWithDefault("preview-duration", "");
+        // Creating a video HTML5 element, used in http://camendesign.com/code/video_for_everybody/test.html as example
+        this.preview = document.createElement("video");
+        //this.preview.setAttribute('controls', 'controls'); // TBD: bug showing controls
+        this.preview.setAttribute('autoplay', 'autoplay');
+        this.preview.setAttribute("width", this.previewWidth);
+        this.preview.setAttribute("height", this.previewHeight);
+        var previewSource = document.createElement("source");
+        previewSource.setAttribute('src', b);
+        previewSource.setAttribute('type', 'video/mp4');
+        this.preview.appendChild(previewSource);
+        if (this.element.getAttribute("hide-tooltip") != "true") {
+            this.preview.setAttribute("title", e)
+        }
+        its.kit.sendToController("iTSShowcaseController", "pause");
+        this.setContainer(d);
+        this.container.style.width = "inherit";
+        this.container.style.height = "auto";
+        this.container.style.visibility = "hidden";
+        var g = document.createElement("div");
+        g.style.width = this.previewWidth + "px";
+        g.style.height = this.previewHeight + "px";
+        g.style.padding = '60px 0px 0px 0px';
+        this.shade = document.createElement("div");
+        this.shade.className = "shade";
+        this.shade.style.background = "rgba(0,0,0,0)";
+        this.shade.style.position = "fixed";
+        this.shade.style.top = "0";
+        this.shade.style.right = "0";
+        this.shade.style.bottom = "0";
+        this.shade.style.left = "0";
+        document.body.appendChild(this.shade);
+        this.shade.addEventListener("click", this, false);
+        document.body.appendChild(this.container);
+        this.container.appendChild(g);
+        this.container.center("fixed");
+        g.appendChild(this.preview);
+        this.container.style.visibility = "";
+        window.addEventListener("ended", this, false);
+            
+        var c = document.createEvent("Events");
+        c.initEvent(iTSVideoPreview.Events.VIDEO_PLAYED, true, true);
+        c._customEvent = true;
+        c.adamId = this.element.getAttribute("adam-id");
+        this.element.dispatchEvent(c)
+    },
+    playWithinQuickView: function () {
+    	console.log("TunesViewer: In function <iTSVideoPreviewWithObject#playWithinQuickView>");
+        this.container = this.element.parentByClassName("quick-view");
+        var a = this.container.querySelector(".quick-view-wrapper");
+        var i = a.querySelector(".movie-data, .episode-data, .music-video-data");
+        var g = a.querySelectorAll("div.movie-trailer-title, div.pagination-controls");
+        var c = a.clientWidth;
+        var e = a.clientHeight;
+        var f = c;
+        var j = this.computeHeight(c, e);
+        var k = 0;
+        var l = 0;
+        var b = this.element.parentByClassName("quick-view-wrapper");
+        g.each(function (m) {
+            l += m.offsetHeightPlusMargin()
+        });
+        b.querySelectorAll(".movie-data, .episode-data, .music-video-data").each(function (m) {
+            k += m.offsetHeightPlusMargin()
+        });
+        if ((k != 0 || l != 0) && (j + l + 38 + k) > e) {
+            var h = (e - k - l);
+            if (l != 0) {
+                h -= 38
+            }
+            if (this.computeWidth(h) < c) {
+                f = this.computeWidth(h);
+                j = this.computeHeight(f, h)
+            }
+        }
+        this.preview.setAttribute("width", f);
+        this.preview.setAttribute("height", j);
+        this.element.insertAfter(this.preview);
+        window.addEventListener("timeupdate", this, false);
+        var d = b.offsetHeightPlusMargin() - k - j;
+        this.preview.style.marginTop = d / 2 + "px";
+        if (i) {
+            i.style.width = c + "px"
+        }
+    },
+    currentTime: function currentTime() {
+    	console.log("TunesViewer: In function <iTSVideoPreviewWithObject#currentTime>");
+        return iTunes.currentTime * 1000
+    },
+    handleEvent: function (a) {
+    	console.log("TunesViewer: In function <iTSVideoPreviewWithObject#handleEvent>");
+        if (a.type == "click") {
+            this.stop()
+        }
+        if (a.type == "timeupdate") {
+            var b = this.previewDuration - this.currentTime();
+            if (b < 1000) {
+                defer(this, "skipToNextPreview", b);
+                window.removeEventListener("timeupdate", this, false)
+            }
+        }
+    },
+    skipToNextPreview: function () {
+    	console.log("TunesViewer: In function <iTSVideoPreviewWithObject#skipToNextPreview>");
+        var b = this.element.parentByClassName("quick-view-wrapper");
+        if (!b) {
+            return
+        }
+        var c = b.querySelector("div.pagination-controls > a.page-link.active");
+        if (!c) {
+            return
+        }
+        if (c.nextElementSibling != null) {
+            var a = document.createEvent("MouseEvents");
+            a.initMouseEvent("click", true, true, document.defaultView, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+            c.nextElementSibling.dispatchEvent(a)
+        }
+    },
+    stop: function () {
+    	console.log("TunesViewer: In function <iTSVideoPreviewWithObject#stop>");
+        if (this.container) {
+            this.container.remove();
+            this.shade.remove()
+        }
+        its.kit.sendToController("iTSShowcaseController", "resume");
+        var a = document.createEvent("Events");
+        a.initEvent("its:videopreview:stoped", true, true);
+        a._customEvent = true;
+        this.element.dispatchEvent(a)
+    },
+    setContainer: function (b) {
+    	console.log("TunesViewer: In function <iTSVideoPreviewWithObject#setContainer>");
+        var a = "quick-view video movie active";
+        if (b) {
+            a += " " + b
+        }
+        this.container = newElement("div", "", a);
+        this.closeLink = this.getCloseLink();
+        this.closeLink.addEventListener("click", this, false);
+        this.container.appendChild(this.closeLink);
+        if (its.client.screenReaderRunning()) {
+            this.closeLink.focus()
+        }
+    },
+    getCloseLink: function () {
+    	console.log("TunesViewer: In function <iTSVideoPreviewWithObject#getCloseLink>");
+        var a = newElement("a", "", "close-preview");
+        a.setAttribute("role", "button");
+        if (its.client.screenReaderRunning()) {
+            a.tabIndex = 0
+        }
+        return a
+    },
+    computeHeight: function (b, a) {
+    	console.log("TunesViewer: In function <iTSVideoPreviewWithObject#computeHeight>");
+        if (this.previewWidth && this.previewHeight) {
+            return Math.round((b * this.previewHeight) / this.previewWidth)
+        }
+    },
+    computeWidth: function (a) {
+    	console.log("TunesViewer: In function <iTSVideoPreviewWithObject#computeWidth>");
+        if (this.previewWidth && this.previewHeight) {
+            return Math.round((a * this.previewWidth) / this.previewHeight)
+        }
+    }
+};
 /*jslint unparam: false*/
 
 
