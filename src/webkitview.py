@@ -52,6 +52,7 @@ class WebKitView(webkit.WebView):
 		Note that this is run many times.
 		"""
 		pass
+		
 
 	def loadHTML(self, html_string, url_to_load):
 		"""
@@ -59,7 +60,7 @@ class WebKitView(webkit.WebView):
 		into the webview.
 		"""
 		self.webkitLoading = True
-		self.load_html_string(html_string.replace("<head>","<head><script>%s</script>" % self.injectJavascript), url_to_load)
+		self.load_html_string(html_string.replace("</head>","<script>%s</script></head>" % self.injectJavascript), url_to_load)
 		self.webkitLoading = False
 
 	def webkitGo(self, view, frame, net_req, nav_act, pol_dec):
