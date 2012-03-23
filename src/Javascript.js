@@ -1,7 +1,21 @@
 /*
- * iTunes Javascript Class, added to the displayed pages.
- * Catches iTunes-api calls from pages, such as
- * http://r.mzstatic.com/htmlResources/6018/dt-storefront-base.jsz
+ iTunes Javascript Class, added to the displayed pages.
+ Catches iTunes-api calls from pages, such as
+ http://r.mzstatic.com/htmlResources/6018/dt-storefront-base.jsz
+
+ Copyright (C) 2009 - 2012 Luke Bryan
+               2011 - 2012 Rogério Theodoro de Brito
+               and other contributors.
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
  */
 
 /*global window */
