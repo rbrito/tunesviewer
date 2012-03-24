@@ -23,7 +23,7 @@ Recommends:
 Suggests:
  soundconverter (>= 1.0),
  vlc (>= 1.0)
-Description: program to access iTunesU media and podcasts
+Description: program to access media and podcasts from iTunes U
  TunesViewer is a small, easy-to-use program to access iTunesU media and
  podcasts from Linux.  TunesViewer lets you:
  .
