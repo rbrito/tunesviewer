@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 The main parser to turn iTunesU xml/html into viewable page
 
