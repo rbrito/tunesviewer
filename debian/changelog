@@ -1,6 +1,6 @@
-tunesviewer (1.4-239~7.gbp6425c8) UNRELEASED; urgency=medium
+tunesviewer (1.4-306~8.gbp20e53e) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @6425c8c7969cda0bdf58bc3794544e7ca3033830 **
+  ** SNAPSHOT build @20e53e47d60e7b0bbe368264c44fa8b13eb76ab7 **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
@@ -207,5 +207,46 @@ tunesviewer (1.4-239~7.gbp6425c8) UNRELEASED; urgency=medium
   * Fix dos-filesystem filter, make : semicolon for compatibility.
 
   [ Rogério Brito ]
+  * configbox: Add a default opener for PDF files.
+  * downloadbox: Decrease the frequency of updates of the UI to 1 per second.
+  * configbox: Minor cosmetic changes.
+  * Javascript: Fix a bunch of stuff trying to fix the previews.
+  * Javascript: Comments and whitespaces.
+  * Javascript: Reducing the amount of anonymous functions being assigned.
+  * Javascript: Add FIXMEs to things that are smelling bad.
+  * Javascript: Move function around to leave the event setting for last.
+  * Javascript: Add some strictness to the code.
 
- -- Rogério Brito <rbrito@ime.usp.br>  Sun, 19 Feb 2012 01:12:31 -0200
+  [ Luke Bryan ]
+  * Placed urls in constants, and set help to open a wiki page.
+
+  [ lb1programmer ]
+  * Set script to load FIRST, this fixes previews and maybe other things.
+
+  [ Rogério Brito ]
+  * Javascript: Minor whitespace changes for readability.
+  * Javascript: Add missing "use strict".
+  * Javascript: Use the identity comparison.
+  * Javascript: While using "strict", we have to declare the variable.
+  * constants: Don't use hardcoded paths for executables.
+
+  [ Luke Bryan ]
+  * Removed unnecessary javascript.
+  * Remove second js
+
+  [ Rogério Brito ]
+  * webkitview: Change commented out code for a simple `pass`
+  * webkitview: Remove stub function.
+  * Javascript: Remove `defined` function which always returned true.
+  * Javascript: Remove function to create previews.
+  * Javascript: Avoid potential (future) pitfalls with `"use strict"`.
+
+  [ Luke Bryan ]
+  * License & Header change.
+
+  [ Rogério Brito ]
+  * Add licensing information to remaining files.
+  * Fix copyright information in accordance to license change.
+  * Add licensing information to remaining files.
+
+ -- Rogério Brito <rbrito@ime.usp.br>  Sat, 24 Mar 2012 00:25:11 -0300
