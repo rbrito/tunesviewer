@@ -19,3 +19,16 @@ License: GPL-2+
  .
  On Debian systems, the full text of the GNU General Public License
  version 2 can be found in the file `/usr/share/common-licenses/GPL-2'.
+
+Files: resources/tunesview.svg
+Copyright: None (Public Domain)
+License: PD
+ This icon was created by [Michał Rzeszutek/bocian][1] and is in
+ the [Public Domain/CC0][2].
+ .
+ It was minified with `scour` with the following parameters:
+ .
+ scour --enable-id-stripping --enable-comment-stripping --shorten-ids --remove-metadata -p 3
+ .
+ [1]: http://openclipart.org/user-detail/bocian
+ [2]: http://creativecommons.org/publicdomain/zero/1.0/
