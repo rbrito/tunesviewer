@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
  A socket class to ensure only one Tunesviewer instance at one time.
 
