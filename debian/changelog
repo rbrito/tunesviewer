@@ -1,6 +1,6 @@
-tunesviewer (1.4-306~8.gbp20e53e) UNRELEASED; urgency=medium
+tunesviewer (1.4-309~9.gbp5188b9) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @20e53e47d60e7b0bbe368264c44fa8b13eb76ab7 **
+  ** SNAPSHOT build @5188b96612ed0c9d244369cde259857ba6eac771 **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
@@ -248,5 +248,6 @@ tunesviewer (1.4-306~8.gbp20e53e) UNRELEASED; urgency=medium
   * Add licensing information to remaining files.
   * Fix copyright information in accordance to license change.
   * Add licensing information to remaining files.
+  * Coalesce the e-mails that Luke uses.
 
- -- Rogério Brito <rbrito@ime.usp.br>  Sat, 24 Mar 2012 00:25:11 -0300
+ -- Rogério Brito <rbrito@ime.usp.br>  Sat, 24 Mar 2012 00:42:55 -0300
