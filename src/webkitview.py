@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
 A subclass of Webkit Webview, injects javascript into page.
 

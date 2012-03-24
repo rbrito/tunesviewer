@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 A find-in-page dialog for Tunesviewer, with callback to main window.
 
