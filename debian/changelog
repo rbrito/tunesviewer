@@ -1,6 +1,6 @@
-tunesviewer (1.4-309~9.gbp5188b9) UNRELEASED; urgency=medium
+tunesviewer (1.4-309~10.gbpf1172a-1) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @5188b96612ed0c9d244369cde259857ba6eac771 **
+  ** SNAPSHOT build @f1172acc3d96c70cf4db251b257e2f558fbea34a **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
@@ -249,5 +249,18 @@ tunesviewer (1.4-309~9.gbp5188b9) UNRELEASED; urgency=medium
   * Fix copyright information in accordance to license change.
   * Add licensing information to remaining files.
   * Coalesce the e-mails that Luke uses.
+  * Add embrionary manpage about the program.
+  * Install the manpage of the program.
+  * Give a better synopsis for the manpage.
+  * Make debian/control be in sync with the manpage synopsis.
+  * Update copyright information to format 1.0.
+  * Update Std-Ver to 3.9.3 with no further changes.
+  * Add copyright information of the icon.
 
- -- Rogério Brito <rbrito@ime.usp.br>  Sat, 24 Mar 2012 00:42:55 -0300
+  [ Luke Bryan ]
+  * Fixed encoding problem that prevented it from running.
+
+  [ Rogério Brito ]
+  * Add shebang line to the tests too.
+
+ -- Rogério Brito <rbrito@ime.usp.br>  Sat, 24 Mar 2012 03:11:40 -0300
