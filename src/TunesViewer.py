@@ -1670,7 +1670,11 @@ if __name__ == "__main__":
 	prog.sock = SingleWindowSocket(url, prog)
 
 	if prog.sock.RUN:
-		prog.url = url
-		prog.main()
+		try:
+			prog.url = url
+			prog.main()
+		except KeyboardInterrupt:
+			print "Keyboard Interrupt, exiting."
+			prog.exitclicked(None)
 	else:
 		logging.info("Sending url to already-running window.")
