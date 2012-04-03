@@ -176,6 +176,7 @@ iTSVideoPreviewWithObject.prototype = {
         var f = this.element.getAttributeWithDefault("preview-artist", "");
         var a = this.element.getAttributeWithDefault("preview-album", "");
         var d = this.element.getAttributeWithDefault("preview-class", "");
+        console.log("TunesViewer: Previewing " + b);
         this.previewDuration = this.element.getAttributeWithDefault("preview-duration", "");
         // Creating a video HTML5 element, used in http://camendesign.com/code/video_for_everybody/test.html as example
         this.preview = document.createElement("video");
