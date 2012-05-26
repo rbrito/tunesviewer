@@ -1,6 +1,6 @@
-tunesviewer (1.4-309~10.gbpf1172a-1) UNRELEASED; urgency=medium
+tunesviewer (1.4.99.0-1~1.gbp19f56e) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @f1172acc3d96c70cf4db251b257e2f558fbea34a **
+  ** SNAPSHOT build @19f56e08e4c707d28c14a2406c0bcd4208207e15 **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
@@ -262,5 +262,13 @@ tunesviewer (1.4-309~10.gbpf1172a-1) UNRELEASED; urgency=medium
 
   [ Rogério Brito ]
   * Add shebang line to the tests too.
+  * Update the changelog.
+
+  [ Luke Bryan ]
+  * Better behavior on Ctrl+C, exit instead of locking up the program and terminal.
+
+  [ Rogério Brito ]
+  * Update version of tunesviewer to a the 1st pre-release.
+  * debian: Add `debian/gbp.conf` to ease building newer Debian packages.
 
  -- Rogério Brito <rbrito@ime.usp.br>  Sat, 24 Mar 2012 03:11:40 -0300
