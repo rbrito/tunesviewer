@@ -1,6 +1,6 @@
-tunesviewer (1.4.99.0-1~1.gbp19f56e) UNRELEASED; urgency=medium
+tunesviewer (1.4.99.0-1~2.gbpca730c) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @19f56e08e4c707d28c14a2406c0bcd4208207e15 **
+  ** SNAPSHOT build @ca730cdb600f7c04ada63d7c03d49e056f8e11e5 **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
@@ -270,5 +270,7 @@ tunesviewer (1.4.99.0-1~1.gbp19f56e) UNRELEASED; urgency=medium
   [ Rogério Brito ]
   * Update version of tunesviewer to a the 1st pre-release.
   * debian: Add `debian/gbp.conf` to ease building newer Debian packages.
+  * debian: Tell `git-buildpackage` the format of the upstream tags.
+  * Remove useless build script.
 
  -- Rogério Brito <rbrito@ime.usp.br>  Sat, 24 Mar 2012 03:11:40 -0300
