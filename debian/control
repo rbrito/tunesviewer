@@ -1,7 +1,9 @@
 Source: tunesviewer
+Maintainer: Rogério Brito <rbrito@ime.usp.br>
+Uploaders:
+ Luke Bryan <lb1programmer@users.sourceforge.net>
 Section: net
 Priority: optional
-Maintainer: Luke Bryan <lb1programmer@users.sourceforge.net>
 Build-Depends:
  debhelper (>= 8),
  python
