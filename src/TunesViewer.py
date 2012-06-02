@@ -866,7 +866,7 @@ class TunesViewer:
 		if event.button == 3:
 			x = int(event.x)
 			y = int(event.y)
-			time = event.time
+			moment = event.time
 			pthinfo = treeview.get_path_at_pos(x, y)
 			if pthinfo is not None:
 				path, col, cellx, celly = pthinfo
@@ -874,7 +874,7 @@ class TunesViewer:
 				treeview.set_cursor(path, col, 0)
 				# Right click menu
 				self.rcmenu.popup(None, None, None,
-						  event.button, time)
+						  event.button, moment)
 			return True
 
 	def tabChange(self, obj1, obj2, i):
