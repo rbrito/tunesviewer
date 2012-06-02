@@ -18,7 +18,6 @@ Download window class.
  GNU General Public License for more details.
 """
 import logging
-import os
 
 import gobject
 import gio
