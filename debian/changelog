@@ -1,6 +1,6 @@
-tunesviewer (1.4.99.0-1~2.gbpca730c) UNRELEASED; urgency=medium
+tunesviewer (1.4.99.0-1~3.gbp781d04) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @ca730cdb600f7c04ada63d7c03d49e056f8e11e5 **
+  ** SNAPSHOT build @781d0441b4bb2021d46cdbe2ec929069bc08f2c0 **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
@@ -272,5 +272,8 @@ tunesviewer (1.4.99.0-1~2.gbpca730c) UNRELEASED; urgency=medium
   * debian: Add `debian/gbp.conf` to ease building newer Debian packages.
   * debian: Tell `git-buildpackage` the format of the upstream tags.
   * Remove useless build script.
+  * debian/control: Add me as maintainer for the package in Debian.
+  * Remove some unused modules found by pyflakes.
+  * TunesViewer: Don't overwrite module with the same name.
 
  -- Rogério Brito <rbrito@ime.usp.br>  Sat, 24 Mar 2012 03:11:40 -0300
