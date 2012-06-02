@@ -39,7 +39,6 @@ import glib
 import gobject
 import gtk
 import pango
-import pygtk
 
 gobject.threads_init()
 
