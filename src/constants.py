@@ -46,7 +46,7 @@ USER_AGENT = 'iTunes/10.6.1'
 DEFAULT_OPENER = "vlc --http-user-agent=%s --http-caching=10000" % (USER_AGENT, )
 
 # URLs
-HOME_URL = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewGrouping?id=27753"
+HOME_URL = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewGenre?id=40000000"
 
 SEARCH_U = "http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&restrict=true&term=%s&media=iTunesU"
 SEARCH_P = "http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&term=%s&media=podcast"
