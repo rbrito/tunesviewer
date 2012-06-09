@@ -1,6 +1,6 @@
-tunesviewer (1.4.99.1-1~1.gbpa9342e) UNRELEASED; urgency=medium
+tunesviewer (1.4.99.1-1~2.gbp5d02e8) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @a9342ed7165bc21c3b3fe37363b671ab00395c34 **
+  ** SNAPSHOT build @5d02e8097e175dc0dc0298d7ee1ee476d60882dc **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #XXXXXX)
@@ -276,5 +276,6 @@ tunesviewer (1.4.99.1-1~1.gbpa9342e) UNRELEASED; urgency=medium
   * Remove some unused modules found by pyflakes.
   * TunesViewer: Don't overwrite module with the same name.
   * Remove debian directory from upstream sources.
+  * debian/README.source: Add small doc on how to package this.
 
  -- Rogério Brito <rbrito@ime.usp.br>  Sat, 24 Mar 2012 03:11:40 -0300
