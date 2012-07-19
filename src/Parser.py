@@ -609,7 +609,8 @@ class Parser:
 					     url,
 					     "",
 					     itemid)
-				
+			elif element.tag=="script" and element.get("id")=="protocol" and element.get("type")=="text/x-apple-plist":
+				print ''.join([etree.tostring(child) for child in element.iterdescendants()])
 			else: # go through the childnodes.
 				for i in element:
 					self.seeHTMLElement(i)

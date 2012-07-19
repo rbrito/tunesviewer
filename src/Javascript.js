@@ -20,7 +20,7 @@
 
 /*global window */
 
-iTunes = { // All called from the page js:
+iTunes = { // Called from the page js:
 	getMachineID: function () {
 		"use strict";
 		// FIXME: Apple's javscript tries to identify what machine we are
@@ -127,7 +127,7 @@ iTunes = { // All called from the page js:
 
 	doPodcastDownload: function (obj, number) {
 		"use strict";
-		alert("podcastdownload");
+		alert("podcastdownload"+obj+number);
 		//var keys = obj.getElementsByTagName('key');
 	},
 
@@ -222,10 +222,36 @@ function removeListeners(objects) {
  */
 document.onpageshow = (function () {
 	"use strict";
-	var as, a, css, divs, i, j, rss, previews, buttons, clickEvent, downloadMouseDownEvent, subscribePodcastClickEvent, disabledButtonClickEvent;
+	var as, a, css, divs, i, j, rss, previews, clickEvent, downloadMouseDownEvent, subscribePodcastClickEvent, disabledButtonClickEvent;
 
 	// Fix <a target="external" etc.
-
+	
+	var btns = document.getElementsByTagName('button');
+	//console.log(btns);
+	divs = document.getElementsByTagName("div");
+	//console.log(btns.length);
+	//console.log(btns);
+	for (var i in btns) {
+		console.log("button:"+btns[i].innerHTML);
+		if (btns[i]) {
+			if (btns[i].innerHTML === "Subscribe Free" &&
+				btns[i].getAttribute('subscribe-podcast-url') !== null) {
+				btns[i].addEventListener('click',
+								subscribePodcastClickEvent(buttons[i].getAttribute('subscribe-podcast-url')),
+								true);
+			}
+			if (btns[i].hasAttribute("disabled")) {
+				removeListeners(buttons[i]);
+				btns[i].addEventListener('click',
+								disabledButtonClickEvent(buttons[i].getAttribute("episode-url"),
+											 buttons[i].getAttribute("artist-name"),
+											 buttons[i].getAttribute('item-name')),
+								false);
+				btns[i].removeAttribute("disabled");
+			}
+		}
+	}
+	
 	// `as` is a list of anchors, `a` iterates over the list
 	as = document.getElementsByTagName("a");
 	for (a in as) {
@@ -251,8 +277,6 @@ document.onpageshow = (function () {
 	fixTransparent(document.getElementsByTagName("h2"));
 	fixTransparent(document.getElementsByTagName("div"));
 	fixTransparent(as);
-
-	divs = document.getElementsByTagName("div");
 
 	// FIXME: Should we change this to be a separate function "attached"
 	// to an object that is, finally, assigned to the onpageshow event?
@@ -293,8 +317,6 @@ document.onpageshow = (function () {
 		}
 	}
 
-	buttons = document.getElementsByTagName('button');
-
 	// FIXME: Should we change this to be a separate function "attached"
 	// to an object that is, finally, assigned to the onpageshow event?
 	subscribePodcastClickEvent = function (subscribePodcastUrl) {
@@ -310,23 +332,6 @@ document.onpageshow = (function () {
 			"<key>songName</key><value><![CDATA[" + itemName + "]]></value></xml>";
 	};
 
-	for (i = 0; i < buttons.length; i++) {
-		if (buttons[i].innerHTML === "Subscribe Free" &&
-		    buttons[i].getAttribute('subscribe-podcast-url') !== null) {
-			buttons[i].addEventListener('click',
-						    subscribePodcastClickEvent(buttons[i].getAttribute('subscribe-podcast-url')),
-						    true);
-		}
-		if (buttons[i].hasAttribute("disabled")) {
-			removeListeners(buttons[i]);
-			buttons[i].addEventListener('click',
-						    disabledButtonClickEvent(buttons[i].getAttribute("episode-url"),
-									     buttons[i].getAttribute("artist-name"),
-									     buttons[i].getAttribute('item-name')),
-						    false);
-			buttons[i].removeAttribute("disabled");
-		}
-	}
 
 	//Fix 100% height
 	if (document.getElementById('search-itunes-u') !== null) {
