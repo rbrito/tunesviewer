@@ -189,4 +189,6 @@ def type_of(url):
 		ext = ext[ext.rfind("."):]
 	if ext.find("/") != -1:
 		ext = ext[:ext.find("/")]
+	if ext==".rtf": #wrong extension in url
+		ext = ".zip"
 	return ext

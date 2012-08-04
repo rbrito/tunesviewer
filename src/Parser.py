@@ -530,17 +530,24 @@ class Parser:
 					     price,
 					     itemid)
 			elif (element.get("audio-preview-url") or
-			      element.get("video-preview-url")):
+			      element.get("video-preview-url") or
+			      element.get("episode-url")):
 				if element.get("video-preview-url"):
 					url = element.get("video-preview-url")
+				elif element.get("episode-url"):
+					url = element.get("episode-url")
 				else:
 					url = element.get("audio-preview-url")
 				title = ""
 				if element.get("preview-title"):
 					title = element.get("preview-title")
+				elif element.get("item-name"):
+					title = element.get("item-name")
 				author = ""
 				if element.get("preview-artist"):
 					author = element.get("preview-artist")
+				elif element.get("artist-name"):
+					author = element.get("artist-name")
 				duration = ""
 				if element.get("preview-duration"):
 					duration = time_convert(element.get("preview-duration"))
