@@ -27,7 +27,7 @@ from common import *
 
 
 class TestCommon(unittest.TestCase):
-	def testTime_Convert(self):
+	def testTimeConvert(self):
 		self.assertEqual(time_convert(1000), "0:01")
 		self.assertEqual(time_convert(1000 * 60), "1:00")
 		self.assertEqual(time_convert(1000 * 61), "1:01")
@@ -57,14 +57,15 @@ class TestCommon(unittest.TestCase):
 		self.assertEqual(safeFilename("/home/mydirectory/somefile", True), "somefile")
 		self.assertEqual(safeFilename(good, True), good[6:])  # without /home/.
 
-	def test_super_unquote(self):
+	def testSuperUnquote(self):
 		self.assertEqual(super_unquote('. Automated Testing'),
 				 '. Automated Testing')
 		self.assertEqual(super_unquote('.%20Automated%20Testing'),
 				 '. Automated Testing')
 		self.assertEqual(super_unquote('.%2520Automated%2520Testing'),
 				 '. Automated Testing')
-	def test_desc(self):
+
+	def testDesc(self):
 		self.assertEqual(desc(1), '1.0 B')
 		self.assertEqual(desc(512), '512.0 B')
 		self.assertEqual(desc(1023), '1023.0 B')
@@ -77,6 +78,10 @@ class TestCommon(unittest.TestCase):
 		self.assertEqual(desc(0.5 * 1024 * 1024 * 1024), '512.0 MB')
 		self.assertEqual(desc(10000000000000000000),"(way too big)")
 
+	def testTypeOf(self):
+		self.assertEqual(type_of("http://a1135.g.akamai.net/f/1135/18227/1h/cchannel.download.akamai.com/18227/podcast/NEWYORK-NY/WAXQ-FM/Secretariat1.mp3?CPROG=PCAST&MARKET=NEWYORK-NY&NG_FORMAT=&SITE_ID=1674&STATION_ID=WAXQ-FM&PCAST_AUTHOR=Q104.3_New_York_City&PCAST_CAT=comedy&PCAST_TITLE=Jim_Kerr_Rock_and_Roll_Morning_Show_Parodies"),".mp3")
+		self.assertEqual(type_of("http://a1135.g.akamai.net/f/1135/18227/1h/cchannel.download.akamai.com/18227/podcast/NEWYORK-NY/WAXQ-FM/ACN_NFLFilmsARealSport_-34414.mp3?CPROG=PCAST&MARKET=NEWYORK-NY&NG_FORMAT=&SITE_ID=1674&STATION_ID=WAXQ-FM&PCAST_AUTHOR=Q104.3_New_York_City&PCAST_CAT=comedy&PCAST_TITLE=Jim_Kerr_Rock_and_Roll_Morning_Show_Parodies"),".mp3")
+		self.assertEqual(type_of("simplefilename.mp4"),".mp4")
 
 if __name__ == "__main__":
 	unittest.main()
