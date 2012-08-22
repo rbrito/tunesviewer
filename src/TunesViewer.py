@@ -900,7 +900,13 @@ class TunesViewer:
 					gtk.MESSAGE_INFO,
 					gtk.BUTTONS_CLOSE,
 					"TunesViewer - Easy iTunesU access\n"
-					"Version %s, (c) 2009-2012, Tunesviewer authors.\n"
+					"Version %s\n\n"
+					"(C) 2009 - 2012 Luke Bryan\n"
+					"2011 - 2012 Rogério Theodoro de Brito\n"
+					"and other contributors.\n"
+					"Icon based on Michał Rzeszutek's openclipart hat.\n"
+					"Loading-throbber based on Firefox icon.\n"
+					"PyGTK Webkit interface and inspector code (C) 2008 Jan Alonzo.\n"
 					"This is open source software, distributed 'as is'." % (TV_VERSION,))
 		msg.run()
 		msg.destroy()
