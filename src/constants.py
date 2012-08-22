@@ -54,5 +54,5 @@ SEARCH_URL1 = "http://phobos.apple.com/WebObjects/MZSearch.woa/wa/advancedSearch
 SEARCH_URL2 = "http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/advancedSearch?media=podcast&titleTerm=%s&authorTerm=%s&descriptionTerm=%s&genreIndex=&languageTerm="
 
 #Project Urls
-HELP_URL = "http://tunesviewer.sourceforge.net/wordpress/help/"
+HELP_URL = "http://tunesviewer.sourceforge.net/help/"
 BUG_URL = "http://sourceforge.net/tracker/?func=add&group_id=305696&atid=1288143"
