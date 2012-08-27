@@ -23,9 +23,10 @@ import logging
 import os
 
 import webkit
-from constants import USER_AGENT
 
+from constants import USER_AGENT
 from inspector import Inspector
+from common import openDefault, type_of
 
 class WebKitView(webkit.WebView):
 	"""
@@ -68,6 +69,8 @@ class WebKitView(webkit.WebView):
 		# These signals are documented in webkit.WebView.__doc__
 		self.connect("load-finished", self.webKitLoaded)
 		self.connect("navigation-policy-decision-requested", self.webkitGo)
+		self.connect("new-window-policy-decision-requested", self.newWin) #requires webkit 1.1.4
+		self.connect("download-requested", self.downloadReq)
 		current = os.path.dirname(os.path.realpath(__file__))
 		self.injectJavascript = file(os.path.join(current, "Javascript.js"),
 					     "r").read()
@@ -78,6 +81,23 @@ class WebKitView(webkit.WebView):
 		Note that this is run many times.
 		"""
 		pass
+	
+	def newWin(self, view, frame, request, nav_action, policy_decision):
+		"""
+		Calls the default browser on external link requests.
+		"""
+		openDefault(request.get_uri())
+		# According to the documentation: http://webkitgtk.org/reference/webkitgtk/stable/webkitgtk-webkitwebview.html#WebKitWebView-new-window-policy-decision-requested
+		# call ignore on the policy decision, then return true (that is, we handled it).
+		policy_decision.ignore()
+		return True
+
+	def downloadReq(self, view, download):
+		"""
+		Signal called on right click, save-something.
+		"""
+		uri = download.get_uri()
+		self.opener.downloadFile(uri,"unknown","",type_of(uri),uri,uri)
 
 	def loadHTML(self, html_string, url_to_load):
 		"""

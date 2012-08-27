@@ -240,7 +240,8 @@ document.onpageshow = (function () {
 								subscribePodcastClickEvent(buttons[i].getAttribute('subscribe-podcast-url')),
 								true);
 			}
-			if (btns[i].hasAttribute("disabled")) {
+			// TODO: See why hasAttribute is not defined sometimes.
+			if (btns[i].hasAttribute && btns[i].hasAttribute("disabled")) {
 				removeListeners(buttons[i]);
 				btns[i].addEventListener('click',
 								disabledButtonClickEvent(buttons[i].getAttribute("episode-url"),
