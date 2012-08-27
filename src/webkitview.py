@@ -55,6 +55,11 @@ class WebKitView(webkit.WebView):
 		else:
 			self.ua = USER_AGENT
 		settings.set_property('user-agent', self.ua)
+		
+		# These might possibly improve dns response?
+		settings.set_property('enable-dns-prefetching', False)
+		settings.set_property('enable-site-specific-quirks',True)
+		
 		# Enable inspector:
 		settings.set_property("enable-developer-extras", True)
 		self._inspector = Inspector(self.get_web_inspector())
