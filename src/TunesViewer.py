@@ -1383,7 +1383,7 @@ class TunesViewer:
 			#Downloader:
 			response = opener.open(url)
 			pageType = response.info().getheader('Content-Type', 'noheader?')
-			if pageType.startswith("text"):
+			if pageType.startswith("text") or pageType=='noheader?': #(noheader on subscribe sometimes)
 				next = response.read(100)
 				while next != "" and self.downloading:
 					text += next

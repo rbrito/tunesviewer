@@ -220,35 +220,65 @@ function removeListeners(objects) {
  * FIXME: This huge thing has to be broken down into smaller pieces with
  * properly named functions.
  */
-document.onpageshow = (function () {
+document.addEventListener("DOMContentLoaded", function () {
 	"use strict";
 	var as, a, css, divs, i, j, rss, previews, clickEvent, downloadMouseDownEvent, subscribePodcastClickEvent, disabledButtonClickEvent;
 
 	// Fix <a target="external" etc.
 	
-	var btns = document.getElementsByTagName('button');
-	//console.log(btns);
+
+	// FIXME: Should we change this to be a separate function "attached"
+	// to an object that is, finally, assigned to the onpageshow event?
+	clickEvent = function (rss) {
+		console.log("TunesViewer: click event listener: " + rss);
+		location.href = rss;
+	};
+
+	// FIXME: Should we change this to be a separate function "attached"
+	// to an object that is, finally, assigned to the onpageshow event?
+	downloadMouseDownEvent = function (downloadUrl) {
+		console.log('TunesViewer: opening: ' + downloadUrl);
+		location.href = downloadUrl;
+	};
+
+	// FIXME: Should we change this to be a separate function "attached"
+	// to an object that is, finally, assigned to the onpageshow event?
+	subscribePodcastClickEvent = function (subscribePodcastUrl) {
+		location.href = subscribePodcastUrl;
+	};
+	
+	var buttons = document.getElementsByTagName('button');
+	//console.log(buttons);
 	divs = document.getElementsByTagName("div");
-	//console.log(btns.length);
-	//console.log(btns);
-	for (var i in btns) {
-		console.log("button:"+btns[i].innerHTML);
-		if (btns[i]) {
-			if (btns[i].innerHTML === "Subscribe Free" &&
-				btns[i].getAttribute('subscribe-podcast-url') !== null) {
-				btns[i].addEventListener('click',
-								subscribePodcastClickEvent(buttons[i].getAttribute('subscribe-podcast-url')),
+	//console.log(buttons.length);
+	//console.log(buttons);
+	for (var i in buttons) {
+		console.log("button:"+buttons[i].innerHTML);
+		if (buttons[i]) {
+			if (buttons[i].textContent && buttons[i].textContent.trim() === "Subscribe Free") {
+				if (buttons[i].getAttribute('subscribe-podcast-url') !== null) {
+					buttons[i].addEventListener('click',
+								function(){
+									subscribePodcastClickEvent(this.getAttribute('subscribe-podcast-url'))
+								},
 								true);
+				} else if (buttons[i].getAttribute('course-feed-url') !== null) {
+					buttons[i].addEventListener('click',
+								function(){
+									subscribePodcastClickEvent(this.getAttribute('course-feed-url'))
+								},
+								true);
+				}
 			}
 			// TODO: See why hasAttribute is not defined sometimes.
-			if (btns[i].hasAttribute && btns[i].hasAttribute("disabled")) {
+			if (buttons[i].hasAttribute && buttons[i].hasAttribute("disabled")) {
 				removeListeners(buttons[i]);
-				btns[i].addEventListener('click',
+				buttons[i].addEventListener('click',
 								disabledButtonClickEvent(buttons[i].getAttribute("episode-url"),
 											 buttons[i].getAttribute("artist-name"),
 											 buttons[i].getAttribute('item-name')),
 								false);
-				btns[i].removeAttribute("disabled");
+				buttons[i].removeAttribute("disabled");
 			}
 		}
 	}
@@ -279,20 +309,6 @@ document.onpageshow = (function () {
 	fixTransparent(document.getElementsByTagName("div"));
 	fixTransparent(as);
 
-	// FIXME: Should we change this to be a separate function "attached"
-	// to an object that is, finally, assigned to the onpageshow event?
-	clickEvent = function (rss) {
-		console.log("TunesViewer: click event listener: " + rss);
-		location.href = rss;
-	};
-
-	// FIXME: Should we change this to be a separate function "attached"
-	// to an object that is, finally, assigned to the onpageshow event?
-	downloadMouseDownEvent = function (downloadUrl) {
-		console.log('TunesViewer: opening: ' + downloadUrl);
-		location.href = downloadUrl;
-	};
-
 	// fix free-download links, mobile
 	for (i = 0; i < divs.length; i++) {
 		if (divs[i].getAttribute("download-url") !== null &&
@@ -300,7 +316,7 @@ document.onpageshow = (function () {
 			console.log("TunesViewer: getting attribute: " + divs[i].getAttribute("download-url"));
 			removeListeners(divs[i].childNodes);
 			divs[i].innerHTML = "<button onclick='window.event.stopPropagation();location.href=\"" + divs[i].getAttribute("download-url") + "\";'>Download</button>";
-			divs[i].addEventListener('mouseDown', downloadMouseDownEvent(getAttribute('download-url')), false);
+			divs[i].addEventListener('mouseDown', function(){downloadMouseDownEvent(getAttribute('download-url'))}, false);
 		}
 		if (divs[i].getAttribute("role") === "button" &&
 			divs[i].getAttribute("aria-label") === "Subscribe Free") {
@@ -317,12 +333,6 @@ document.onpageshow = (function () {
 			divs[i].addEventListener('click', clickEvent(rss), false);
 		}
 	}
-
-	// FIXME: Should we change this to be a separate function "attached"
-	// to an object that is, finally, assigned to the onpageshow event?
-	subscribePodcastClickEvent = function (subscribePodcastUrl) {
-		location.href = subscribePodcastUrl;
-	};
 
 	// FIXME: Should we change this to be a separate function "attached"
 	// to an object that is, finally, assigned to the onpageshow event?
@@ -349,4 +359,4 @@ document.onpageshow = (function () {
 	document.body.appendChild(css);
 	console.log("TunesViewer: JS OnPageShow Ran Successfully.");
 
-}()); // end Pageshow.
+}, false); // end Pageshow.
