@@ -3,7 +3,7 @@ tunesviewer (1.4.99.2-1~1.gbpe9f097) UNRELEASED; urgency=medium
   ** SNAPSHOT build @e9f0978bdef8ba31c3cfd2044445eb67c029be87 **
 
   [ Rogério Brito ]
-  * Initial release. (Closes: #XXXXXX)
+  * Initial release. (Closes: #674724)
   * TunesViewer: Some readability/PEP-8 fixes.
   * TunesViewer: Import `lxml` directly, not bombing at runtime.
   * TunesViewer: Reduce one level of identation of the code.
