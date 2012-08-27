@@ -13,7 +13,7 @@ tunesviewer (1.4.99.1-1~2.gbp5d02e8) UNRELEASED; urgency=medium
   * Some (minor) refactoring for readability.
   * downloader: Don't catch every exception under the sun.
 
-  [ lb1programmer ]
+  [ Luke Bryan ]
   * Fixed infinte dialog-boxes when clicking 'i'.
   * Adding some basic unit-tests.
 
@@ -42,13 +42,13 @@ tunesviewer (1.4.99.1-1~2.gbp5d02e8) UNRELEASED; urgency=medium
   * TunesViewer: Make the contents of the time column right-aligned.
   * common: Rework the `timeFind` function for consist look with iTunes U.
 
-  [ lb1programmer ]
+  [ Luke Bryan ]
   * Modified desktop file, added test-cases
 
   [ Rogério Brito ]
   * Rename the `timeFind` function to `time_convert`.
 
-  [ lb1programmer ]
+  [ Luke Bryan ]
   * Modify desktop file
   * Add test-cases
 
@@ -78,7 +78,7 @@ tunesviewer (1.4.99.1-1~2.gbp5d02e8) UNRELEASED; urgency=medium
   * Use the `logging` module more extensively.
   * configbox: Define some "constants" for frequently used values.
 
-  [ lb1programmer ]
+  [ Luke Bryan ]
   * Fixed search url, fixed crash caused by logging module.
   * Quick fix for the download buttons in upper panel.
   * JS work
@@ -98,13 +98,13 @@ tunesviewer (1.4.99.1-1~2.gbp5d02e8) UNRELEASED; urgency=medium
   * gitignore: Ignore HTML files that some tests may leave around.
   * First try at creating a module for holding constants.
 
-  [ lb1programmer ]
+  [ Luke Bryan ]
   * JS subscribe
 
   [ Rogério Brito ]
   * debian/rules: Tell debhelper to build in parallel whenever possible.
 
-  [ lb1programmer ]
+  [ Luke Bryan ]
   * Fixed crash on first initialization, due to missing folders.
   * More constants
 
@@ -134,12 +134,9 @@ tunesviewer (1.4.99.1-1~2.gbp5d02e8) UNRELEASED; urgency=medium
   * Fixed misnamed variable, added comments.
   * Make ALL selectable.
   * Added copy to clipboard from top panel.
-
-  [ programmin1 ]
   * Update debian/copyright
-  * Revised icon to not look flat, added white outline for visibility in darker-colored themes.
-
-  [ Luke Bryan ]
+  * Revised icon to not look flat, added white outline for visibility in
+    darker-colored themes.
   * Set one-directory deep default download directory.
 
   [ Rogério Brito ]
@@ -219,8 +216,6 @@ tunesviewer (1.4.99.1-1~2.gbp5d02e8) UNRELEASED; urgency=medium
 
   [ Luke Bryan ]
   * Placed urls in constants, and set help to open a wiki page.
-
-  [ lb1programmer ]
   * Set script to load FIRST, this fixes previews and maybe other things.
 
   [ Rogério Brito ]
