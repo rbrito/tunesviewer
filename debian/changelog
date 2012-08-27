@@ -122,7 +122,8 @@ tunesviewer (1.4.99.1-1~2.gbp5d02e8) UNRELEASED; urgency=medium
   * Separate some downloading and icon functions.
   * Made text selectable
   * Added download:// interface
-  * Fixed another possible error in notification, too many notifications gio.error.
+  * Fixed another possible error in notification, too many notifications
+    gio.error.
 
   [ Rogério Brito ]
   * Update the changelog.
@@ -148,14 +149,15 @@ tunesviewer (1.4.99.1-1~2.gbp5d02e8) UNRELEASED; urgency=medium
 
   [ Rogério Brito ]
   * Javascript.js: Remove some commented out code.
-  * Javscript: Fix some whitespace problems detected by jslint.com.
-  * Javscript: Fix some missing semicolons detected by jslint.com.
+  * Javascript: Fix some whitespace problems detected by jslint.com.
+  * Javascript: Fix some missing semicolons detected by jslint.com.
   * Javascript: Refactor slightly for legibility.
   * Javascript: Move variable declarations to top of function.
   * Javascript: Fix some variable declarations pointed out by jslint.com.
   * Javascript: Break some long lines.
   * Javascript: Fix some whitespace characters.
-  * Javascript: As per jslint.com, don't use parens for lambda function definitions.
+  * Javascript: As per jslint.com, don't use parens for lambda function
+    definitions.
   * TunesViewer: Be more resistant agains missing icon.
 
   [ Luke Bryan ]
@@ -169,7 +171,8 @@ tunesviewer (1.4.99.1-1~2.gbp5d02e8) UNRELEASED; urgency=medium
   * SingleWindowSocket: Don't bother the user if everything is set.
 
   [ Luke Bryan ]
-  * Set no-loading-icon by default, it makes the window shift down on Ubuntu Unity.
+  * Set no-loading-icon by default, it makes the window shift down on Ubuntu
+    Unity.
 
   [ Rogério Brito ]
   * common: Try harder to convert strings with times in milliseconds.
@@ -196,7 +199,6 @@ tunesviewer (1.4.99.1-1~2.gbp5d02e8) UNRELEASED; urgency=medium
   * Fixing JSlint errors
 
   [ Rogério Brito ]
-  * Keep packaging information separate from the project.
   * Keep packaging information separate from the project.
   * Javascript: Minor whitespace fixes.
 
@@ -260,7 +262,8 @@ tunesviewer (1.4.99.1-1~2.gbp5d02e8) UNRELEASED; urgency=medium
   * Update the changelog.
 
   [ Luke Bryan ]
-  * Better behavior on Ctrl+C, exit instead of locking up the program and terminal.
+  * Better behavior on Ctrl+C, exit instead of locking up the program
+    and terminal.
 
   [ Rogério Brito ]
   * Update version of tunesviewer to a the 1st pre-release.
@@ -272,5 +275,22 @@ tunesviewer (1.4.99.1-1~2.gbp5d02e8) UNRELEASED; urgency=medium
   * TunesViewer: Don't overwrite module with the same name.
   * Remove debian directory from upstream sources.
   * debian/README.source: Add small doc on how to package this.
+
+  [ Luke Bryan ]
+  * Updated constants.
+
+  [ Rogério Brito ]
+  * Remove some unused modules found by pyflakes.
+  * TunesViewer: Don't overwrite module with the same name.
+
+  [ Luke Bryan ]
+  * Set Home URL
+  * Possible improvement
+  * Update strings and attempt improve Javascript.js
+  * Improved tests file.
+  * Fix parsing.
+  * Update help url since SF hosted apps will be gone later.
+  * Changes to About and Help URL for 1.5.
+  * Update tests.
 
  -- Rogério Brito <rbrito@ime.usp.br>  Sat, 24 Mar 2012 03:11:40 -0300
