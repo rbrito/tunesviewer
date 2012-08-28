@@ -283,9 +283,10 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (buttons[i].hasAttribute && buttons[i].hasAttribute("disabled")) {
 				removeListeners(buttons[i]);
 				buttons[i].addEventListener('click',
-								disabledButtonClickEvent(buttons[i].getAttribute("episode-url"),
-											 buttons[i].getAttribute("artist-name"),
-											 buttons[i].getAttribute('item-name')),
+								function() {disabledButtonClickEvent(getAttribute("episode-url"),
+											 getAttribute("artist-name"),
+											 getAttribute('item-name'))
+								},
 								false);
 				buttons[i].removeAttribute("disabled");
 			}

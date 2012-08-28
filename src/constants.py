@@ -55,4 +55,4 @@ SEARCH_URL2 = "http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/adva
 
 #Project Urls
 HELP_URL = "http://tunesviewer.sourceforge.net/help/"
-BUG_URL = "http://sourceforge.net/tracker/?func=add&group_id=305696&atid=1288143"
+BUG_URL = "https://github.com/rbrito/tunesviewer/issues/new"
