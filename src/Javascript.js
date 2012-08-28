@@ -246,6 +246,15 @@ document.addEventListener("DOMContentLoaded", function () {
 	subscribePodcastClickEvent = function (subscribePodcastUrl) {
 		location.href = subscribePodcastUrl;
 	};
+
+	// FIXME: Should we change this to be a separate function "attached"
+	// to an object that is, finally, assigned to the onpageshow event?
+	disabledButtonClickEvent = function (episodeUrl, artistName, itemName) {
+		location.href = "download://<xml><key>URL</key><value><![CDATA[" + episodeUrl + "]]></value>" +
+			"<key>artistName</key><value><![CDATA[" + artistName + "]]></value>" +
+			"<key>fileExtension</key><value>zip</value>" +
+			"<key>songName</key><value><![CDATA[" + itemName + "]]></value></xml>";
+	};
 	
 	var buttons = document.getElementsByTagName('button');
 	//console.log(buttons);
@@ -274,9 +283,10 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (buttons[i].hasAttribute && buttons[i].hasAttribute("disabled")) {
 				removeListeners(buttons[i]);
 				buttons[i].addEventListener('click',
-								disabledButtonClickEvent(buttons[i].getAttribute("episode-url"),
-											 buttons[i].getAttribute("artist-name"),
-											 buttons[i].getAttribute('item-name')),
+								function() {disabledButtonClickEvent(getAttribute("episode-url"),
+											 getAttribute("artist-name"),
+											 getAttribute('item-name'))
+								},
 								false);
 				buttons[i].removeAttribute("disabled");
 			}
@@ -334,14 +344,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	}
 
-	// FIXME: Should we change this to be a separate function "attached"
-	// to an object that is, finally, assigned to the onpageshow event?
-	disabledButtonClickEvent = function (episodeUrl, artistName, itemName) {
-		location.href = "download://<xml><key>URL</key><value><![CDATA[" + episodeUrl + "]]></value>" +
-			"<key>artistName</key><value><![CDATA[" + artistName + "]]></value>" +
-			"<key>fileExtension</key><value>zip</value>" +
-			"<key>songName</key><value><![CDATA[" + itemName + "]]></value></xml>";
-	};
 
 
 	//Fix 100% height

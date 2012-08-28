@@ -1313,6 +1313,8 @@ class TunesViewer:
 					extType = "."+key.getnext().text
 				elif key.text == "songName" and key.getnext() is not None:
 					name = key.getnext().text
+			if extType==".rtf":
+				extType = ".zip"
 			self.downloadFile(name, artist, duration, extType, comment, url)
 			return
 		elif url.startswith("copyurl://"):
