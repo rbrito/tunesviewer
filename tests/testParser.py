@@ -111,7 +111,7 @@ class TestParser(unittest.TestCase):
 				 'iTunes U > Fort Hays State University > '
 				 'FHSU News > From the President - '
 				 'President Hammond')
-		self.assertEqual(len(parsed_html.mediaItems), 28)
+		self.assertEqual(len(parsed_html.mediaItems), 30)
 		# FIXME: The following should be made into proper tests
 		for line in parsed_html.mediaItems:
 			logging.debug(line)
@@ -154,10 +154,11 @@ class TestParser(unittest.TestCase):
 
 		self.assertEqual(parsed_html.Redirect, '')
 		self.assertEqual(parsed_html.Title,
-				 'iTunes U > George Fox University > Chapel - Chapel 2011-2012')
+				 'iTunes U > George Fox University > Chapel - Chapel 2012 - 2013')
 		# FIXME: Are all tabs shown?
 		self.assertEqual(parsed_html.tabMatches,
-				 [', Selected. Chapel 2011-2012',
+				 [', Selected. Chapel 2012 - 2013',
+				  '. Chapel 2011-2012',
 				  '. Shalom 2011-2012',
 				  '. Chapel 2010-2011',
 				  '. Shalom 2010-2011',
