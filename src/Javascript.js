@@ -257,12 +257,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	};
 	
 	var buttons = document.getElementsByTagName('button');
-	//console.log(buttons);
 	divs = document.getElementsByTagName("div");
-	//console.log(buttons.length);
-	//console.log(buttons);
 	for (var i in buttons) {
-		console.log("button:"+buttons[i].innerHTML);
 		if (buttons[i]) {
 			if (buttons[i].textContent && buttons[i].textContent.trim() === "Subscribe Free") {
 				if (buttons[i].getAttribute('subscribe-podcast-url') !== null) {
