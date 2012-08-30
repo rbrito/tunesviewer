@@ -328,10 +328,13 @@ class Parser:
 						isPod = False
 				if isPod and podurl: # Every media file has link to same url, so it must be podcast url of this page.
 					self.podcast = podurl
-				elif (len(buttons) > 1 and
-				      buttons[0].get("subscribe-podcast-url")):
-					if not(buttons[0].get("subscribe-podcast-url").startswith("http://itunes.apple.com/WebObjects/DZR.woa/wa/subscribePodcast?id=")):
-						self.podcast = buttons[0].get("subscribe-podcast-url")
+				elif (len(buttons) > 1):
+					if buttons[0].get("subscribe-podcast-url"):
+						if not(buttons[0].get("subscribe-podcast-url").startswith("http://itunes.apple.com/WebObjects/DZR.woa/wa/subscribePodcast?id=")):
+							self.podcast = buttons[0].get("subscribe-podcast-url")
+					elif buttons[0].get("course-feed-url") and buttons[1].get("course-feed-url") is None:
+						# Single "subscribe", not a listing-page.
+						self.podcast = buttons[0].get("course-feed-url")
 
 		logging.debug("Parse took " + str(time.time()-sttime) + "s.")
 
