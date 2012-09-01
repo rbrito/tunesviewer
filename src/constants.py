@@ -25,7 +25,7 @@ import glib
 
 # Path of the program (bad assumption)
 TV_PATH = "/usr/bin/tunesviewer"
-TV_VERSION = "1.5" #also needs changing in debian conf file somewhere
+TV_VERSION = "1.4.99.0" #also needs changing in debian conf file somewhere
 
 # Directory under which we write configuration files
 USER_PREFS_DIR = glib.get_user_config_dir()
@@ -54,5 +54,5 @@ SEARCH_URL1 = "http://phobos.apple.com/WebObjects/MZSearch.woa/wa/advancedSearch
 SEARCH_URL2 = "http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/advancedSearch?media=podcast&titleTerm=%s&authorTerm=%s&descriptionTerm=%s&genreIndex=&languageTerm="
 
 #Project Urls
-HELP_URL = "http://sourceforge.net/apps/trac/tunesviewer/wiki/help"
-BUG_URL = "http://sourceforge.net/tracker/?func=add&group_id=305696&atid=1288143"
+HELP_URL = "http://tunesviewer.sourceforge.net/help/"
+BUG_URL = "https://github.com/rbrito/tunesviewer/issues/new"

@@ -1,0 +1,307 @@
+tunesviewer (1.4.99.3-1~1.gbpd5c606) UNRELEASED; urgency=medium
+
+  ** SNAPSHOT build @d5c6065df5de1fecdc942f0203c1c10425d12367 **
+
+  [ Rogério Brito ]
+  * Initial release. (Closes: #674724)
+  * TunesViewer: Some readability/PEP-8 fixes.
+  * TunesViewer: Import `lxml` directly, not bombing at runtime.
+  * TunesViewer: Reduce one level of identation of the code.
+  * TunesViewer: Rename variable to avoid collision with Python's keyword.
+  * webkitview: Avoid collision with Python builtins.
+  * webview: Avoid potential errors testing variable against False.
+  * Some (minor) refactoring for readability.
+  * downloader: Don't catch every exception under the sun.
+
+  [ Luke Bryan ]
+  * Fixed infinte dialog-boxes when clicking 'i'.
+  * Adding some basic unit-tests.
+
+  [ Rogério Brito ]
+  * Add instructions on building Debian packages to the `README.md` file.
+  * Refactor the unittests for `common.py`
+  * common: Make timeFind more robust against input values.
+  * common: Some minor readability/cosmetics and PEP-8 changes.
+  * common: Make HTML decoding more robust.
+  * testParser: Rework the way the tests work for future extensibility.
+  * testCommon: Remove a silly leftover `import`.
+  * configbox: Minor cosmetic changes.
+  * configbox: Remove commented out code.
+  * {configbox,firstsetup}: Make firstsetup methods into regular functions.
+  * icon: Fix missing green upper left corner on the border of the U.
+  * desktop file: Translate comment to pt_BR.
+  * desktop file: Reorganize the file slightly.
+  * desktop file: Don't hardcode paths to allow for flexible installation.
+  * desktop file: Make some translated strings in pt_BR available in pt.
+  * README.md: Give more detailed instructions about Debian packages.
+  * Reorganize the project directories for modularity.
+  * tests: Adapt the tests to the new directory structure.
+  * tests: Adapt the tests to the new directory structure.
+  * README.md: Update instructions on how to build Debian packages.
+  * debian: Reinclude missing changes of paths to build the package.
+  * TunesViewer: Make the contents of the time column right-aligned.
+  * common: Rework the `timeFind` function for consist look with iTunes U.
+
+  [ Luke Bryan ]
+  * Modified desktop file, added test-cases
+
+  [ Rogério Brito ]
+  * Rename the `timeFind` function to `time_convert`.
+
+  [ Luke Bryan ]
+  * Modify desktop file
+  * Add test-cases
+
+  [ Rogério Brito ]
+  * Remove some commented code.
+  * cosmetics: Remove whitespace from the end of lines.
+  * testParser: cosmetics: Whitespace work.
+  * testParser: Use unittest's assertEqual method.
+  * tests: Make the tests work from root or `tests` directories.
+  * Tidy up some of the docstrings a bit.
+  * TunesViewer: Rework the code for modularity.
+  * Use more the `logging` module around the project.
+  * Minor formatting changes.
+  * Use a bit more of the `logging` module.
+  * TunesViewer: Don't redefine Python's `type` word.
+  * TunesViewer: Use a shorter variable name.
+  * TunesViewer: Reduce excessive/incorrect indentation level.
+  * common: Add stronger URL unquoting of strings.
+  * testParser: Add a test of decoding an XML feed.
+  * testParser: Mark some tests as broken by changes in iTunes.
+  * cosmetics: Minor cosmetic fixes.
+  * Parser: Fix breakage with logging. Thanks Luke for the eagle eyes.
+  * SingleWindowSocket: Tweak a little bit the docstrings.
+  * Change some parts of the code for compliance with Python 3.
+  * help.txt: Spell check the contents of the file.
+  * cosmetics: Change some strings a bit and remove commented code.
+  * Use the `logging` module more extensively.
+  * configbox: Define some "constants" for frequently used values.
+
+  [ Luke Bryan ]
+  * Fixed search url, fixed crash caused by logging module.
+  * Quick fix for the download buttons in upper panel.
+  * JS work
+  * More Javascript
+
+  [ Rogério Brito ]
+  * downloader: Don't put multiple commands in one line.
+  * Use a better icon for the program.
+  * Remove files that were moved already.
+  * testParser: Remove duplicate tests originating from a bad merge.
+  * testParser: Use `logging.debug` instead of `logging.warn`.
+  * tests: Incorporate `test.py` into `testParser.py`.
+  * testParser: Fix the expected result of a test.
+  * Javascript: Remove some commented out code.
+  * Parser: Try to simplify some of the code of the parser.
+  * Parser: Add more information on exceptional circumstances.
+  * gitignore: Ignore HTML files that some tests may leave around.
+  * First try at creating a module for holding constants.
+
+  [ Luke Bryan ]
+  * JS subscribe
+
+  [ Rogério Brito ]
+  * debian/rules: Tell debhelper to build in parallel whenever possible.
+
+  [ Luke Bryan ]
+  * Fixed crash on first initialization, due to missing folders.
+  * More constants
+
+  [ Rogério Brito ]
+  * Fix breakage when XDG directories are not present.
+  * constants: Mark that assuming a particular path for the program is bad.
+  * SingleWindowSocket: Fix constant that was renamed.
+  * debian/changelog: Update.
+
+  [ Luke Bryan ]
+  * More work on constants.
+  * Revert parser code to catch any/all attributes.
+  * Change splitter
+  * Fixed file extension function, unit-testing.
+  * Separate some downloading and icon functions.
+  * Made text selectable
+  * Added download:// interface
+  * Fixed another possible error in notification, too many notifications
+    gio.error.
+
+  [ Rogério Brito ]
+  * Update the changelog.
+  * TunesViewer: Move loading the `sys` module only when used.
+  * TunesViewer: Use `optparse` to parse command line options.
+  * TunesViewer: Minor cosmetic stuff.
+
+  [ Luke Bryan ]
+  * Fixed misnamed variable, added comments.
+  * Make ALL selectable.
+  * Added copy to clipboard from top panel.
+  * Update debian/copyright
+  * Revised icon to not look flat, added white outline for visibility in
+    darker-colored themes.
+  * Set one-directory deep default download directory.
+
+  [ Rogério Brito ]
+  * common: Be more paranoid and inform what raised the exception.
+  * common: Use a more general 'human readable' conversion in `desc`.
+
+  [ Luke Bryan ]
+  * Fixed download problem and display error
+
+  [ Rogério Brito ]
+  * Javascript.js: Remove some commented out code.
+  * Javascript: Fix some whitespace problems detected by jslint.com.
+  * Javascript: Fix some missing semicolons detected by jslint.com.
+  * Javascript: Refactor slightly for legibility.
+  * Javascript: Move variable declarations to top of function.
+  * Javascript: Fix some variable declarations pointed out by jslint.com.
+  * Javascript: Break some long lines.
+  * Javascript: Fix some whitespace characters.
+  * Javascript: As per jslint.com, don't use parens for lambda function
+    definitions.
+  * TunesViewer: Be more resistant agains missing icon.
+
+  [ Luke Bryan ]
+  * Fixed possible index-out-of-range, and reworked unit tests.
+
+  [ Rogério Brito ]
+  * Update the changelog for upload to the PPA.
+  * Javascript: Make clear the messages that come from TunesViewer.
+  * Javascript: Change some comments for legibility.
+  * downloadbox: Catch exception when DBUS is not available for some reason.
+  * SingleWindowSocket: Don't bother the user if everything is set.
+
+  [ Luke Bryan ]
+  * Set no-loading-icon by default, it makes the window shift down on Ubuntu
+    Unity.
+
+  [ Rogério Brito ]
+  * common: Try harder to convert strings with times in milliseconds.
+  * UI: Add support for showing icons for reading material.
+  * Javascript: Provide a third argument for calls to `addEventListener`.
+  * Javascript: Add an empty function to avoid creating too many objects.
+  * Javascript: Add `use strict` to some functions.
+
+  [ Luke Bryan ]
+  * Improved command-line arguments.
+
+  [ Rogério Brito ]
+  * TunesViewer: Initialize the icon_book variable.
+  * TunesViewer: Use an icon for books that is more probable to exist.
+  * TunesViewer: Make an error message more descriptive of the error.
+
+  [ Luke Bryan ]
+  * Icon modifications
+
+  [ Rogério Brito ]
+  * TunesViewer: Take a more general approach to providing icons.
+
+  [ Bruno P. Kinoshita ]
+  * Fixing JSlint errors
+
+  [ Rogério Brito ]
+  * Keep packaging information separate from the project.
+  * Javascript: Minor whitespace fixes.
+
+  [ Luke Bryan ]
+  * Fix dos-filesystem filter, make : semicolon for compatibility.
+
+  [ Rogério Brito ]
+  * configbox: Add a default opener for PDF files.
+  * downloadbox: Decrease the frequency of updates of the UI to 1 per second.
+  * configbox: Minor cosmetic changes.
+  * Javascript: Fix a bunch of stuff trying to fix the previews.
+  * Javascript: Comments and whitespaces.
+  * Javascript: Reducing the amount of anonymous functions being assigned.
+  * Javascript: Add FIXMEs to things that are smelling bad.
+  * Javascript: Move function around to leave the event setting for last.
+  * Javascript: Add some strictness to the code.
+
+  [ Luke Bryan ]
+  * Placed urls in constants, and set help to open a wiki page.
+  * Set script to load FIRST, this fixes previews and maybe other things.
+
+  [ Rogério Brito ]
+  * Javascript: Minor whitespace changes for readability.
+  * Javascript: Add missing "use strict".
+  * Javascript: Use the identity comparison.
+  * Javascript: While using "strict", we have to declare the variable.
+  * constants: Don't use hardcoded paths for executables.
+
+  [ Luke Bryan ]
+  * Removed unnecessary javascript.
+  * Remove second js
+
+  [ Rogério Brito ]
+  * webkitview: Change commented out code for a simple `pass`
+  * webkitview: Remove stub function.
+  * Javascript: Remove `defined` function which always returned true.
+  * Javascript: Remove function to create previews.
+  * Javascript: Avoid potential (future) pitfalls with `"use strict"`.
+
+  [ Luke Bryan ]
+  * License & Header change.
+
+  [ Rogério Brito ]
+  * Add licensing information to remaining files.
+  * Fix copyright information in accordance to license change.
+  * Add licensing information to remaining files.
+  * Coalesce the e-mails that Luke uses.
+  * Add embrionary manpage about the program.
+  * Install the manpage of the program.
+  * Give a better synopsis for the manpage.
+  * Make debian/control be in sync with the manpage synopsis.
+  * Update copyright information to format 1.0.
+  * Update Std-Ver to 3.9.3 with no further changes.
+  * Add copyright information of the icon.
+
+  [ Luke Bryan ]
+  * Fixed encoding problem that prevented it from running.
+
+  [ Rogério Brito ]
+  * Add shebang line to the tests too.
+  * Update the changelog.
+
+  [ Luke Bryan ]
+  * Better behavior on Ctrl+C, exit instead of locking up the program
+    and terminal.
+
+  [ Rogério Brito ]
+  * Update version of tunesviewer to a the 1st pre-release.
+  * debian: Add `debian/gbp.conf` to ease building newer Debian packages.
+  * debian: Tell `git-buildpackage` the format of the upstream tags.
+  * Remove useless build script.
+  * debian/control: Add me as maintainer for the package in Debian.
+  * Remove some unused modules found by pyflakes.
+  * TunesViewer: Don't overwrite module with the same name.
+  * Remove debian directory from upstream sources.
+  * debian/README.source: Add small doc on how to package this.
+
+  [ Luke Bryan ]
+  * Updated constants.
+
+  [ Rogério Brito ]
+  * Remove some unused modules found by pyflakes.
+  * TunesViewer: Don't overwrite module with the same name.
+
+  [ Luke Bryan ]
+  * Set Home URL
+  * Possible improvement
+  * Update strings and attempt improve Javascript.js
+  * Improved tests file.
+  * Fix parsing.
+  * Update help url since SF hosted apps will be gone later.
+  * Changes to About and Help URL for 1.5.
+  * Update tests.
+  * Fixed some glitches in webview.
+  * Fixed Javascript and subscribe.
+  * Define the function before it's used.
+  * Set Github issues url, fixed a bug, file always downloading.
+  * Fix extension for some files downloaded from webview.
+  * Fix subscribe toolbar-button in some cases.
+  * Removed unnecessary console.logs.
+
+  [ Rogério Brito ]
+  * Update changelog with another upstream version.
+  * debian/changelog: Update with the correct ITP bug number.
+
+ -- Rogério Brito <rbrito@ime.usp.br>  Sat, 01 Sep 2012 10:55:54 -0300

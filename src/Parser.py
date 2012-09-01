@@ -37,6 +37,8 @@ def safe(obj):
 		return obj
 	else:
 		return ""
+		
+ATOM = "{http://www.w3.org/2005/Atom}feed"
 
 class Parser:
 	def __init__(self, url, contentType, source):
@@ -64,10 +66,10 @@ class Parser:
 			bad = "[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD]"
 			self.source = re.sub(bad, " ", self.source) # now it should be valid xml.
 			dom = etree.fromstring(self.source.replace('xmlns="http://www.apple.com/itms/"', '')) #(this xmlns causes problems with xpath)
-			if dom.tag.find("html") > -1 or dom.tag == "{http://www.w3.org/2005/Atom}feed":
+			if dom.tag.find("html") > -1:# or dom.tag == "{http://www.w3.org/2005/Atom}feed":
 				# Don't want normal pages/atom pages, those are for the web browser!
 				raise Exception
-			elif dom.tag == "rss": # rss files are added
+			elif dom.tag == "rss" or dom.tag == ATOM: # rss files are added
 				self.HTML += "<p>This is a podcast feed, click Add to Podcast manager button on the toolbar to subscribe.</p>"
 				items = dom.xpath("//item")
 				logging.debug("rss: " + str(len(items)))
@@ -290,7 +292,7 @@ class Parser:
 		self.podcast = ""
 		if len(location) > 0 and location[0] == "Search Results":
 			logging.debug("Search page, not podcast.")
-		elif dom.tag == "rss":
+		elif dom.tag == "rss" or dom.tag==ATOM:
 			self.podcast = self.url
 		elif hasmedia:
 			for i in keys:
@@ -326,10 +328,13 @@ class Parser:
 						isPod = False
 				if isPod and podurl: # Every media file has link to same url, so it must be podcast url of this page.
 					self.podcast = podurl
-				elif (len(buttons) > 1 and
-				      buttons[0].get("subscribe-podcast-url")):
-					if not(buttons[0].get("subscribe-podcast-url").startswith("http://itunes.apple.com/WebObjects/DZR.woa/wa/subscribePodcast?id=")):
-						self.podcast = buttons[0].get("subscribe-podcast-url")
+				elif (len(buttons) > 1):
+					if buttons[0].get("subscribe-podcast-url"):
+						if not(buttons[0].get("subscribe-podcast-url").startswith("http://itunes.apple.com/WebObjects/DZR.woa/wa/subscribePodcast?id=")):
+							self.podcast = buttons[0].get("subscribe-podcast-url")
+					elif buttons[0].get("course-feed-url") and buttons[1].get("course-feed-url") is None:
+						# Single "subscribe", not a listing-page.
+						self.podcast = buttons[0].get("course-feed-url")
 
 		logging.debug("Parse took " + str(time.time()-sttime) + "s.")
 
@@ -530,17 +535,24 @@ class Parser:
 					     price,
 					     itemid)
 			elif (element.get("audio-preview-url") or
-			      element.get("video-preview-url")):
+			      element.get("video-preview-url") or
+			      element.get("episode-url")):
 				if element.get("video-preview-url"):
 					url = element.get("video-preview-url")
+				elif element.get("episode-url"):
+					url = element.get("episode-url")
 				else:
 					url = element.get("audio-preview-url")
 				title = ""
 				if element.get("preview-title"):
 					title = element.get("preview-title")
+				elif element.get("item-name"):
+					title = element.get("item-name")
 				author = ""
 				if element.get("preview-artist"):
 					author = element.get("preview-artist")
+				elif element.get("artist-name"):
+					author = element.get("artist-name")
 				duration = ""
 				if element.get("preview-duration"):
 					duration = time_convert(element.get("preview-duration"))

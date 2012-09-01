@@ -1,0 +1,34 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: TunesViewer
+Upstream-Contact: Luke Bryan <lb1programmer@users.sourceforge.net>
+Source: https://sf.net/projects/tunesviewer
+
+Files: *
+Copyright: © 2009-2012 Luke Bryan <lb1programmer@users.sourceforge.net>
+           © 2011-2012 Rogério Theodoro de Brito <rbrito@ime.usp.br>
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ On Debian systems, the full text of the GNU General Public License
+ version 2 can be found in the file `/usr/share/common-licenses/GPL-2'.
+
+Files: resources/tunesview.svg
+Copyright: None (Public Domain)
+License: PD
+ This icon was created by [Michał Rzeszutek/bocian][1] and is in
+ the [Public Domain/CC0][2].
+ .
+ It was minified with `scour` with the following parameters:
+ .
+ scour --enable-id-stripping --enable-comment-stripping --shorten-ids --remove-metadata -p 3
+ .
+ [1]: http://openclipart.org/user-detail/bocian
+ [2]: http://creativecommons.org/publicdomain/zero/1.0/

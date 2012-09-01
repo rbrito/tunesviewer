@@ -1,0 +1,37 @@
+Source: tunesviewer
+Maintainer: Rogério Brito <rbrito@ime.usp.br>
+Uploaders:
+ Luke Bryan <lb1programmer@users.sourceforge.net>
+Section: net
+Priority: optional
+Build-Depends:
+ debhelper (>= 8),
+ python
+Standards-Version: 3.9.3
+Homepage: http://tunesviewer.sf.net/
+
+Package: tunesviewer
+Architecture: all
+Depends:
+ python (>= 2.6),
+ python-gtk2 (>= 2.16),
+ python-lxml (>= 2.0),
+ python-notify,
+ python-support (>= 0.90),
+ python-webkit (>= 1.1),
+ ${misc:Depends}
+Recommends:
+ rhythmbox-plugins (>= 0.12)
+Suggests:
+ soundconverter (>= 1.0),
+ vlc (>= 1.0)
+Description: program to access media and podcasts from iTunes U
+ TunesViewer is a small, easy-to-use program to access iTunesU media and
+ podcasts from Linux.  TunesViewer lets you:
+ .
+  * Search, browse, and download videos, audio lectures, and ebooks.
+  * Go directly from the "loading iTunes-U..." page to viewing podcast with
+    TunesViewer.
+  * Reveal the standard RSS-podcast-feed of an iTunes podcast, for use in
+    podcast software.
+  * Log in to download students-and-staff-only media.

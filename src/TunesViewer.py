@@ -900,7 +900,13 @@ class TunesViewer:
 					gtk.MESSAGE_INFO,
 					gtk.BUTTONS_CLOSE,
 					"TunesViewer - Easy iTunesU access\n"
-					"Version %s, (c) 2009-2012, Tunesviewer authors.\n"
+					"Version %s\n\n"
+					"(C) 2009 - 2012 Luke Bryan\n"
+					"2011 - 2012 Rogério Theodoro de Brito\n"
+					"and other contributors.\n"
+					"Icon based on Michał Rzeszutek's openclipart hat.\n"
+					"Loading-throbber based on Firefox icon.\n"
+					"PyGTK Webkit interface and inspector code (C) 2008 Jan Alonzo.\n"
 					"This is open source software, distributed 'as is'." % (TV_VERSION,))
 		msg.run()
 		msg.destroy()
@@ -1307,6 +1313,8 @@ class TunesViewer:
 					extType = "."+key.getnext().text
 				elif key.text == "songName" and key.getnext() is not None:
 					name = key.getnext().text
+			if extType==".rtf":
+				extType = ".zip"
 			self.downloadFile(name, artist, duration, extType, comment, url)
 			return
 		elif url.startswith("copyurl://"):
@@ -1377,7 +1385,7 @@ class TunesViewer:
 			#Downloader:
 			response = opener.open(url)
 			pageType = response.info().getheader('Content-Type', 'noheader?')
-			if pageType.startswith("text"):
+			if pageType.startswith("text") or pageType=='noheader?': #(noheader on subscribe sometimes)
 				next = response.read(100)
 				while next != "" and self.downloading:
 					text += next
