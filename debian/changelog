@@ -1,6 +1,6 @@
-tunesviewer (1.4.99.2-1~1.gbpe9f097) UNRELEASED; urgency=medium
+tunesviewer (1.4.99.3-1~1.gbpd5c606) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @e9f0978bdef8ba31c3cfd2044445eb67c029be87 **
+  ** SNAPSHOT build @d5c6065df5de1fecdc942f0203c1c10425d12367 **
 
   [ Rogério Brito ]
   * Initial release. (Closes: #674724)
@@ -292,5 +292,16 @@ tunesviewer (1.4.99.2-1~1.gbpe9f097) UNRELEASED; urgency=medium
   * Update help url since SF hosted apps will be gone later.
   * Changes to About and Help URL for 1.5.
   * Update tests.
+  * Fixed some glitches in webview.
+  * Fixed Javascript and subscribe.
+  * Define the function before it's used.
+  * Set Github issues url, fixed a bug, file always downloading.
+  * Fix extension for some files downloaded from webview.
+  * Fix subscribe toolbar-button in some cases.
+  * Removed unnecessary console.logs.
 
- -- Rogério Brito <rbrito@ime.usp.br>  Sat, 24 Mar 2012 03:11:40 -0300
+  [ Rogério Brito ]
+  * Update changelog with another upstream version.
+  * debian/changelog: Update with the correct ITP bug number.
+
+ -- Rogério Brito <rbrito@ime.usp.br>  Sat, 01 Sep 2012 10:55:54 -0300
