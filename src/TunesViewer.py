@@ -1313,6 +1313,8 @@ class TunesViewer:
 					extType = "."+key.getnext().text
 				elif key.text == "songName" and key.getnext() is not None:
 					name = key.getnext().text
+			if extType==".rtf":
+				extType = ".zip"
 			self.downloadFile(name, artist, duration, extType, comment, url)
 			return
 		elif url.startswith("copyurl://"):
@@ -1383,7 +1385,7 @@ class TunesViewer:
 			#Downloader:
 			response = opener.open(url)
 			pageType = response.info().getheader('Content-Type', 'noheader?')
-			if pageType.startswith("text"):
+			if pageType.startswith("text") or pageType=='noheader?': #(noheader on subscribe sometimes)
 				next = response.read(100)
 				while next != "" and self.downloading:
 					text += next
