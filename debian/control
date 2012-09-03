@@ -18,7 +18,7 @@ Depends:
  python-lxml (>= 2.0),
  python-notify,
  python-support (>= 0.90),
- python-webkit (>= 1.1),
+ python-webkit (>= 1.1.4),
  ${misc:Depends}
 Recommends:
  rhythmbox-plugins (>= 0.12)
