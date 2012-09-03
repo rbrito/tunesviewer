@@ -1,0 +1,17 @@
+Debian packaging for tunesviewer
+-------------------------------
+
+A quick summary of how one can update the Debian packaging of tunesviewer is
+to, assuming that one already has the packages `devscripts`,
+`git-buildpackage`, and `pristine-tar` installed:
+
+    gbp-clone --all git://github.com/rbrito/tunesviewer.git
+    cd tunesviewer
+    git checkout -- debian
+    [ Make here some adaptations, like updating debian/changelog, if needed ]
+    git-buildpackage
+
+These are the important steps and may need to be changed according to
+deviations, say, in the release process of tunesviewer.
+
+ -- Rogério Brito <rbrito@ime.usp.br>, Sat,  9 Jun 2012 10:06:39 -0300
