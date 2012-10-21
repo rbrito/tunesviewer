@@ -134,7 +134,6 @@ class TestParser(unittest.TestCase):
 		# FIXME: The following should be made into proper tests
 		self.checkItems(parsed_html.mediaItems)
 
-
 	def testParseSJSU(self):
 		url = "http://deimos3.apple.com/WebObjects/Core.woa/Browse/sjsu.edu?ignore.mscache=3176353"
 		text = self.o.open(url).read()
@@ -145,7 +144,6 @@ class TestParser(unittest.TestCase):
 		self.assertEqual(parsed_html.Title, 'iTunes U')
 		self.assertEqual(len(parsed_html.mediaItems), 0)
 		self.checkItems(parsed_html.mediaItems)
-
 
 	def testParseWithTabs(self):
 		url = "https://deimos.apple.com/WebObjects/Core.woa/BrowsePrivately/georgefox.edu.1285568794"
@@ -158,6 +156,7 @@ class TestParser(unittest.TestCase):
 		# FIXME: Are all tabs shown?
 		self.assertEqual(parsed_html.tabMatches,
 				 [', Selected. Chapel 2012 - 2013',
+				  '. Shalom 2012-2013',
 				  '. Chapel 2011-2012',
 				  '. Shalom 2011-2012',
 				  '. Chapel 2010-2011',
@@ -209,7 +208,9 @@ class TestParser(unittest.TestCase):
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text).HTML
 		file("parsed_test.html", "w").write(parsed_html)
-		
+		self.assertTrue(parsed_html.find("<html") != -1)
+		self.assertTrue(parsed_html.find("<a href=") != -1)
+		self.assertTrue(parsed_html.find("<img src=") != -1)
 
 
 if __name__ == "__main__":
