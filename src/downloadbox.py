@@ -19,9 +19,9 @@ Download window class.
 """
 import logging
 
-import gobject
-import gio
-import gtk
+from gi.repository import Gio as gio
+from gi.repository import GObject as gobject
+from gi.repository import Gtk as gtk
 
 from downloader import Downloader
 from common import *
@@ -44,8 +44,8 @@ class DownloadBox:
 	def __init__(self, Wopener):
 		self.Wopener = Wopener # reference to main prog.
 		self.window = gtk.Window()
-		self.window.set_icon(self.window.render_icon(gtk.STOCK_SAVE,
-							     gtk.ICON_SIZE_BUTTON))
+		#self.window.set_icon(self.window.render_icon(gtk.STOCK_SAVE,
+		#					     gtk.ICON_SIZE_BUTTON))
 		self.window.set_title("Downloads")
 		self.window.set_size_request(500, 200)
 		self.window.connect("delete_event", self.onclose)
@@ -53,7 +53,7 @@ class DownloadBox:
 		self.vbox.show()
 		scrolledwindow = gtk.ScrolledWindow()
 		scrolledwindow.show()
-		scrolledwindow.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+		scrolledwindow.set_policy(gtk.PolicyType.NEVER,  gtk.PolicyType.AUTOMATIC)
 		scrolledwindow.add_with_viewport(self.vbox)
 		self.window.add(scrolledwindow)
 
@@ -134,9 +134,9 @@ class DownloadBox:
 				else:#if (i.success):
 					message = "File already downloaded."
 				msg = gtk.MessageDialog(self.window,
-							gtk.DIALOG_MODAL,
-							gtk.MESSAGE_INFO,
-							gtk.BUTTONS_CLOSE,
+							gtk.DialogFlags.MODAL,
+							gtk.MessageType.INFO,
+							gtk.ButtonsType.CLOSE,
 							message)
 				msg.run()
 				msg.destroy()
