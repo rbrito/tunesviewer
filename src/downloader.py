@@ -26,9 +26,10 @@ import urllib2
 
 from threading import Thread
 
-import gobject
-import gtk
-import pango
+
+from gi.repository import GObject as gobject
+from gi.repository import Gtk as gtk
+from gi.repository import Pango as pango
 
 from common import *
 
@@ -63,8 +64,8 @@ class Downloader:
 		self._element.pack_start(lower, False, False, 0)
 		self._cancelbutton = gtk.Button("Cancel")
 		self._cancelbutton.show()
-		self._progress = gtk.ProgressBar(adjustment = None)
-		self._progress.set_ellipsize(pango.ELLIPSIZE_END)
+		self._progress = gtk.ProgressBar()
+		self._progress.set_ellipsize(pango.EllipsizeMode.END)
 		self._progress.show()
 		ic = gtk.Image()
 		ic.set_from_pixbuf(icon)
@@ -78,23 +79,24 @@ class Downloader:
 		upper.pack_start(self._cancelbutton, False, False, 0)
 		name = gtk.Label("Downloading to: %s from: %s" % (localfile, url))
 		name.show()
-		name.set_ellipsize(pango.ELLIPSIZE_END)
+		name.set_ellipsize(pango.EllipsizeMode.END)
 		name.set_selectable(True)
 
 		# Add action button
-		self._combo = gtk.combo_box_new_text()
-		self._combo.append_text("Choose Action:")
-		self._combo.append_text("Open File")
-		self._combo.append_text("Convert File")
-		self._combo.append_text("Copy to Device")
-		self._combo.append_text("Delete File")
+		actions = gtk.ListStore(str)
+		actions.append(["Choose Action:"])
+		actions.append(["Open File"])
+		actions.append(["Convert File"])
+		actions.append(["Copy to Device"])
+		actions.append(["Delete File"])
+		self._combo = gtk.ComboBox(model=actions)
 		self._combo.set_active(0)
 		self._combo.connect("changed", self.actionSelect)
 		self._combo.show()
 
 		self._mediasel = gtk.FileChooserButton("Choose the folder representing the device")
 		self._mediasel.set_size_request(100, -1)
-		self._mediasel.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+		self._mediasel.set_action(gtk.FileChooserAction.SELECT_FOLDER)
 		self._mediasel.connect("current-folder-changed", self.folderChange)
 		#self._mediasel.connect("file-set",self.folderChange)
 		self._mediasel.hide()

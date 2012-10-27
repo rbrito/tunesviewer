@@ -21,7 +21,7 @@
 import logging
 from threading import Thread
 
-import gtk
+from gi.repository import Gtk as gtk
 
 from common import *
 
