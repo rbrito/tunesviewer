@@ -22,7 +22,8 @@ A subclass of Webkit Webview, injects javascript into page.
 import logging
 import os
 
-import webkit
+
+from gi.repository import WebKit as webkit
 
 from constants import USER_AGENT
 from inspector import Inspector
@@ -63,7 +64,7 @@ class WebKitView(webkit.WebView):
 		
 		# Enable inspector:
 		settings.set_property("enable-developer-extras", True)
-		self._inspector = Inspector(self.get_web_inspector())
+		self._inspector = Inspector(self.get_inspector())
 		self.set_settings(settings)
 
 		# These signals are documented in webkit.WebView.__doc__

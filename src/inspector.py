@@ -16,8 +16,8 @@
 
 import logging
 
-import gtk
-import webkit
+from gi.repository import WebKit as webkit
+from gi.repository import Gtk as gtk
 
 class Inspector(gtk.Window):
     def __init__ (self, inspector):
@@ -48,8 +48,8 @@ class Inspector(gtk.Window):
         Called when the 'inspect' menu item is activated.
         """
         scrolled_window = gtk.ScrolledWindow()
-        scrolled_window.props.hscrollbar_policy = gtk.POLICY_AUTOMATIC
-        scrolled_window.props.vscrollbar_policy = gtk.POLICY_AUTOMATIC
+        scrolled_window.props.hscrollbar_policy = gtk.PolicyType.AUTOMATIC
+        scrolled_window.props.vscrollbar_policy = gtk.PolicyType.AUTOMATIC
         webview = webkit.WebView()
         scrolled_window.add(webview)
         scrolled_window.show_all()

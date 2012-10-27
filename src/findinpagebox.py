@@ -18,8 +18,8 @@ A find-in-page dialog for Tunesviewer, with callback to main window.
  GNU General Public License for more details.
 """
 
-import gobject
-import gtk
+from gi.repository import GObject as gobject
+from gi.repository import Gtk as gtk
 
 class FindInPageBox(gtk.Dialog):
 
@@ -29,18 +29,18 @@ class FindInPageBox(gtk.Dialog):
 
 	def __init__(self):
 		gtk.Dialog.__init__(self, "Find in Current Page", None,
-				    gtk.DIALOG_DESTROY_WITH_PARENT,
+				    gtk.DialogFlags.DESTROY_WITH_PARENT,
 				    (gtk.STOCK_FIND, 1, gtk.STOCK_CLOSE, 0))
 		self.currentFound = -1
 		self.set_size_request(250, -1) # change width
 		self.set_default_response(1)
-		self.set_icon(self.render_icon(gtk.STOCK_FIND, gtk.ICON_SIZE_BUTTON))
+		#self.set_icon(self.render_icon(gtk.STOCK_FIND, gtk.ICON_SIZE_BUTTON))
 		self.connect("response", self.response) # Ok/Cancel
 		vbox = self.get_content_area()
-		vbox.pack_start(gtk.Label("Find Text:"))
+		vbox.pack_start(gtk.Label("Find Text:"),True,True,0)
 		self.findText = gtk.Entry()
 		self.findText.set_activates_default(True)
-		vbox.pack_start(self.findText)
+		vbox.pack_start(self.findText,True,True,0)
 		self.connect("delete_event", self.delete_event)
 
 	def delete_event(self, widget, event, data=None):

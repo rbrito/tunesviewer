@@ -20,7 +20,7 @@ A 'find' window class for Tunesviewer.
 
 import logging
 
-import gtk
+from gi.repository import Gtk as gtk
 
 import constants
 
@@ -34,11 +34,11 @@ class FindBox:
 		self.mainwin = mainwin
 		self.window = gtk.Dialog("Advanced Search",
 					 None,
-					 gtk.DIALOG_DESTROY_WITH_PARENT,
+					 gtk.DialogFlags.DESTROY_WITH_PARENT,
 					 (gtk.STOCK_FIND, 1, gtk.STOCK_CLOSE, 0))
 		self.window.set_default_response(1)
-		self.window.set_icon(self.window.render_icon(gtk.STOCK_FIND,
-							     gtk.ICON_SIZE_BUTTON))
+		#self.window.set_icon(self.window.render_icon(gtk.STOCK_FIND,
+		#					     gtk.ICON_SIZE_BUTTON))
 		self.window.connect("response", self.response) # Ok/Cancel
 		#set up a table: http://www.pygtk.org/pygtk2tutorial/sec-PackingUsingTables.html
 		vbox = self.window.get_content_area()
@@ -80,7 +80,7 @@ class FindBox:
 
 		self.notebook.append_page(itable, gtk.Label("iTunesU"))
 		self.notebook.append_page(podtable, gtk.Label("Podcasts"))
-		vbox.pack_start(self.notebook)
+		vbox.pack_start(self.notebook, True, True, 0)
 		#vbox.pack_start(table)
 		self.window.connect("delete_event", self.delete_event)
 

@@ -23,7 +23,7 @@ This is also called by configbox.
 import os
 import logging
 
-import gtk
+from gi.repository import Gtk as gtk
 
 from constants import TV_PATH
 

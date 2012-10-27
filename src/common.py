@@ -22,8 +22,8 @@ import os.path
 import re
 import urllib2
 
-import glib
-import gtk
+from gi.repository import GLib as glib
+from gi.repository import Gtk as gtk
 
 SUFFIXES = ['', 'K', 'M', 'G', 'T', 'P']
 
