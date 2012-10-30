@@ -55,8 +55,9 @@ class TestParser(unittest.TestCase):
 	def testParseAgriculture(self):
 		url = "http://itunes.apple.com/WebObjects/DZR.woa/wa/viewPodcast?cc=us&id=387961518"
 		text = self.o.open(url).read()
+		file('Food and Sustainable Agriculture.html','w').write(text)
 		parsed_html = Parser(url, "text/HTML", text)
-
+		
 		self.assertEqual(parsed_html.Redirect, '')
 		self.assertEqual(parsed_html.Title, 'Food and Sustainable Agriculture')
 		self.assertEqual(len(parsed_html.mediaItems), 7)
@@ -70,6 +71,8 @@ class TestParser(unittest.TestCase):
 		url = "https://deimos.apple.com/WebObjects/Core.woa/BrowsePrivately/georgefox.edu.01651902695"
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text)
+		file('Top Downloads.xml','w').write(text)
+		file('Top Downloads.html','w').write(parsed_html.HTML)
 
 		# FIXME: Maybe it could be smarter about finding the title...
 		self.assertEqual(parsed_html.Redirect, '')
@@ -81,6 +84,8 @@ class TestParser(unittest.TestCase):
 		url = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewGrouping?id=27753"
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text)
+		file('iTunesU.xml','w').write(text)
+		file('iTunesU.html','w').write(parsed_html.HTML)
 
 		# FIXME: Maybe it could be smarter about finding the title...
 		self.assertEqual(parsed_html.Redirect, '')
@@ -92,6 +97,8 @@ class TestParser(unittest.TestCase):
 		url = "http://deimos.apple.com/WebObjects/Core.woa/Browse/fhsu.edu"
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text)
+		file('FHSU.xml','w').write(text)
+		file('FHSU.html','w').write(parsed_html.HTML)
 
 		# FIXME: Maybe it could be smarter about finding the title...
 		self.assertEqual(parsed_html.Redirect, '')
@@ -104,6 +111,8 @@ class TestParser(unittest.TestCase):
 		url = "http://deimos.apple.com/WebObjects/Core.woa/Browse/fhsu.edu.1152205441"
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text)
+		file('FHSUPres.xml','w').write(text)
+		file('FHSUPres.html','w').write(parsed_html.HTML)
 
 		# FIXME: Maybe it could be smarter about finding the title...
 		self.assertEqual(parsed_html.Redirect, '')
@@ -121,6 +130,8 @@ class TestParser(unittest.TestCase):
 		url = "http://deimos3.apple.com/WebObjects/Core.woa/Browse/siuc.edu?ignore.mscache=9669968"
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text)
+		file('SIUC.xml','w').write(text)
+		file('SIUC.html','w').write(parsed_html.HTML)
 
 		# FIXME: Maybe it could be smarter about finding the title...
 		self.assertEqual(parsed_html.Redirect, '')
@@ -134,11 +145,12 @@ class TestParser(unittest.TestCase):
 		# FIXME: The following should be made into proper tests
 		self.checkItems(parsed_html.mediaItems)
 
-
 	def testParseSJSU(self):
 		url = "http://deimos3.apple.com/WebObjects/Core.woa/Browse/sjsu.edu?ignore.mscache=3176353"
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text)
+		file('SJSU.xml','w').write(text)
+		file('SJSU.html','w').write(parsed_html.HTML)
 
 		# FIXME: Maybe it could be smarter about finding the title...
 		self.assertEqual(parsed_html.Redirect, '')
@@ -146,11 +158,12 @@ class TestParser(unittest.TestCase):
 		self.assertEqual(len(parsed_html.mediaItems), 0)
 		self.checkItems(parsed_html.mediaItems)
 
-
 	def testParseWithTabs(self):
 		url = "https://deimos.apple.com/WebObjects/Core.woa/BrowsePrivately/georgefox.edu.1285568794"
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text)
+		file('Tabs.xml','w').write(text)
+		file('Tabs.html','w').write(parsed_html.HTML)
 
 		self.assertEqual(parsed_html.Redirect, '')
 		self.assertEqual(parsed_html.Title,
@@ -158,6 +171,7 @@ class TestParser(unittest.TestCase):
 		# FIXME: Are all tabs shown?
 		self.assertEqual(parsed_html.tabMatches,
 				 [', Selected. Chapel 2012 - 2013',
+				  '. Shalom 2012-2013',
 				  '. Chapel 2011-2012',
 				  '. Shalom 2011-2012',
 				  '. Chapel 2010-2011',
@@ -181,12 +195,15 @@ class TestParser(unittest.TestCase):
 		url = "http://www2.ohlone.edu/cgi-bin/itunespub/itunes_public.pl"
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text)
+		file('ohlone.html','w').write(parsed_html.HTML)
 		assert parsed_html.Redirect.startswith('itmss://deimos.apple.com/WebObjects/Core.woa/BrowsePrivately/ohlone.edu')
 
 	def test_XML_feed(self):
 		url = "https://deimos.apple.com/WebObjects/Core.woa/Feed/itunes.stanford.edu-dz.11153667080.011153667082"
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/xml", text)
+		
+		file('iDevelopment.html','w').write(parsed_html.HTML)
 
 		self.assertEqual(parsed_html.Redirect, '')
 		self.assertEqual(parsed_html.Title, 'iPad and iPhone Application Development (SD)')
@@ -197,6 +214,7 @@ class TestParser(unittest.TestCase):
 		url = "http://itunes.apple.com/us/course/multicore-programming-primer/id495066021"
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/html", text)
+		file('Multicore.html','w').write(text)
 
 		self.assertEqual(parsed_html.Redirect, '')
 		self.assertEqual(parsed_html.Title, 'Multicore Programming Primer')
@@ -208,8 +226,11 @@ class TestParser(unittest.TestCase):
 		url = "http://deimos3.apple.com/WebObjects/Core.woa/Browse/georgefox.edu.8155705810.08155705816.8223066656?i=1688428005"
 		text = self.o.open(url).read()
 		parsed_html = Parser(url, "text/HTML", text).HTML
-		file("parsed_test.html", "w").write(parsed_html)
-		
+		file("gfu.html", "w").write(text)
+		file("gfu.html", "w").write(parsed_html)
+		self.assertTrue(parsed_html.find("<html") != -1)
+		self.assertTrue(parsed_html.find("<a href=") != -1)
+		self.assertTrue(parsed_html.find("<img src=") != -1)
 
 
 if __name__ == "__main__":
