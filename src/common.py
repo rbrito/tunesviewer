@@ -116,9 +116,9 @@ def markup(text, isheading):
 	Gives markup for name - for liststore.
 	"""
 	if isheading:
-		return "<u><i>%s</i></u>" % (glib.markup_escape_text(text))
+		return "<u><i>%s</i></u>" % (glib.markup_escape_text(text.encode('UTF-8')))
 	else:
-		return glib.markup_escape_text(text)
+		return glib.markup_escape_text(text.encode('UTF-8'))
 
 
 def HTmarkup(text, isheading):
