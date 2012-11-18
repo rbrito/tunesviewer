@@ -772,15 +772,15 @@ class TunesViewer:
 		"""Checks for update to the program."""
 		openDefault("http://tunesviewer.sourceforge.net/checkversion.php?version="+TV_VERSION)
 
-	def treesel(self, selection, model):
+	def treesel(self, selection, model,treepath,thing,thing2):
 		"""Called when selection changes, changes the enabled toolbar buttons."""
 		self.tbInfo.set_sensitive(True)
-		ind = selection[0]
-		gotoable = (self.liststore[ind][8] != "")
-		playable = (self.liststore[ind][9] != "")
-		downloadable = (self.liststore[ind][9] != "" and
-				(self.liststore[ind][10] == "" or
-				 self.liststore[ind][10] == "0"))
+		ind = treepath
+		gotoable = (model[ind][8] != "")
+		playable = (model[ind][9] != "")
+		downloadable = (model[ind][9] != "" and
+				(model[ind][10] == "" or
+				 model[ind][10] == "0"))
 		self.tbGoto.set_sensitive(gotoable) # only if there is goto url
 		self.tbPlay.set_sensitive(playable) # only if there is media url
 		self.tbDownload.set_sensitive(downloadable)
@@ -881,7 +881,7 @@ class TunesViewer:
 				treeview.grab_focus()
 				treeview.set_cursor(path, col, 0)
 				# Right click menu
-				self.rcmenu.popup(None, None, None,
+				self.rcmenu.popup(None, None, None,None,
 						  event.button, moment)
 			return True
 
@@ -1622,7 +1622,7 @@ class VWin:
 		self.window.set_title(title)
 
 		self.sw = gtk.ScrolledWindow()
-		self.sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.sw.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		self.viewer = gtk.TextView()
 		self.viewer.get_buffer().set_text(source)
 		self.viewer.set_wrap_mode(gtk.WRAP_WORD)
