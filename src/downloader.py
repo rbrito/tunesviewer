@@ -110,6 +110,7 @@ class Downloader:
 		if self._copyfile != None:
 			self._mediasel.set_current_folder(self._copyfile)
 		self._cancelbutton.connect_after("clicked", self.cancel)
+		self._progress.set_show_text(True)
 		self._progress.show()
 		self._element.show()
 
@@ -208,13 +209,20 @@ class Downloader:
 		"""
 		self.t = Thread(target=self.downloadThread, args=())
 		self.t.start()
+		
+	def setProgress(self, fraction):
+		self._progress.set_fraction(fraction)
+		if (fraction==1.0):
+			self._cancelbutton.set_sensitive(False)
+	def setProgressText(self, text):
+		self._progress.set_text(text)
 
 	def downloadThread(self):
 		"""
 		This does the actual downloading, it should run as a thread.
 		"""
 		self.starttime = time.time()
-		self._progress.set_text("Starting Download...")
+		gobject.idle_add(self.setProgressText,"Starting Download...")
 		self.count = 0 # Counts downloaded size.
 		self.downloading = True
 		while self.downloading and not self.success:
@@ -229,9 +237,8 @@ class Downloader:
 				logging.debug("%d of %d downloaded." % (self.count, self.filesize))
 
 				if self.count >= self.filesize:
-					self._progress.set_text("Already downloaded.")
-					self._progress.set_fraction(1.0)
-					self._cancelbutton.set_sensitive(False)
+					gobject.idle_add(self.setProgressText,("Already downloaded."))
+					gobject.idle_add(self.setProgress, 1.0)
 					self.downloading = False
 					self.success = True
 					self._netfile.close()
@@ -284,15 +291,13 @@ class Downloader:
 			pass
 		if self.downloading: #Not cancelled.
 			self.success = True #completed.
-			self._progress.set_fraction(1.0)
-			self._progress.set_text(self.readsize + " downloaded.")
+			gobject.idle_add(self.setProgress, 1.0);
+			gobject.idle_add(self.setProgressText,(self.readsize + " downloaded."))
 			if self._combo.get_active() == 1:
 				openDefault(self.localfile)
 			elif self._combo.get_active() == 3:
 				# Copy to Device
 				self.copy2device()
-			logging.debug("Pre dlnotify")
-			self._cancelbutton.set_sensitive(False)
 		#else:
 			#This set_text isn't needed, it caused error when it was cancelled, and self._progress destroyed.
 			#Shouldn't be accessing gui from a thread anyway.
