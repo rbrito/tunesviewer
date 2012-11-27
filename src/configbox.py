@@ -127,6 +127,7 @@ class ConfigBox:
 		progs.append(["rhythmbox %i"])
 		progs.append(["banshee %i"])
 		self.podcastprogbox = gtk.ComboBox(model=progs)
+		self.podcastprogbox.set_entry_text_column(1)
 		
 		dtab.pack_start(self.podcastprogbox, True, False, 0)
 		# End download tab
@@ -229,7 +230,7 @@ class ConfigBox:
 		logging.debug("Saving Prefs")
 		#First set the variables to the new values:
 		text = self.viewer.get_buffer().get_slice(self.viewer.get_buffer().get_start_iter(),
-							  self.viewer.get_buffer().get_end_iter())
+							  self.viewer.get_buffer().get_end_iter(),True)
 		self.openers = self.getopeners(text)
 		self.downloadfile = self.filenamesel.get_text()
 		self.downloadsafe = self.downloadsafeCheck.get_active()
@@ -245,7 +246,7 @@ class ConfigBox:
 			self.downloadfolder = DOWNLOADS_DIR
 		self.defaultcommand = self.combo.get_active()
 		self.notifyseconds = int(self.notifyEntry.get_text())
-		self.podcastprog = self.podcastprogbox.child.get_text()
+		self.podcastprog = self.podcastprogbox.get_child().get_text()
 		try:
 			self.iconsizeN = int(self.iconsize.get_text())
 			self.imagesizeN = int(self.imagesize.get_text())

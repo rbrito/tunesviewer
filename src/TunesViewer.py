@@ -270,7 +270,7 @@ class TunesViewer:
 		filem.set_submenu(filemenu)
 
 		## Advanced search
-		aSearch = gtk.ImageMenuItem(gtk.STOCK_FIND)
+		aSearch = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_FIND,None)
 		aSearch.set_label("Advanced _Search...")
 		aSearch.connect("activate", self.advancedSearch)
 		key, mod = gtk.accelerator_parse("<Ctrl>K")
@@ -279,7 +279,7 @@ class TunesViewer:
 		filemenu.append(aSearch)
 
 		## Search on current page
-		pSearch = gtk.ImageMenuItem(gtk.STOCK_FIND)
+		pSearch = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_FIND,None)
 		pSearch.set_label("Find on Current Page...")
 		pSearch.connect("activate", self.searchCurrent)
 		key, mod = gtk.accelerator_parse("<Ctrl>F")
@@ -290,7 +290,7 @@ class TunesViewer:
 		filemenu.append(gtk.SeparatorMenuItem())
 
 		## Exit application
-		exit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
+		exit = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_QUIT,None)
 		exit.set_label("E_xit")
 		exit.connect("activate", self.exitclicked)
 		key, mod = gtk.accelerator_parse("<Ctrl>Q")
@@ -304,7 +304,7 @@ class TunesViewer:
 		editm.set_submenu(editmenu)
 
 		## Copy podcast URL
-		self.copym = gtk.ImageMenuItem(gtk.STOCK_COPY)
+		self.copym = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_COPY,None)
 		self.copym.set_label("_Copy Normal Podcast Url")
 		self.copym.connect("activate", self.copyrss)
 		key, mod = gtk.accelerator_parse("<Ctrl><Shift>C")
@@ -313,7 +313,7 @@ class TunesViewer:
 		editmenu.append(self.copym)
 
 		## Paste URL
-		pastem = gtk.ImageMenuItem(gtk.STOCK_PASTE)
+		pastem = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_PASTE,None)
 		pastem.set_label("Paste and _Goto Url")
 		pastem.connect("activate", self.pastego)
 		key, mod = gtk.accelerator_parse("<Ctrl><Shift>V")
@@ -324,7 +324,7 @@ class TunesViewer:
 		editmenu.append(gtk.SeparatorMenuItem())
 
 		## Preferences
-		prefs = gtk.ImageMenuItem(gtk.STOCK_PREFERENCES)
+		prefs = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_PREFERENCES,None)
 		prefs.connect("activate", self.openprefs)
 		editmenu.append(prefs)
 
@@ -334,7 +334,7 @@ class TunesViewer:
 		viewm.set_submenu(viewmenu)
 
 		## Request content in HTML mode
-		self.htmlmode = gtk.CheckMenuItem("Request _HTML Mode")
+		self.htmlmode = gtk.CheckMenuItem.new_with_mnemonic("Request _HTML Mode")
 		self.htmlmode.set_active(True)
 		viewmenu.append(self.htmlmode)
 
@@ -344,7 +344,7 @@ class TunesViewer:
 		viewmenu.append(gtk.SeparatorMenuItem())
 
 		## Show downloads
-		viewdownloads = gtk.ImageMenuItem(gtk.STOCK_GO_DOWN)
+		viewdownloads = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_GO_DOWN,None)
 		viewdownloads.set_label("Show _Downloads")
 		key, mod = gtk.accelerator_parse("<Ctrl>j")
 		viewdownloads.add_accelerator("activate", agr, key, mod,
@@ -360,7 +360,7 @@ class TunesViewer:
 		viewmenu.append(gtk.SeparatorMenuItem())
 
 		## Zoom in
-		ziItem = gtk.ImageMenuItem(gtk.STOCK_ZOOM_IN)
+		ziItem = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_ZOOM_IN,None)
 		key, mod = gtk.accelerator_parse("<Ctrl>plus")
 		ziItem.add_accelerator("activate", agr, key, mod,
 				       gtk.AccelFlags.VISIBLE)
@@ -368,7 +368,7 @@ class TunesViewer:
 		viewmenu.append(ziItem)
 
 		## Zoom out
-		zoItem = gtk.ImageMenuItem(gtk.STOCK_ZOOM_OUT)
+		zoItem = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_ZOOM_OUT,None)
 		key, mod = gtk.accelerator_parse("<Ctrl>minus")
 		zoItem.add_accelerator("activate", agr, key, mod,
 				       gtk.AccelFlags.VISIBLE)
@@ -376,7 +376,7 @@ class TunesViewer:
 		viewmenu.append(zoItem)
 
 		## Reset zoom
-		znItem = gtk.ImageMenuItem(gtk.STOCK_ZOOM_100)
+		znItem = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_ZOOM_100,None)
 		key, mod = gtk.accelerator_parse("<Ctrl>0")
 		znItem.add_accelerator("activate", agr, key, mod,
 				       gtk.AccelFlags.VISIBLE)
@@ -386,7 +386,7 @@ class TunesViewer:
 		viewmenu.append(gtk.SeparatorMenuItem())
 
 		## View page source
-		viewsource = gtk.MenuItem("Page _Source")
+		viewsource = gtk.MenuItem.new_with_mnemonic("Page _Source")
 		key, mod = gtk.accelerator_parse("<Ctrl>U")
 		viewsource.add_accelerator("activate", agr, key, mod,
 					   gtk.AccelFlags.VISIBLE)
@@ -394,12 +394,12 @@ class TunesViewer:
 		viewmenu.append(viewsource)
 
 		## View cookies
-		viewcookie = gtk.MenuItem("_Cookies")
+		viewcookie = gtk.MenuItem.new_with_mnemonic("_Cookies")
 		viewcookie.connect("activate", self.viewCookie)
 		viewmenu.append(viewcookie)
 
 		## View information of selected item
-		viewprop = gtk.ImageMenuItem(gtk.STOCK_INFO)
+		viewprop = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_INFO,None)
 		viewprop.set_label("Selection _Info")
 		key, mod = gtk.accelerator_parse("<Ctrl>I")
 		viewprop.add_accelerator("activate", agr, key, mod,
@@ -422,20 +422,20 @@ class TunesViewer:
 
 		## iTunes U subdirectory
 		self.itunesuDir = gtk.Menu()
-		itunesu = gtk.MenuItem("iTunes_U")
+		itunesu = gtk.MenuItem.new_with_mnemonic("iTunes_U")
 		itunesu.set_submenu(self.itunesuDir)
 		#self.itunesuDir.append(gtk.MenuItem("directory here"))
 		gomenu.append(itunesu)
 
 		## Podcast subdirectory
 		self.podcastDir = gtk.Menu()
-		podcasts = gtk.MenuItem("_Podcasts")
+		podcasts = gtk.MenuItem.new_with_mnemonic("_Podcasts")
 		podcasts.set_submenu(self.podcastDir)
 		#self.podcastDir.append(gtk.MenuItem("directory here"))
 		gomenu.append(podcasts)
 
 		## Go back
-		back = gtk.ImageMenuItem(gtk.STOCK_GO_BACK)
+		back = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_GO_BACK,None)
 		key, mod = gtk.accelerator_parse("<Alt>Left")
 		back.add_accelerator("activate", agr, key, mod,
 				     gtk.AccelFlags.VISIBLE)
@@ -443,7 +443,7 @@ class TunesViewer:
 		gomenu.append(back)
 
 		## Go forward
-		forward = gtk.ImageMenuItem(gtk.STOCK_GO_FORWARD)
+		forward = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_GO_FORWARD,None)
 		key, mod = gtk.accelerator_parse("<Alt>Right")
 		forward.add_accelerator("activate", agr, key, mod,
 					gtk.AccelFlags.VISIBLE)
@@ -451,7 +451,7 @@ class TunesViewer:
 		gomenu.append(forward)
 
 		## Refresh page
-		refresh = gtk.ImageMenuItem(gtk.STOCK_REFRESH)
+		refresh = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_REFRESH,None)
 		key, mod = gtk.accelerator_parse("F5")
 		refresh.add_accelerator("activate", agr, key, mod,
 					gtk.AccelFlags.VISIBLE)
@@ -459,7 +459,7 @@ class TunesViewer:
 		gomenu.append(refresh)
 
 		## Stop loading
-		stop = gtk.ImageMenuItem(gtk.STOCK_STOP)
+		stop = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_STOP,None)
 		key, mod = gtk.accelerator_parse("Escape")
 		stop.add_accelerator("activate", agr, key, mod,
 				     gtk.AccelFlags.VISIBLE)
@@ -467,7 +467,7 @@ class TunesViewer:
 		gomenu.append(stop)
 
 		## Go to the initial page
-		homeb = gtk.ImageMenuItem(gtk.STOCK_HOME)
+		homeb = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_HOME,None)
 		homeb.connect("activate", self.goHome)
 		gomenu.append(homeb)
 
@@ -477,7 +477,7 @@ class TunesViewer:
 		itemm.set_submenu(itemmenu)
 
 		## Go to link
-		follow = gtk.ImageMenuItem(gtk.STOCK_JUMP_TO)
+		follow = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_JUMP_TO,None)
 		follow.connect("activate", self.followlink)
 		follow.set_label("_Goto Link")
 		key, mod = gtk.accelerator_parse("<Ctrl>G")
@@ -486,7 +486,7 @@ class TunesViewer:
 		itemmenu.append(follow)
 
 		## Play/View file
-		playview = gtk.ImageMenuItem(gtk.STOCK_MEDIA_PLAY)
+		playview = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_MEDIA_PLAY,None)
 		playview.set_label("_Play/View File")
 		playview.connect("activate", self.playview)
 		key, mod = gtk.accelerator_parse("<Ctrl>P")
@@ -495,7 +495,7 @@ class TunesViewer:
 		itemmenu.append(playview)
 
 		## Download file
-		download = gtk.ImageMenuItem(gtk.STOCK_SAVE)
+		download = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_SAVE,None)
 		download.set_label("_Download File")
 		download.connect("activate", self.download)
 		key, mod = gtk.accelerator_parse("<Ctrl>D")
@@ -504,34 +504,34 @@ class TunesViewer:
 		itemmenu.append(download)
 
 		## Add Page to podcast manager
-		self.addpodmenu = gtk.ImageMenuItem(gtk.STOCK_ADD)
+		self.addpodmenu = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_ADD,None)
 		self.addpodmenu.set_label("_Add Page to Podcast Manager")
 		self.addpodmenu.connect("activate", self.addPod)
 		itemmenu.append(self.addpodmenu)
 
 		### Contextual (right-click) menu
 		self.rcmenu = gtk.Menu()
-		self.rcgoto = gtk.ImageMenuItem(gtk.STOCK_JUMP_TO)
+		self.rcgoto = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_JUMP_TO,None)
 		self.rcgoto.connect("activate", self.followlink)
 		self.rcgoto.set_label("_Goto")
 		self.rcgoto.show()
 
-		self.rccopy = gtk.ImageMenuItem(gtk.STOCK_COPY)
+		self.rccopy = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_COPY,None)
 		self.rccopy.connect("activate", self.copyRowLink)
 		self.rccopy.set_label("_Copy Link")
 		self.rccopy.show()
 
-		self.rcplay = gtk.ImageMenuItem(gtk.STOCK_MEDIA_PLAY)
+		self.rcplay = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_MEDIA_PLAY,None)
 		self.rcplay.connect("activate", self.playview)
 		self.rcplay.set_label("_Play/View")
 		self.rcplay.show()
 
-		self.rcdownload = gtk.ImageMenuItem(gtk.STOCK_SAVE)
+		self.rcdownload = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_SAVE,None)
 		self.rcdownload.connect("activate", self.download)
 		self.rcdownload.set_label("_Download")
 		self.rcdownload.show()
 
-		rcinfo = gtk.ImageMenuItem(gtk.STOCK_INFO)
+		rcinfo = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_INFO,None)
 		rcinfo.connect("activate", self.viewprop)
 		rcinfo.set_label("Item _Info")
 		rcinfo.show()
@@ -549,12 +549,12 @@ class TunesViewer:
 		helpm.set_submenu(helpmenu)
 
 		## Help
-		helpitem = gtk.ImageMenuItem(gtk.STOCK_HELP)
+		helpitem = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_HELP,None)
 		helpitem.connect("activate", self.showHelp)
 		helpmenu.append(helpitem)
 
 		## Check for updates
-		helpupdate = gtk.MenuItem("Check for _Update...")
+		helpupdate = gtk.MenuItem.new_with_mnemonic("Check for _Update...")
 		helpupdate.connect("activate", self.progUpdate)
 		helpmenu.append(helpupdate)
 
@@ -827,9 +827,9 @@ class TunesViewer:
 			widget.currentFound += 1
 			if widget.currentFound >= len(self.liststore):
 				msg = gtk.MessageDialog(widget,
-							gtk.DIALOG_MODAL,
-							gtk.MESSAGE_INFO,
-							gtk.BUTTONS_OK,
+						gtk.DialogFlags.MODAL,
+						gtk.MessageType.INFO,
+						gtk.ButtonsType.OK,
 							"End of page.")
 				msg.run()
 				msg.destroy()
@@ -904,9 +904,9 @@ class TunesViewer:
 
 	def showAbout(self, obj):
 		msg = gtk.MessageDialog(self.window,
-					gtk.DIALOG_MODAL,
-					gtk.MESSAGE_INFO,
-					gtk.BUTTONS_CLOSE,
+					gtk.DialogFlags.MODAL,
+					gtk.MessageType.INFO,
+					gtk.ButtonsType.CLOSE,
 					"TunesViewer - Easy iTunesU access\n"
 					"Version %s\n\n"
 					"(C) 2009 - 2012 Luke Bryan\n"
@@ -959,9 +959,9 @@ class TunesViewer:
 			subprocess.Popen(cmds)
 		except OSError as e:
 			msg = gtk.MessageDialog(self.window,
-						gtk.DIALOG_MODAL,
-						gtk.MESSAGE_WARNING,
-						gtk.BUTTONS_CLOSE,
+						gtk.DialogFlags.MODAL,
+						gtk.MessageType.WARNING,
+						gtk.ButtonsType.CLOSE,
 						"Error running: %s\n\n"
 						"Is the program installed and working?\n%s" % (" ".join(cmds), e))
 			msg.run()
@@ -1109,18 +1109,18 @@ class TunesViewer:
 			start(self.config.openers[kind], url)
 		elif url == "":
 			msg = gtk.MessageDialog(self.window,
-						gtk.DIALOG_MODAL,
-						gtk.MESSAGE_WARNING,
-						gtk.BUTTONS_CLOSE,
+						gtk.DialogFlags.MODAL,
+						gtk.MessageType.WARNING,
+						gtk.ButtonsType.CLOSE,
 						"This item is not a file.")
 			msg.run()
 			msg.destroy()
 			return
 		else:
 			msg = gtk.MessageDialog(self.window,
-						gtk.DIALOG_MODAL,
-						gtk.MESSAGE_WARNING,
-						gtk.BUTTONS_CLOSE,
+						gtk.DialogFlags.MODAL,
+						gtk.MessageType.WARNING,
+						gtk.ButtonsType.CLOSE,
 						"You don't have any program set to open " +
 						kind +
 						"\nfiles directly from the web. "
@@ -1169,9 +1169,9 @@ class TunesViewer:
 		url = properties[9]
 		if url == "":
 			msg = gtk.MessageDialog(self.window,
-						gtk.DIALOG_MODAL,
-						gtk.MESSAGE_WARNING,
-						gtk.BUTTONS_CLOSE,
+						gtk.DialogFlags.MODAL,
+						gtk.MessageType.WARNING,
+						gtk.ButtonsType.CLOSE,
 						"This item is not a file.")
 			msg.run()
 			msg.destroy()
@@ -1248,14 +1248,14 @@ class TunesViewer:
 		self.config.save_settings()
 		if self.downloadbox.downloadrunning:
 			msg = gtk.MessageDialog(self.window,
-						gtk.DIALOG_MODAL,
-						gtk.MESSAGE_QUESTION,
-						gtk.BUTTONS_YES_NO,
+						gtk.DialogFlags.MODAL,
+						gtk.MessageType.QUESTION,
+						gtk.ButtonsType.YES_NO,
 						"Are you sure you want to exit? "
 						"This will cancel all active downloads.")
 			answer = msg.run()
 			msg.destroy()
-			if answer == gtk.RESPONSE_YES:
+			if answer == gtk.ResponseType.YES:
 				# Clear crash recovery
 				try:
 					os.remove(pending_dl_file)
@@ -1440,9 +1440,9 @@ class TunesViewer:
 			pass #just exited, don't crash.
 		if self.downloadError != "": #Warn if there is an error:
 			msg = gtk.MessageDialog(self.window,
-						gtk.DIALOG_MODAL,
-						gtk.MESSAGE_ERROR,
-						gtk.BUTTONS_CLOSE,
+						gtk.DialogFlags.MODAL,
+						gtk.MessageType.ERROR,
+						gtk.ButtonsType.CLOSE,
 						str(self.downloadError))
 			msg.run()
 			msg.destroy()
