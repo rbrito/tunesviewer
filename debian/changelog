@@ -1,3 +1,9 @@
+tunesviewer (1.5-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Rogério Brito <rbrito@ime.usp.br>  Tue, 27 Nov 2012 03:35:09 -0200
+
 tunesviewer (1.4.99.3-1~1.gbpd5c606) UNRELEASED; urgency=medium
 
   ** SNAPSHOT build @d5c6065df5de1fecdc942f0203c1c10425d12367 **
