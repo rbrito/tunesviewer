@@ -74,7 +74,6 @@ class TunesViewer:
 
 	# Initializes the main window
 	def __init__(self, dname=None):
-
 		self.downloadbox = DownloadBox(self) # Only one downloadbox is constructed
 		self.findbox = FindBox(self)
 		self.findInPage = FindInPageBox()
@@ -1552,7 +1551,7 @@ class TunesViewer:
 		"""
 		self.icon_audio = None
 		self.icon_video = None
-		self.icon_book = None
+		self.icon_pdf = None
 		self.icon_zip = None
 		self.icon_other = None
 		self.icon_link = None
