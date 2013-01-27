@@ -175,9 +175,9 @@ class Downloader:
 				subprocess.Popen(["soundconverter", self.localfile])
 			except OSError:
 				msg = gtk.MessageDialog(None,
-							gtk.DIALOG_MODAL,
-							gtk.MESSAGE_ERROR,
-							gtk.BUTTONS_CLOSE,
+							gtk.DialogFlags.MODAL,
+							gtk.MessageType.ERROR,
+							gtk.ButtonsType.CLOSE,
 							"Soundconverter not found, try installing it with your package manager.")
 				msg.run()
 				msg.destroy()
@@ -311,13 +311,13 @@ class Downloader:
 	def deletefile(self):
 		filesize = os.path.getsize(self.localfile)
 		msg = gtk.MessageDialog(None,
-					gtk.DIALOG_MODAL,
-					gtk.MESSAGE_QUESTION,
-					gtk.BUTTONS_YES_NO,
+					gtk.DialogFlags.MODAL,
+					gtk.MessageType.QUESTION,
+					gtk.ButtonsType.YES_NO,
 					"Are you sure you want to delete this %s file?\n%s" % (desc(filesize), self.localfile))
 		answer = msg.run()
 		msg.destroy()
-		if answer == gtk.RESPONSE_YES:
+		if answer == gtk.ResponseType.YES:
 			logging.debug("deleting...")
 			self.cancel(None)
 		else:

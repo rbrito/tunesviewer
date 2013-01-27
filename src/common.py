@@ -159,10 +159,11 @@ def start(program, arg):
 		logging.debug("Execution of %s completed." % program)
 	except Exception as e:
 		logging.info(str(e))
-		msg = gtk.MessageDialog(None, gtk.DIALOG_MODAL,
-					gtk.MESSAGE_ERROR,
-					gtk.BUTTONS_CLOSE,
-					"Error starting %s\n%s" % (program, e))
+		msg = gtk.MessageDialog(None, 
+			gtk.DialogFlags.MODAL,
+			gtk.MessageType.ERROR,
+			gtk.ButtonsType.CLOSE,
+			"Error starting %s\n%s" % (program, e))
 		msg.run()
 		msg.destroy()
 
