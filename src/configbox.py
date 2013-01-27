@@ -246,7 +246,8 @@ class ConfigBox:
 			self.downloadfolder = DOWNLOADS_DIR
 		self.defaultcommand = self.combo.get_active()
 		self.notifyseconds = int(self.notifyEntry.get_text())
-		self.podcastprog = self.podcastprogbox.get_child().get_text()
+		#TODO: fix:
+		#self.podcastprog = self.podcastprogbox.get_child().get_text()
 		try:
 			self.iconsizeN = int(self.iconsize.get_text())
 			self.imagesizeN = int(self.imagesize.get_text())
@@ -401,9 +402,9 @@ class ConfigBox:
 		err += setup.setdefaultprotocol("itpc", self.setOtherProg.get_text())
 		if err:
 			msg = gtk.MessageDialog(self.window,
-						gtk.DIALOG_MODAL,
-						gtk.MESSAGE_ERROR,
-						gtk.BUTTONS_CLOSE,
-						"Unable to set defaults.")
+				gtk.DialogFlags.MODAL,
+				gtk.MessageType.ERROR,
+				gtk.ButtonsType.CLOSE,
+				"Unable to set defaults.")
 			msg.run()
 			msg.destroy()

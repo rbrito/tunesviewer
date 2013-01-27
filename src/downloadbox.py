@@ -107,17 +107,17 @@ class DownloadBox:
 		    self.lastCompleteDownloads != self.downloaded):
 			self.lastCompleteDownloads = self.downloaded
 			try:
-				import pynotify
+				from gi.repository import Notify
 				if self.total == 1:
 					s = ""
 				else:
 					s = "s"
-				pynotify.init("TunesViewer")
-				n = pynotify.Notification("Download%s Finished" % s,
+				Notify.init("TunesViewer")
+				n = Notify.Notification.new("Download%s Finished" % s,
 					"%s/%s download%s completed successfully." % (self.downloaded, self.total, s), gtk.STOCK_GO_DOWN)
 				n.set_timeout(1000 * self.Wopener.config.notifyseconds)
 				n.show()
-			except (ImportError, gio.Error, glib.GError) as e:
+			except (ImportError, glib.GError) as e:
 				logging.warn("Notification failed: " + str(e))
 
 	def newDownload(self, icon, url, localfile, opener):
