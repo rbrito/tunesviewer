@@ -13,6 +13,7 @@ Homepage: http://tunesviewer.sf.net/
 Package: tunesviewer
 Architecture: all
 Depends:
+ gir1.2-webkit-3.0,
  python (>= 2.6),
  python-gtk2 (>= 2.16),
  python-lxml (>= 2.0),
