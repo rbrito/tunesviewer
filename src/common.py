@@ -22,8 +22,8 @@ import os.path
 import re
 import urllib2
 
-import glib
-import gtk
+from gi.repository import GLib as glib
+from gi.repository import Gtk as gtk
 
 SUFFIXES = ['', 'K', 'M', 'G', 'T', 'P']
 
@@ -116,9 +116,9 @@ def markup(text, isheading):
 	Gives markup for name - for liststore.
 	"""
 	if isheading:
-		return "<u><i>%s</i></u>" % (glib.markup_escape_text(text))
+		return "<u><i>%s</i></u>" % (glib.markup_escape_text(text.encode('UTF-8')))
 	else:
-		return glib.markup_escape_text(text)
+		return glib.markup_escape_text(text.encode('UTF-8'))
 
 
 def HTmarkup(text, isheading):
@@ -159,10 +159,11 @@ def start(program, arg):
 		logging.debug("Execution of %s completed." % program)
 	except Exception as e:
 		logging.info(str(e))
-		msg = gtk.MessageDialog(None, gtk.DIALOG_MODAL,
-					gtk.MESSAGE_ERROR,
-					gtk.BUTTONS_CLOSE,
-					"Error starting %s\n%s" % (program, e))
+		msg = gtk.MessageDialog(None, 
+			gtk.DialogFlags.MODAL,
+			gtk.MessageType.ERROR,
+			gtk.ButtonsType.CLOSE,
+			"Error starting %s\n%s" % (program, e))
 		msg.run()
 		msg.destroy()
 

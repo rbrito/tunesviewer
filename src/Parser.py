@@ -649,8 +649,8 @@ class Parser:
 					datemodified,
 					gotourl,
 					previewurl,
-					price,
-					itemid])
+					str(price),
+					str(itemid)])
 
 	def textContent(self, element):
 		"""Gets all text content of the node."""

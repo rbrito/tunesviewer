@@ -21,7 +21,8 @@
 import logging
 from threading import Thread
 
-import gtk
+from gi.repository import Gtk as gtk
+from gi.repository import GObject
 
 from common import *
 
@@ -37,11 +38,11 @@ class ItemDetails:
 			self.window.set_title("Item Information: %s" % selection[1])
 			self.window.set_size_request(300, 300)
 			self.sw = gtk.ScrolledWindow()
-			self.sw.set_policy(gtk.POLICY_AUTOMATIC,gtk.POLICY_AUTOMATIC)
+			self.sw.set_policy(gtk.PolicyType.AUTOMATIC,gtk.PolicyType.AUTOMATIC)
 			self.viewer = gtk.TextView()
-			self.viewer.set_wrap_mode(gtk.WRAP_WORD)
+			self.viewer.set_wrap_mode(gtk.WrapMode.WORD)
 			self.viewer.set_editable(False)
-			self.window.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE)
+			self.window.add_button(gtk.STOCK_CLOSE, gtk.ResponseType.CLOSE)
 			self.window.connect("response", self.leave)
 			mainhbox = gtk.HBox()
 			self.sw.add(self.viewer)
@@ -78,10 +79,10 @@ class ItemDetails:
 				self.text += "Price:\n" + selection[10] + "\n\n"
 			if selection[11]:
 				self.text += "id:" + selection[11]
-			gtk.gdk.threads_enter()
-			self.viewer.get_buffer().set_text(self.text)
-			gtk.gdk.threads_leave()
+			GObject.idle_add(self.settext, self.text);
 
+	def settext(self,text):
+		self.viewer.get_buffer().set_text(text)
 
 	def update(self):
 		try:

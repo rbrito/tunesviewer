@@ -21,7 +21,8 @@ all over the program.
 
 import os.path
 
-import glib
+
+from gi.repository import GLib as glib
 
 # Path of the program (bad assumption)
 TV_PATH = "/usr/bin/tunesviewer"

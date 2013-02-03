@@ -23,7 +23,7 @@ This is also called by configbox.
 import os
 import logging
 
-import gtk
+from gi.repository import Gtk as gtk
 
 from constants import TV_PATH
 
@@ -34,18 +34,17 @@ def run():
 		logging.error("Run this as user, not root.")
 		return
 
-
 	msg = gtk.MessageDialog(None,
-				gtk.DIALOG_MODAL,
-				gtk.MESSAGE_QUESTION,
-				gtk.BUTTONS_YES_NO,
-				"Do you want to enable opening "
-				"university media directly from the "
-				"web browser?")
+		gtk.DialogFlags.MODAL,
+		gtk.MessageType.QUESTION,
+		gtk.ButtonsType.YES_NO,
+		"Do you want to enable opening "
+		"university media directly from the "
+		"web browser?")
 	r = msg.run()
 	msg.destroy()
 
-	if r == gtk.RESPONSE_YES:
+	if r == gtk.ResponseType.YES:
 		logging.info("Setting default...")
 		setdefault()
 
@@ -56,10 +55,10 @@ def setdefault():
 		file(TV_PATH)
 	except IOError:
 		msg = gtk.MessageDialog(None,
-					gtk.DIALOG_MODAL,
-					gtk.MESSAGE_ERROR,
-					gtk.BUTTONS_CLOSE,
-					"The link %s does not exist." % TV_PATH)
+			gtk.DialogFlags.MODAL,
+			gtk.MessageType.ERROR,
+			gtk.ButtonsType.CLOSE,
+			"The link %s does not exist." % TV_PATH)
 		msg.run()
 		msg.destroy()
 		return
@@ -74,18 +73,18 @@ def setdefault():
 	err += setdefaultprotocol("itpc", tv_call)
 
 	if err:
-		message_type = gtk.MESSAGE_ERROR
+		message_type = gtk.MessageType.ERROR
 		message = "Unable to set defaults."
 	else:
-		message_type = gtk.MESSAGE_INFO
+		message_type = gtk.MessageType.INFO
 		message = ("Default set. Now you should be able to "
 			   "open iTunesU from a web browser.")
 
 
 	msg = gtk.MessageDialog(None,
-				gtk.DIALOG_MODAL,
+				gtk.DialogFlags.MODAL,
 				message_type,
-				gtk.BUTTONS_CLOSE,
+				gtk.ButtonsType.CLOSE,
 				message)
 	msg.run()
 	msg.destroy()
