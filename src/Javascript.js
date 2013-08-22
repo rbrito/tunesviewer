@@ -3,7 +3,7 @@
  Catches iTunes-api calls from pages, such as
  http://r.mzstatic.com/htmlResources/6018/dt-storefront-base.jsz
 
- Copyright (C) 2009 - 2012 Luke Bryan
+ Copyright (C) 2009 - 2013 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -127,7 +127,7 @@ iTunes = { // Called from the page js:
 
 	doPodcastDownload: function (obj, number) {
 		"use strict";
-		alert("podcastdownload"+obj+number);
+		location.href= "download://"+obj.innerHTML;
 		//var keys = obj.getElementsByTagName('key');
 	},
 
@@ -356,5 +356,12 @@ document.addEventListener("DOMContentLoaded", function () {
 	css.innerHTML = "* { -webkit-user-select: initial !important } div.search-form {height: 90}";
 	document.body.appendChild(css);
 	console.log("TunesViewer: JS OnPageShow Ran Successfully.");
+	
+	//Fix bug where image/zip files say ios only
+	var btns = document.querySelectorAll('div.button-less');
+	for (var i=0; i<btns.length; i++) {
+		btns[i].classList.remove('button-less');
+		btns[i].querySelector('span.action').textContent = "Download";
+	}
 
 }, false); // end Pageshow.

@@ -5,7 +5,7 @@
 TunesViewer
 A small, easy-to-use tool to access iTunesU and podcast media.
 
- Copyright (C) 2009 - 2012 Luke Bryan
+ Copyright (C) 2009 - 2013 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -1301,7 +1301,7 @@ class TunesViewer:
 			comment = ""
 			url = ""
 			for key in keys:
-				print key.text, key.getnext().text
+				#print key.text, key.getnext().text
 				if key.text == "navbar":
 					return
 				if key.text == "URL" and key.getnext() is not None:
@@ -1312,6 +1312,13 @@ class TunesViewer:
 					extType = "."+key.getnext().text
 				elif key.text == "songName" and key.getnext() is not None:
 					name = key.getnext().text
+				# Also accept those sent by doPodcastDownload(xml):
+				elif key.text == "episodeURL" and key.getnext() is not None:
+					url = key.getnext().text
+					extType = type_of(url)
+				elif key.text == "itemName" and key.getnext() is not None:
+					name = key.getnext().text
+					
 			if extType==".rtf":
 				extType = ".zip"
 			self.downloadFile(name, artist, duration, extType, comment, url)
