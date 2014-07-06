@@ -3,7 +3,7 @@
  Catches iTunes-api calls from pages, such as
  http://r.mzstatic.com/htmlResources/6018/dt-storefront-base.jsz
 
- Copyright (C) 2009 - 2013 Luke Bryan
+ Copyright (C) 2009 - 2014 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -362,6 +362,24 @@ document.addEventListener("DOMContentLoaded", function () {
 	for (var i=0; i<btns.length; i++) {
 		btns[i].classList.remove('button-less');
 		btns[i].querySelector('span.action').textContent = "Download";
+	}
+	
+	//Change the type on <object> video so it plays:
+	iTSVideoPreviewWithObject.prototype.origplay = iTSVideoPreviewWithObject.prototype.play
+	iTSVideoPreviewWithObject.prototype.play = function() {
+		//run normally:
+		iTSVideoPreviewWithObject.prototype.origplay.apply(this,arguments);
+		console.log(this)
+		setTimeout(function(){
+			var objs = document.getElementsByTagName('object');
+			for (var i=0; i<objs.length; i++) {
+				var type = objs[i].getAttribute('data');
+				console.log(type);
+				type = type.substr(type.length-3);//always 3-char mime extension?
+				objs[i].type = 'video/'+type;
+				
+			}
+		},100);
 	}
 
 }, false); // end Pageshow.

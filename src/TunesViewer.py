@@ -5,7 +5,7 @@
 TunesViewer
 A small, easy-to-use tool to access iTunesU and podcast media.
 
- Copyright (C) 2009 - 2013 Luke Bryan
+ Copyright (C) 2009 - 2014 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -887,11 +887,9 @@ class TunesViewer:
 		logging.debug("Opening bug")
 		openDefault(BUG_URL)
 
-
 	def showHelp(self, obj):
 		logging.debug("Opening Help")
 		openDefault(HELP_URL)
-
 
 	def showAbout(self, obj):
 		msg = gtk.MessageDialog(self.window,
