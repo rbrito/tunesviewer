@@ -373,11 +373,43 @@ document.addEventListener("DOMContentLoaded", function () {
 		setTimeout(function(){
 			var objs = document.getElementsByTagName('object');
 			for (var i=0; i<objs.length; i++) {
-				var type = objs[i].getAttribute('data');
-				console.log(type);
-				type = type.substr(type.length-3);//always 3-char mime extension?
-				objs[i].type = 'video/'+type;
+				// Rework <object> to work:
+				//var type = objs[i].getAttribute('data');
+				//console.log(type);
+				//type = type.substr(type.length-3);//always 3-char mime extension?
+				//objs[i].type = 'video/'+type;
 				
+				//Better: Replace with <video>:
+				var url = objs[i].getAttribute('data');
+				//replace:
+				var vid = document.createElement('video');
+				vid.setAttribute('src', url);
+				vid.setAttribute('controls', 'true');
+				vid.setAttribute('autoplay', 'true');
+				vid.setAttribute('style', 'width:100%; max-width:680px; height:100%; max-height:480px;');
+				objs[i].parentNode.appendChild(vid);
+				objs[i].parentNode.removeChild(objs[i]);
+				//Set fullscreen to really make fullscreen:
+				vid.addEventListener('webkitfullscreenchange', function(){
+					if (document.fullScreen || document.webkitIsFullScreen) {
+						vid.style.position = 'fixed';
+						vid.style.top = 0;
+						vid.style.bottom = 0;
+						vid.style.left = 0;
+						vid.style.right = 0;
+						vid.style.maxWidth = '100%';
+						vid.style.maxHeight = '100%';
+					} else {
+						//Back to normal - undo specific workarounds
+						vid.style.position = '';
+						vid.style.top = '';
+						vid.style.bottom = '';
+						vid.style.left = '';
+						vid.style.right = '';
+						vid.style.maxWidth = '';
+						vid.style.maxHeight = '';
+					}
+				});
 			}
 		},100);
 	}
