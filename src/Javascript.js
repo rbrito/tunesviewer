@@ -33,6 +33,14 @@ iTunes = { // Called from the page js:
 		return "";
 	},
 	
+	getHistory: function() {
+		return {
+			removeCurrentPage: function() {
+				
+			}
+		}
+	},
+	
 
 	getPreferences: function() {
 		"use strict";
