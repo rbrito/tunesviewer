@@ -5,7 +5,7 @@
 TunesViewer
 A small, easy-to-use tool to access iTunesU and podcast media.
 
- Copyright (C) 2009 - 2014 Luke Bryan
+ Copyright (C) 2009 - 2015 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -74,6 +74,7 @@ class TunesViewer:
 
 	# Initializes the main window
 	def __init__(self, dname=None):
+		self.storeFront = "143441-1,12"
 		self.downloadbox = DownloadBox(self) # Only one downloadbox is constructed
 		self.findbox = FindBox(self)
 		self.findInPage = FindInPageBox()
@@ -898,7 +899,7 @@ class TunesViewer:
 					gtk.BUTTONS_CLOSE,
 					"TunesViewer - Easy iTunesU access\n"
 					"Version %s\n\n"
-					"(C) 2009 - 2012 Luke Bryan\n"
+					"(C) 2009 - 2015 Luke Bryan\n"
 					"2011 - 2012 Rogério Theodoro de Brito\n"
 					"and other contributors.\n"
 					"Icon based on Michał Rzeszutek's openclipart hat.\n"
@@ -1326,6 +1327,9 @@ class TunesViewer:
 			gtk.Clipboard().set_text(tocopy)
 			logging.debug("copied "+tocopy)
 			return
+		elif url.startswith("store://"):
+			self.storeFront = url[8:]
+			url = self.config.home #Go back to frontpage
 		if self.downloading:
 			return
 		elif url.startswith("web"):
@@ -1366,14 +1370,14 @@ class TunesViewer:
 		if htmMode:
 			self.opener.addheaders = [('User-agent', self.descView.ua),
 						  ('Accept-Encoding', 'gzip'),
-						  ("X-Apple-Tz:", self.tz),
-						  ("X-Apple-Store-Front", "143441-1,12")]
+						  ("X-Apple-Tz", self.tz),
+						  ("X-Apple-Store-Front", self.storeFront)]
 		if self.mobilemode.get_active():
 			# As described on
 			# http://blogs.oreilly.com/iphone/2008/03/tmi-apples-appstore-protocol-g.html
 			self.opener.addheaders = [('User-agent', 'iTunes-iPhone/1.2.0'),
 						  ('Accept-Encoding', 'gzip'),
-						  ('X-Apple-Store-Front:', '143441-1,2')]
+						  ('X-Apple-Store-Front', self.storeFront)]
 		#Show that it's loading:
 		self.setLoadDisplay(True)
 
@@ -1385,6 +1389,15 @@ class TunesViewer:
 	def loadPageThread(self, opener, url, newurl):
 		pageType = ""
 		text = ""
+		#if url.find("woa/wa/switchToStoreFront") >-1:
+			#print "SWITCHING STORE", url
+			#import re
+			#match = re.match('.*storeFrontId=(\d*).*', url)
+			#if match:
+				#self.storeFront = match.group(1) + '-1,12';
+				#print self.storeFront
+				#self.loadPageThread(opener, self.config.home, self.config.home)
+				#return #no further action, no need to download the <key>action</key>         <dict>   <key>kind</key><string>Reset</string>  <key>signout</key><true/>   </dict>
 		try:
 			#Downloader:
 			response = opener.open(url)
