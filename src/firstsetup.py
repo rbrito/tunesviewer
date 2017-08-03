@@ -5,7 +5,7 @@ Initial setup - sets up browser integration.
 
 This is also called by configbox.
 
- Copyright (C) 2009 - 2012 Luke Bryan
+ Copyright (C) 2009 - 2014 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 

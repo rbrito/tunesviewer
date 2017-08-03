@@ -3,7 +3,7 @@
 """
 Common functions for Tunesviewer.
 
- Copyright (C) 2009 - 2012 Luke Bryan
+ Copyright (C) 2009 - 2015 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 

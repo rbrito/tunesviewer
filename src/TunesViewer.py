@@ -5,7 +5,7 @@
 TunesViewer
 A small, easy-to-use tool to access iTunesU and podcast media.
 
- Copyright (C) 2009 - 2012 Luke Bryan
+ Copyright (C) 2009 - 2015 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -79,6 +79,9 @@ class TunesViewer:
 		self.icon_video = None
 		self.icon_pdf = None  # tada
 		self.icon_book = None
+
+		self.storeFront = "143441-1,12"
+
 		self.downloadbox = DownloadBox(self) # Only one downloadbox is constructed
 		self.findbox = FindBox(self)
 		self.findInPage = FindInPageBox()
@@ -896,11 +899,9 @@ class TunesViewer:
 		logging.debug("Opening bug")
 		openDefault(BUG_URL)
 
-
 	def showHelp(self, obj):
 		logging.debug("Opening Help")
 		openDefault(HELP_URL)
-
 
 	def showAbout(self, obj):
 		msg = gtk.MessageDialog(self.window,
@@ -909,7 +910,7 @@ class TunesViewer:
 					gtk.ButtonsType.CLOSE,
 					"TunesViewer - Easy iTunesU access\n"
 					"Version %s\n\n"
-					"(C) 2009 - 2012 Luke Bryan\n"
+					"(C) 2009 - 2015 Luke Bryan\n"
 					"2011 - 2012 Rogério Theodoro de Brito\n"
 					"and other contributors.\n"
 					"Icon based on Michał Rzeszutek's openclipart hat.\n"
@@ -1310,7 +1311,7 @@ class TunesViewer:
 			comment = ""
 			url = ""
 			for key in keys:
-				print key.text, key.getnext().text
+				#print key.text, key.getnext().text
 				if key.text == "navbar":
 					return
 				if key.text == "URL" and key.getnext() is not None:
@@ -1321,6 +1322,13 @@ class TunesViewer:
 					extType = "."+key.getnext().text
 				elif key.text == "songName" and key.getnext() is not None:
 					name = key.getnext().text
+				# Also accept those sent by doPodcastDownload(xml):
+				elif key.text == "episodeURL" and key.getnext() is not None:
+					url = key.getnext().text
+					extType = type_of(url)
+				elif key.text == "itemName" and key.getnext() is not None:
+					name = key.getnext().text
+					
 			if extType==".rtf":
 				extType = ".zip"
 			self.downloadFile(name, artist, duration, extType, comment, url)
@@ -1330,6 +1338,9 @@ class TunesViewer:
 			gtk.Clipboard().set_text(tocopy)
 			logging.debug("copied "+tocopy)
 			return
+		elif url.startswith("store://"):
+			self.storeFront = url[8:]
+			url = self.config.home #Go back to frontpage
 		if self.downloading:
 			return
 		elif url.startswith("web"):
@@ -1371,13 +1382,14 @@ class TunesViewer:
 		if htmMode:
 			self.opener.addheaders = [('User-agent', self.descView.ua),
 						  ('Accept-Encoding', 'gzip'),
-						  ("X-Apple-Tz:", self.tz)]
+						  ("X-Apple-Tz", self.tz),
+						  ("X-Apple-Store-Front", self.storeFront)]
 		if self.mobilemode.get_active():
 			# As described on
 			# http://blogs.oreilly.com/iphone/2008/03/tmi-apples-appstore-protocol-g.html
 			self.opener.addheaders = [('User-agent', 'iTunes-iPhone/1.2.0'),
 						  ('Accept-Encoding', 'gzip'),
-						  ('X-Apple-Store-Front:', '143441-1,2')]
+						  ('X-Apple-Store-Front', self.storeFront)]
 		#Show that it's loading:
 		self.setLoadDisplay(True)
 
@@ -1389,6 +1401,15 @@ class TunesViewer:
 	def loadPageThread(self, opener, url, newurl):
 		pageType = ""
 		text = ""
+		#if url.find("woa/wa/switchToStoreFront") >-1:
+			#print "SWITCHING STORE", url
+			#import re
+			#match = re.match('.*storeFrontId=(\d*).*', url)
+			#if match:
+				#self.storeFront = match.group(1) + '-1,12';
+				#print self.storeFront
+				#self.loadPageThread(opener, self.config.home, self.config.home)
+				#return #no further action, no need to download the <key>action</key>         <dict>   <key>kind</key><string>Reset</string>  <key>signout</key><true/>   </dict>
 		try:
 			#Downloader:
 			response = opener.open(url)
@@ -1560,7 +1581,7 @@ class TunesViewer:
 		"""
 		self.icon_audio = None
 		self.icon_video = None
-		self.icon_book = None
+		self.icon_pdf = None
 		self.icon_zip = None
 		self.icon_other = None
 		self.icon_link = None

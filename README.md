@@ -44,14 +44,20 @@ taken care of automatically by package managers.
 
 The main [project of TunesViewer][2] is hosted on [SourceForge.net][3].
 
+## Running from Git Checkout
+
+After checking out the latest master (or other branch), double click and run src/Tunesviewer.py.
+
 ## Building a Debian Package
 
 Building a Debian Package from the git repository, ready for installation in
 your system is as easy as:
 
 1. Installing the packages `build-essential`, `debhelper`, `fakeroot`, and `python`
-2. Checking out the `debian` branch of this project
+2. Checking out the `debian` branch of this project (and optionally merging in other branch)
 3. Typing `fakeroot debian/rules clean binary`
+
+If you encounter problems, make sure debian/rules and the python files in src/ are executable.
 
 ## Experimental Debian Packages
 
@@ -63,7 +69,7 @@ You are welcome to install them and to report potential issues with respect
 to the packaging in this [project's issue tracker][5].
 
 
-[0]: http://sourceforge.net/projects/tunesviewer/files/tunesviewer_1.4.deb/download
+[0]: http://sourceforge.net/projects/tunesviewer/files/tunesviewer_1.5.2.deb/download
 [1]: http://sourceforge.net/projects/tunesviewer/files/tunesviewer-1.4.noarch.rpm/download
 [2]: http://sourceforge.net/projects/tunesviewer
 [3]: http://sourceforge.net

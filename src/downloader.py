@@ -50,7 +50,10 @@ class Downloader:
 	def __init__(self, icon, url, localfile, opener, downloadWindow):
 		self.opener = opener # shared downloader
 		self.url = url
+		if (localfile.endswith(".ibooks")):
+			localfile = localfile[:-6]+".epub"
 		self.localfile = localfile
+		
 		#Reference to the download window's class
 		self._downloadWindow = downloadWindow
 		self._copyfile = downloadWindow.devicedir
