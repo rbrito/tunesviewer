@@ -4,7 +4,7 @@
 """
 A subclass of Webkit Webview, injects javascript into page.
 
- Copyright (C) 2009 - 2012 Luke Bryan
+ Copyright (C) 2009 - 2017 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -106,7 +106,10 @@ class WebKitView(webkit.WebView):
 		into the webview.
 		"""
 		self.webkitLoading = True
-		self.load_html_string(html_string.replace("<head>","<head><script>%s</script>" % self.injectJavascript), url_to_load)
+		html = html_string.replace("<head>","<head><script>%s</script>" % self.injectJavascript)
+		if self.opener.config.enableAdBlock:
+			html = html.replace("</head>","<link rel=\"stylesheet\" href=\"http://tunesviewer.sourceforge.net/noAdV1.php\" type=\"text/css\" /></head>");
+		self.load_html_string(html, url_to_load)
 		self.webkitLoading = False
 
 	def webkitGo(self, view, frame, net_req, nav_act, pol_dec):

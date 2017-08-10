@@ -3,7 +3,7 @@
 """
 Configuration window for Tunesviewer.
 
- Copyright (C) 2009 - 2012 Luke Bryan
+ Copyright (C) 2009 - 2017 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -75,7 +75,11 @@ class ConfigBox:
 
 		dtab = gtk.VBox() # for downloads tab
 		vtab = gtk.VBox() # for display tab
+		
+		moduletab = gtk.VBox() # for display tab
+		
 		tabs = gtk.Notebook()
+		tabs.append_page(moduletab, gtk.Label("Modules"))
 		tabs.append_page(dtab, gtk.Label("Downloads"))
 		tabs.append_page(vtab, gtk.Label("Display"))
 		self.window.get_content_area().pack_start(tabs, True, True, 0)
@@ -189,6 +193,13 @@ class ConfigBox:
 		otherHbox.pack_start(setother,True,True,0)
 		defv.pack_start(otherHbox, True, False, 0)
 		# End display tab
+		
+		
+		self.enableSentryCheck = gtk.CheckButton("Send crash reports to improve Tunesviewer\n - The cause of exceptions and basic system information\n   such as operating system version may be sent for debugging purposes.")
+		moduletab.pack_start( self.enableSentryCheck,True,True,0)
+		
+		self.enableAdBlockCheck = gtk.CheckButton("Block promos and advertisements\n - Hide promos and apps that do not work on Linux anyway.")
+		moduletab.pack_start(self.enableAdBlockCheck,True,True,0)
 
 		#Set initial configuration:
 		self.load_settings()
@@ -242,6 +253,9 @@ class ConfigBox:
 		self.releasedCol = self.checkReleasedCol.get_active()
 		self.modifiedCol = self.checkModifiedCol.get_active()
 		self.zoomAll = self.checkZoomAll.get_active()
+		self.enableSentry = self.enableSentryCheck.get_active()
+		self.enableAdBlock = self.enableAdBlockCheck.get_active()
+		
 		if self.downloadfolder == None:
 			self.downloadfolder = DOWNLOADS_DIR
 		self.defaultcommand = self.combo.get_active()
@@ -275,6 +289,9 @@ class ConfigBox:
 		config.set(sec, "modifiedCol", self.modifiedCol)
 		config.set(sec, "zoomAll", self.zoomAll)
 		config.set(sec, "zoom", self.mainwin.descView.get_zoom_level())
+		#Tunesviewer 2.x settings:
+		config.set(sec, "EnableSentry", self.enableSentry)
+		config.set(sec, "EnableAdBlock", self.enableAdBlock)
 
 		# Move this to another, better place
 		try:
@@ -300,6 +317,8 @@ class ConfigBox:
 		# disk -> variables -> gui
 		logging.debug("Loading Prefs")
 		first = False
+		upgrading2 = False
+		
 		if os.path.isfile(PREFS_FILE):
 			try:
 				#Load to the main variables:
@@ -327,12 +346,37 @@ class ConfigBox:
 				self.modifiedCol = (config.get(sec, "modifiedCol") == "True")
 				self.zoomAll = (config.get(sec, "zoomAll") == "True")
 				self.mainwin.descView.set_zoom_level(float(config.get(sec, "zoom")))
+				#New Tunesviewer 2:
+				if not config.has_option(sec,"EnableSentry"):
+					question = gtk.MessageDialog(None,
+						gtk.DialogFlags.MODAL,
+						gtk.MessageType.QUESTION,
+						gtk.ButtonsType.YES_NO,
+						"Do you want to enable crash reporting to help improve this program?\n\n"
+						"Errors and system information such as operating system version may be sent for debugging purposes. "
+						"This feature may be checked on or off at any time in the preferences.")
+					resp = question.run()
+					question.destroy()
+
+					if resp == gtk.ResponseType.YES:
+						self.enableSentry = True;
+					else:
+						self.enableSentry = False;
+					self.enableAdBlock = False; #default
+					#self.save_settings()
+					upgrading2 = True
+				else:
+					self.enableSentry = (config.get(sec, "EnableSentry") == "True")
+					self.enableAdBlock = (config.get(sec, "EnableAdBlock") == "True")
+					
 			except Exception as e:
 				logging.warn("Load-settings error: " + str(e))
 		else:
 			first = True
 
 		#Load to the screen:
+		self.enableSentryCheck.set_active(self.enableSentry)
+		self.enableAdBlockCheck.set_active(self.enableAdBlock)
 		self.downloadsel.set_current_folder(self.downloadfolder)
 		self.viewer.get_buffer().set_text(self.openertext(self.openers))
 		self.downloadsafeCheck.set_active(self.downloadsafe)
@@ -349,8 +393,11 @@ class ConfigBox:
 		self.checkReleasedCol.set_active(self.releasedCol)
 		self.checkModifiedCol.set_active(self.modifiedCol)
 		self.checkZoomAll.set_active(self.zoomAll)
+		
 		if first:
 			self.first_setup()
+			self.save_settings()
+		if upgrading2:
 			self.save_settings()
 		self.setVisibility()
 

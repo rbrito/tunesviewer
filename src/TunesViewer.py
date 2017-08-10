@@ -5,7 +5,7 @@
 TunesViewer
 A small, easy-to-use tool to access iTunesU and podcast media.
 
- Copyright (C) 2009 - 2015 Luke Bryan
+ Copyright (C) 2009 - 2017 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -58,6 +58,7 @@ from SingleWindowSocket import SingleWindowSocket
 from common import *
 from constants import TV_VERSION, SEARCH_U, SEARCH_P, USER_AGENT, HELP_URL, BUG_URL
 
+
 class TunesViewer:
 	source = ""  # full html/xml source
 	url = ""  # page url
@@ -90,7 +91,7 @@ class TunesViewer:
 		self.window = gtk.Window(gtk.WindowType.TOPLEVEL)
 		self.window.set_title("TunesViewer")
 		self.window.set_size_request(350, 350) #minimum
-		self.window.resize(750, 750) #default
+		self.window.resize(1080, 750) #default
 		self.window.connect("delete_event", self.delete_event)
 		# set add drag-drop, based on:
 		# http://stackoverflow.com/questions/1219863/python-gtk-drag-and-drop-get-url
@@ -713,6 +714,21 @@ class TunesViewer:
 		self.noneSelected()
 
 		self.config = ConfigBox(self) # Only one configuration box, it has reference back to here to change toolbar,statusbar settings.
+		
+		if self.config.enableSentry:
+			from raven import Client
+			import platform
+			useros = file('/etc/issue').read() if os.path.exists('/etc/issue') else 'Unknown'
+
+			client = Client(
+			  dsn='https://f4c16e06f8e2417e99522c17ee3bf6de:ca218e94828b499686b453ff6057fea7@sentry.io/201476',
+			  release=TV_VERSION
+			)
+			client.tags_context({
+				'Platform': platform.platform(), #Linux version
+				'issue': useros, # Ubuntu version
+				'CPU': platform.processor()
+			})
 
 		# Set up the main url handler with downloading and cookies:
 		self.cj = cookielib.CookieJar()
