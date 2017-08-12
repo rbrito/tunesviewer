@@ -96,13 +96,14 @@ def setdefaultprotocol(protocol, program):
 	there was an error.
 	"""
 
-	base_cmd = "gconftool-2 -s /desktop/gnome/url-handlers/"
-
-	err = os.system(base_cmd + protocol +
-			"/enabled --type Boolean true")
-	err += os.system(base_cmd + protocol + "/command '" +
-			 program + "' --type String")
-
+	#No longer works in 17.04:
+	#base_cmd = "gconftool-2 -s /desktop/gnome/url-handlers/"
+	#err = os.system(base_cmd + protocol +
+	#		"/enabled --type Boolean true")
+	#err += os.system(base_cmd + protocol + "/command '" +
+	#		 program + "' --type String")
+	base_cmd = "xdg-mime default TunesViewer.desktop x-scheme-handler/"
+	err = os.system(base_cmd + protocol)
 	return err >= 1
 
 if __name__ == '__main__':
