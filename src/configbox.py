@@ -348,21 +348,8 @@ class ConfigBox:
 				self.mainwin.descView.set_zoom_level(float(config.get(sec, "zoom")))
 				#New Tunesviewer 2:
 				if not config.has_option(sec,"EnableSentry"):
-					question = gtk.MessageDialog(None,
-						gtk.DialogFlags.MODAL,
-						gtk.MessageType.QUESTION,
-						gtk.ButtonsType.YES_NO,
-						"Do you want to enable crash reporting to help improve this program?\n\n"
-						"Errors and system information such as operating system version may be sent for debugging purposes. "
-						"This feature may be checked on or off at any time in the preferences.")
-					resp = question.run()
-					question.destroy()
-
-					if resp == gtk.ResponseType.YES:
-						self.enableSentry = True;
-					else:
-						self.enableSentry = False;
-					self.enableAdBlock = False; #default
+					self.sentryChoice()
+					self.enableAdBlock = False #default
 					#self.save_settings()
 					upgrading2 = True
 				else:
@@ -373,6 +360,8 @@ class ConfigBox:
 				logging.warn("Load-settings error: " + str(e))
 		else:
 			first = True
+			self.sentryChoice()
+			self.enableAdBlock = False #default
 
 		#Load to the screen:
 		self.enableSentryCheck.set_active(self.enableSentry)
@@ -401,6 +390,21 @@ class ConfigBox:
 			self.save_settings()
 		self.setVisibility()
 
+	def sentryChoice(self):
+		question = gtk.MessageDialog(None,
+			gtk.DialogFlags.MODAL,
+			gtk.MessageType.QUESTION,
+			gtk.ButtonsType.YES_NO,
+			"Do you want to enable crash reporting to help improve this program?\n\n"
+			"Errors and system information such as operating system version may be sent for debugging purposes. "
+			"This feature may be checked on or off at any time in the preferences.")
+		resp = question.run()
+		question.destroy()
+
+		if resp == gtk.ResponseType.YES:
+			self.enableSentry = True;
+		else:
+			self.enableSentry = False;
 
 	def setVisibility(self):
 		if self.toolbar:
