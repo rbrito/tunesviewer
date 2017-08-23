@@ -26,7 +26,7 @@ from gi.repository import GLib as glib
 
 # Path of the program (bad assumption)
 TV_PATH = "/usr/bin/tunesviewer"
-TV_VERSION = "2.0-BETA" #also needs changing in debian/changelog
+TV_VERSION = "2.0-BETA2" #also needs changing in debian/changelog
 
 # Directory under which we write configuration files
 USER_PREFS_DIR = glib.get_user_config_dir()

@@ -926,7 +926,7 @@ class TunesViewer:
 					gtk.ButtonsType.CLOSE,
 					"TunesViewer - Easy iTunesU access\n"
 					"Version %s\n\n"
-					"(C) 2009 - 2015 Luke Bryan\n"
+					"(C) 2009 - 2017 Luke Bryan\n"
 					"2011 - 2012 Rogério Theodoro de Brito\n"
 					"and other contributors.\n"
 					"Icon based on Michał Rzeszutek's openclipart hat.\n"
