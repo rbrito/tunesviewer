@@ -43,7 +43,7 @@ DATA_SOCKET = os.path.join(DATA_DIR, "tunesviewerLOCK") # Holds socket, so secon
 DOWNLOADS_DIR = os.path.expanduser("~")
 
 # User agent and connection programs
-USER_AGENT = 'iTunes/10.6.3.25'
+USER_AGENT = 'iTunes/12.6.2'
 DEFAULT_OPENER = "vlc --http-user-agent=%s" % (USER_AGENT, )
 
 # URLs
