@@ -107,8 +107,15 @@ class WebKitView(webkit.WebView):
 		"""
 		self.webkitLoading = True
 		html = html_string.replace("<head>","<head><script>%s</script>" % self.injectJavascript)
+
 		if self.opener.config.enableAdBlock:
 			html = html.replace("</head>","<link rel=\"stylesheet\" href=\"http://tunesviewer.sourceforge.net/noAdV1.php\" type=\"text/css\" /></head>");
+
+		if self.opener.config.enableSentry:
+			html = html.replace("</head>","<script src=\"https://cdn.ravenjs.com/3.17.0/raven.min.js\" crossorigin=\"anonymous\"></script>" +
+			"<script>Raven.config('https://c3f5d8482e5f44c58d1a9e560dead0c5@sentry.io/211830').install();</script>" +
+			"</head>");
+
 		self.load_html_string(html, url_to_load)
 		self.webkitLoading = False
 
