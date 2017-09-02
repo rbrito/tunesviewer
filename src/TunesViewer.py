@@ -315,7 +315,7 @@ class TunesViewer:
 		self.copym.add_accelerator("activate", agr, key, mod,
 					   gtk.AccelFlags.VISIBLE)
 		editmenu.append(self.copym)
-
+		
 		## Paste URL
 		pastem = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_PASTE,None)
 		pastem.set_label("Paste and _Goto Url")
@@ -1010,7 +1010,7 @@ class TunesViewer:
 			logging.debug(self.backStack)
 			logging.debug(self.forwardStack)
 		else:
-			gtk.gdk.beep()
+			gdk.beep()
 		#Update the back, forward buttons:
 		self.updateBackForward()
 
@@ -1028,7 +1028,7 @@ class TunesViewer:
 				#remove from forward:
 				self.forwardStack.pop()
 		else:
-			gtk.gdk.beep()
+			gdk.beep()
 		self.updateBackForward()
 
 	def updateBackForward(self):
