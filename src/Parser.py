@@ -71,6 +71,7 @@ class Parser:
 				raise Exception
 			elif dom.tag == "rss" or dom.tag == ATOM: # rss files are added
 				self.HTML += "<p>This is a podcast feed, click Add to Podcast manager button on the toolbar to subscribe.</p>"
+				self.HTML += "<style>img{ max-width:100%; margin:1em 0; }</style>"
 				items = dom.xpath("//item")
 				logging.debug("rss: " + str(len(items)))
 				for item in items:

@@ -18,6 +18,7 @@ A subclass of Webkit Webview, injects javascript into page.
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 """
+#from __future__ import unicode_literals
 
 import logging
 import os
@@ -106,8 +107,14 @@ class WebKitView(webkit.WebView):
 		into the webview.
 		"""
 		self.webkitLoading = True
-		html = html_string.replace("<head>","<head><script>%s</script>" % self.injectJavascript)
-
+		#print(("<head><script>%s</script>" % (self.injectJavascript,)))
+		#print(unicode(("<head><script>%s</script>" % (self.injectJavascript,)),errors='replace'))
+		#Encoding weirdness and Rogerio` special character in comment? https://stackoverflow.com/questions/46499698
+		if str(type(html_string)).find('unicode') > -1:
+			html = html_string.replace(u"<head>", unicode(("<head><script>%s</script>" % (self.injectJavascript,)), errors='replace' ))
+		else:
+			html = html_string.replace("<head>", "<head><script>%s</script>" % self.injectJavascript)
+		#html = html_string.replace("<head>", "<head><script>%s</script>" % self.injectJavascript)
 		if self.opener.config.enableAdBlock:
 			html = html.replace("</head>","<link rel=\"stylesheet\" href=\"http://tunesviewer.sourceforge.net/noAdV1.php\" type=\"text/css\" /></head>");
 
