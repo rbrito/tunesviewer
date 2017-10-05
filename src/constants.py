@@ -4,7 +4,7 @@
 Module for holding constants (and some variables with "fixed" values) used
 all over the program.
 
- Copyright (C) 2009 - 2012 Luke Bryan
+ Copyright (C) 2009 - 2017 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -26,7 +26,7 @@ from gi.repository import GLib as glib
 
 # Path of the program (bad assumption)
 TV_PATH = "/usr/bin/tunesviewer"
-TV_VERSION = "1.4.99.0" #also needs changing in debian conf file somewhere
+TV_VERSION = "2.0-BETA2" #also needs changing in debian/changelog
 
 # Directory under which we write configuration files
 USER_PREFS_DIR = glib.get_user_config_dir()
@@ -43,7 +43,7 @@ DATA_SOCKET = os.path.join(DATA_DIR, "tunesviewerLOCK") # Holds socket, so secon
 DOWNLOADS_DIR = os.path.expanduser("~")
 
 # User agent and connection programs
-USER_AGENT = 'iTunes/10.6.3.25'
+USER_AGENT = 'iTunes/12.6.2'
 DEFAULT_OPENER = "vlc --http-user-agent=%s" % (USER_AGENT, )
 
 # URLs

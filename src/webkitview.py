@@ -4,7 +4,7 @@
 """
 A subclass of Webkit Webview, injects javascript into page.
 
- Copyright (C) 2009 - 2012 Luke Bryan
+ Copyright (C) 2009 - 2017 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -18,6 +18,7 @@ A subclass of Webkit Webview, injects javascript into page.
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 """
+#from __future__ import unicode_literals
 
 import logging
 import os
@@ -106,7 +107,23 @@ class WebKitView(webkit.WebView):
 		into the webview.
 		"""
 		self.webkitLoading = True
-		self.load_html_string(html_string.replace("<head>","<head><script>%s</script>" % self.injectJavascript), url_to_load)
+		#print(("<head><script>%s</script>" % (self.injectJavascript,)))
+		#print(unicode(("<head><script>%s</script>" % (self.injectJavascript,)),errors='replace'))
+		#Encoding weirdness and Rogerio` special character in comment? https://stackoverflow.com/questions/46499698
+		if str(type(html_string)).find('unicode') > -1:
+			html = html_string.replace(u"<head>", unicode(("<head><script>%s</script>" % (self.injectJavascript,)), errors='replace' ))
+		else:
+			html = html_string.replace("<head>", "<head><script>%s</script>" % self.injectJavascript)
+		#html = html_string.replace("<head>", "<head><script>%s</script>" % self.injectJavascript)
+		if self.opener.config.enableAdBlock:
+			html = html.replace("</head>","<link rel=\"stylesheet\" href=\"http://tunesviewer.sourceforge.net/noAdV1.php\" type=\"text/css\" /></head>");
+
+		if self.opener.config.enableSentry:
+			html = html.replace("</head>","<script src=\"https://cdn.ravenjs.com/3.17.0/raven.min.js\" crossorigin=\"anonymous\"></script>" +
+			"<script>Raven.config('https://c3f5d8482e5f44c58d1a9e560dead0c5@sentry.io/211830').install();</script>" +
+			"</head>");
+
+		self.load_html_string(html, url_to_load)
 		self.webkitLoading = False
 
 	def webkitGo(self, view, frame, net_req, nav_act, pol_dec):

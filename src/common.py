@@ -3,7 +3,7 @@
 """
 Common functions for Tunesviewer.
 
- Copyright (C) 2009 - 2012 Luke Bryan
+ Copyright (C) 2009 - 2015 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -90,6 +90,8 @@ def safeFilename(name, dos):
 	http://stackoverflow.com/questions/295135/turn-a-string-into-a-valid-filename-in-python
 	http://msdn.microsoft.com/en-us/library/ms810456.aspx
 	"""
+	#Also make n/n/n date at end of title, not just the end in name, eg Buck Sexton podcast, Machine Learning class.
+	name = name.replace("/", "-")
 	if dos:
 		unsafe_fat_chars = r'[^-a-zA-Z0-9 $%`_@{}~!#().,;]'
 		name = name.replace(":",";")

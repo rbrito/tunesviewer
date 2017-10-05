@@ -3,7 +3,7 @@
 """
 A class to handle a single download.
 
- Copyright (C) 2009 - 2012 Luke Bryan
+ Copyright (C) 2009 - 2017 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -104,6 +104,7 @@ class Downloader:
 		self._mediasel.set_size_request(100, -1)
 		self._mediasel.set_action(gtk.FileChooserAction.SELECT_FOLDER)
 		self._mediasel.connect("current-folder-changed", self.folderChange)
+		self._mediasel.connect("selection-changed", self.folderChange)
 		#self._mediasel.connect("file-set",self.folderChange)
 		self._mediasel.hide()
 		lower.pack_start(self._combo, False, False, 2)
@@ -116,6 +117,7 @@ class Downloader:
 		self._progress.set_show_text(True)
 		self._progress.show()
 		self._element.show()
+		self._copydir = None
 
 	def openit(self, obj, obj2):
 		openDefault(self.localfile)
@@ -132,7 +134,7 @@ class Downloader:
 		Called when the media-device-directory is changed, copies if
 		download is finished.
 		"""
-		self._copydir = self._mediasel.get_current_folder()
+		self._copydir = self._mediasel.get_filename()
 		#Set the selection as the default for new downloads.
 		self._downloadWindow.devicedir = self._copydir
 		logging.debug(self._copydir)

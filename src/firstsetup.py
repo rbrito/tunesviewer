@@ -5,7 +5,7 @@ Initial setup - sets up browser integration.
 
 This is also called by configbox.
 
- Copyright (C) 2009 - 2012 Luke Bryan
+ Copyright (C) 2009 - 2017 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -96,13 +96,14 @@ def setdefaultprotocol(protocol, program):
 	there was an error.
 	"""
 
-	base_cmd = "gconftool-2 -s /desktop/gnome/url-handlers/"
-
-	err = os.system(base_cmd + protocol +
-			"/enabled --type Boolean true")
-	err += os.system(base_cmd + protocol + "/command '" +
-			 program + "' --type String")
-
+	#No longer works in 17.04:
+	#base_cmd = "gconftool-2 -s /desktop/gnome/url-handlers/"
+	#err = os.system(base_cmd + protocol +
+	#		"/enabled --type Boolean true")
+	#err += os.system(base_cmd + protocol + "/command '" +
+	#		 program + "' --type String")
+	base_cmd = "xdg-mime default TunesViewer.desktop x-scheme-handler/"
+	err = os.system(base_cmd + protocol)
 	return err >= 1
 
 if __name__ == '__main__':

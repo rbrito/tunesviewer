@@ -5,7 +5,7 @@
 TunesViewer
 A small, easy-to-use tool to access iTunesU and podcast media.
 
- Copyright (C) 2009 - 2012 Luke Bryan
+ Copyright (C) 2009 - 2017 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -58,6 +58,7 @@ from SingleWindowSocket import SingleWindowSocket
 from common import *
 from constants import TV_VERSION, SEARCH_U, SEARCH_P, USER_AGENT, HELP_URL, BUG_URL
 
+
 class TunesViewer:
 	source = ""  # full html/xml source
 	url = ""  # page url
@@ -79,7 +80,10 @@ class TunesViewer:
 		self.icon_video = None
 		self.icon_pdf = None  # tada
 		self.icon_book = None
-		self.downloadbox = DownloadBox(self) # Only one downloadbox is constructed
+
+		self.storeFront = "143441-1,12"
+
+    self.downloadbox = DownloadBox(self) # Only one downloadbox is constructed
 		self.findbox = FindBox(self)
 		self.findInPage = FindInPageBox()
 		self.findInPage.connect('find', self.find_in_page_cb)
@@ -87,7 +91,7 @@ class TunesViewer:
 		self.window = gtk.Window(gtk.WindowType.TOPLEVEL)
 		self.window.set_title("TunesViewer")
 		self.window.set_size_request(350, 350) #minimum
-		self.window.resize(750, 750) #default
+		self.window.resize(1080, 750) #default
 		self.window.connect("delete_event", self.delete_event)
 		# set add drag-drop, based on:
 		# http://stackoverflow.com/questions/1219863/python-gtk-drag-and-drop-get-url
@@ -311,7 +315,7 @@ class TunesViewer:
 		self.copym.add_accelerator("activate", agr, key, mod,
 					   gtk.AccelFlags.VISIBLE)
 		editmenu.append(self.copym)
-
+		
 		## Paste URL
 		pastem = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_PASTE,None)
 		pastem.set_label("Paste and _Goto Url")
@@ -419,22 +423,21 @@ class TunesViewer:
 		gomenu = gtk.Menu()
 		gom = gtk.MenuItem("_Go")
 		gom.set_submenu(gomenu)
+		# ## iTunes U subdirectory
+		# self.itunesuDir = gtk.Menu()
+		# itunesu = gtk.MenuItem.new_with_mnemonic("iTunes_U")
+		# itunesu.set_submenu(self.itunesuDir)
+		# #self.itunesuDir.append(gtk.MenuItem("directory here"))
+		# gomenu.append(itunesu)
 
-		## iTunes U subdirectory
-		self.itunesuDir = gtk.Menu()
-		itunesu = gtk.MenuItem.new_with_mnemonic("iTunes_U")
-		itunesu.set_submenu(self.itunesuDir)
-		#self.itunesuDir.append(gtk.MenuItem("directory here"))
-		gomenu.append(itunesu)
+		# ## Podcast subdirectory
+		# self.podcastDir = gtk.Menu()
+		# podcasts = gtk.MenuItem.new_with_mnemonic("_Podcasts")
+		# podcasts.set_submenu(self.podcastDir)
+		# #self.podcastDir.append(gtk.MenuItem("directory here"))
+		# gomenu.append(podcasts)
 
-		## Podcast subdirectory
-		self.podcastDir = gtk.Menu()
-		podcasts = gtk.MenuItem.new_with_mnemonic("_Podcasts")
-		podcasts.set_submenu(self.podcastDir)
-		#self.podcastDir.append(gtk.MenuItem("directory here"))
-		gomenu.append(podcasts)
-
-		## Go back
+    ## Go back
 		back = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_GO_BACK,None)
 		key, mod = gtk.accelerator_parse("<Alt>Left")
 		back.add_accelerator("activate", agr, key, mod,
@@ -710,6 +713,21 @@ class TunesViewer:
 		self.noneSelected()
 
 		self.config = ConfigBox(self) # Only one configuration box, it has reference back to here to change toolbar,statusbar settings.
+		
+		if self.config.enableSentry:
+			from raven import Client
+			import platform
+			useros = file('/etc/issue').read() if os.path.exists('/etc/issue') else 'Unknown'
+
+			client = Client(
+			  dsn='https://f4c16e06f8e2417e99522c17ee3bf6de:ca218e94828b499686b453ff6057fea7@sentry.io/201476',
+			  release=TV_VERSION
+			)
+			client.tags_context({
+				'Platform': platform.platform(), #Linux version
+				'issue': useros, # Ubuntu version
+				'CPU': platform.processor()
+			})
 
 		# Set up the main url handler with downloading and cookies:
 		self.cj = cookielib.CookieJar()
@@ -896,11 +914,9 @@ class TunesViewer:
 		logging.debug("Opening bug")
 		openDefault(BUG_URL)
 
-
 	def showHelp(self, obj):
 		logging.debug("Opening Help")
 		openDefault(HELP_URL)
-
 
 	def showAbout(self, obj):
 		msg = gtk.MessageDialog(self.window,
@@ -909,7 +925,7 @@ class TunesViewer:
 					gtk.ButtonsType.CLOSE,
 					"TunesViewer - Easy iTunesU access\n"
 					"Version %s\n\n"
-					"(C) 2009 - 2012 Luke Bryan\n"
+					"(C) 2009 - 2017 Luke Bryan\n"
 					"2011 - 2012 Rogério Theodoro de Brito\n"
 					"and other contributors.\n"
 					"Icon based on Michał Rzeszutek's openclipart hat.\n"
@@ -942,8 +958,7 @@ class TunesViewer:
 
 	def pastego(self, obj):
 		"Gets the clipboard contents, and goes to link."
-		clip = gtk.clipboard_get()
-		text = clip.wait_for_text()
+		text = gtk.Clipboard.get(gdk.SELECTION_CLIPBOARD).wait_for_text()
 		if text != None:
 			self.gotoURL(text, True)
 
@@ -972,7 +987,7 @@ class TunesViewer:
 		Copies the standard rss podcast link for the current page.
 		"""
 		logging.debug("Copying: " + self.podcast)
-		gtk.Clipboard().set_text(self.podcast)
+		gtk.Clipboard.get(gdk.SELECTION_CLIPBOARD).set_text(self.podcast, -1)
 
 	def goBack(self, obj):
 		"""
@@ -994,7 +1009,7 @@ class TunesViewer:
 			logging.debug(self.backStack)
 			logging.debug(self.forwardStack)
 		else:
-			gtk.gdk.beep()
+			gdk.beep()
 		#Update the back, forward buttons:
 		self.updateBackForward()
 
@@ -1012,7 +1027,7 @@ class TunesViewer:
 				#remove from forward:
 				self.forwardStack.pop()
 		else:
-			gtk.gdk.beep()
+			gdk.beep()
 		self.updateBackForward()
 
 	def updateBackForward(self):
@@ -1050,7 +1065,7 @@ class TunesViewer:
 		if self.selected() is None:
 			return
 		logging.debug(self.selected()[8])
-		gtk.Clipboard().set_text(self.selected()[8])
+		gtk.Clipboard.get(gdk.SELECTION_CLIPBOARD).set_text(self.selected()[8], -1)
 
 	def combomodechanged(self, obj):
 		"""
@@ -1310,7 +1325,7 @@ class TunesViewer:
 			comment = ""
 			url = ""
 			for key in keys:
-				print key.text, key.getnext().text
+				#print key.text, key.getnext().text
 				if key.text == "navbar":
 					return
 				if key.text == "URL" and key.getnext() is not None:
@@ -1321,15 +1336,25 @@ class TunesViewer:
 					extType = "."+key.getnext().text
 				elif key.text == "songName" and key.getnext() is not None:
 					name = key.getnext().text
+				# Also accept those sent by doPodcastDownload(xml):
+				elif key.text == "episodeURL" and key.getnext() is not None:
+					url = key.getnext().text
+					extType = type_of(url)
+				elif key.text == "itemName" and key.getnext() is not None:
+					name = key.getnext().text
+					
 			if extType==".rtf":
 				extType = ".zip"
 			self.downloadFile(name, artist, duration, extType, comment, url)
 			return
 		elif url.startswith("copyurl://"):
 			tocopy = urllib.unquote(url[10:].replace("[http:]","http:").replace("[https:]","https:"))
-			gtk.Clipboard().set_text(tocopy)
+			gtk.Clipboard.get(gdk.SELECTION_CLIPBOARD).set_text(tocopy, -1)
 			logging.debug("copied "+tocopy)
 			return
+		elif url.startswith("store://"):
+			self.storeFront = url[8:]
+			url = self.config.home #Go back to frontpage
 		if self.downloading:
 			return
 		elif url.startswith("web"):
@@ -1371,13 +1396,14 @@ class TunesViewer:
 		if htmMode:
 			self.opener.addheaders = [('User-agent', self.descView.ua),
 						  ('Accept-Encoding', 'gzip'),
-						  ("X-Apple-Tz:", self.tz)]
+						  ("X-Apple-Tz", self.tz),
+						  ("X-Apple-Store-Front", self.storeFront)]
 		if self.mobilemode.get_active():
 			# As described on
 			# http://blogs.oreilly.com/iphone/2008/03/tmi-apples-appstore-protocol-g.html
 			self.opener.addheaders = [('User-agent', 'iTunes-iPhone/1.2.0'),
 						  ('Accept-Encoding', 'gzip'),
-						  ('X-Apple-Store-Front:', '143441-1,2')]
+						  ('X-Apple-Store-Front', self.storeFront)]
 		#Show that it's loading:
 		self.setLoadDisplay(True)
 
@@ -1389,6 +1415,15 @@ class TunesViewer:
 	def loadPageThread(self, opener, url, newurl):
 		pageType = ""
 		text = ""
+		#if url.find("woa/wa/switchToStoreFront") >-1:
+			#print "SWITCHING STORE", url
+			#import re
+			#match = re.match('.*storeFrontId=(\d*).*', url)
+			#if match:
+				#self.storeFront = match.group(1) + '-1,12';
+				#print self.storeFront
+				#self.loadPageThread(opener, self.config.home, self.config.home)
+				#return #no further action, no need to download the <key>action</key>         <dict>   <key>kind</key><string>Reset</string>  <key>signout</key><true/>   </dict>
 		try:
 			#Downloader:
 			response = opener.open(url)
@@ -1625,7 +1660,7 @@ class VWin:
 		self.sw.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		self.viewer = gtk.TextView()
 		self.viewer.get_buffer().set_text(source)
-		self.viewer.set_wrap_mode(gtk.WRAP_WORD)
+		self.viewer.set_wrap_mode(gtk.WrapMode.WORD)
 		self.viewer.set_editable(False)
 		#TextView inside ScrolledWindow goes in the window:
 		self.sw.add(self.viewer)

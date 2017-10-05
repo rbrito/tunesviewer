@@ -3,7 +3,7 @@
  Catches iTunes-api calls from pages, such as
  http://r.mzstatic.com/htmlResources/6018/dt-storefront-base.jsz
 
- Copyright (C) 2009 - 2012 Luke Bryan
+ Copyright (C) 2009 - 2015 Luke Bryan
                2011 - 2012 Rogério Theodoro de Brito
                and other contributors.
 
@@ -31,6 +31,14 @@ iTunes = { // Called from the page js:
 		console.log("TunesViewer: In function <getMachineID>");
 
 		return "";
+	},
+	
+	getHistory: function() {
+		return {
+			removeCurrentPage: function() {
+				
+			}
+		}
 	},
 	
 
@@ -127,7 +135,7 @@ iTunes = { // Called from the page js:
 
 	doPodcastDownload: function (obj, number) {
 		"use strict";
-		alert("podcastdownload"+obj+number);
+		location.href= "download://"+obj.innerHTML;
 		//var keys = obj.getElementsByTagName('key');
 	},
 
@@ -356,5 +364,72 @@ document.addEventListener("DOMContentLoaded", function () {
 	css.innerHTML = "* { -webkit-user-select: initial !important } div.search-form {height: 90}";
 	document.body.appendChild(css);
 	console.log("TunesViewer: JS OnPageShow Ran Successfully.");
+	
+	//Fix bug where image/zip files say ios only
+	var btns = document.querySelectorAll('div.button-less');
+	for (var i=0; i<btns.length; i++) {
+		btns[i].classList.remove('button-less');
+		btns[i].querySelector('span.action').textContent = "Download";
+	}
+	
+	//Change the type on <object> video so it plays:
+	iTSVideoPreviewWithObject.prototype.origplay = iTSVideoPreviewWithObject.prototype.play
+	iTSVideoPreviewWithObject.prototype.play = function() {
+		//run normally:
+		iTSVideoPreviewWithObject.prototype.origplay.apply(this,arguments);
+		console.log(this)
+		setTimeout(function(){
+			var objs = document.getElementsByTagName('object');
+			for (var i=0; i<objs.length; i++) {
+				// Rework <object> to work:
+				//var type = objs[i].getAttribute('data');
+				//console.log(type);
+				//type = type.substr(type.length-3);//always 3-char mime extension?
+				//objs[i].type = 'video/'+type;
+				
+				//Better: Replace with <video>:
+				var url = objs[i].getAttribute('data');
+				//replace:
+				var vid = document.createElement('video');
+				vid.setAttribute('src', url);
+				vid.setAttribute('controls', 'true');
+				vid.setAttribute('autoplay', 'true');
+				vid.setAttribute('style', 'width:100%; max-width:680px; height:100%; max-height:480px;');
+				objs[i].parentNode.appendChild(vid);
+				objs[i].parentNode.removeChild(objs[i]);
+				//Set fullscreen to really make fullscreen:
+				vid.addEventListener('webkitfullscreenchange', function(){
+					if (document.fullScreen || document.webkitIsFullScreen) {
+						vid.style.position = 'fixed';
+						vid.style.top = 0;
+						vid.style.bottom = 0;
+						vid.style.left = 0;
+						vid.style.right = 0;
+						vid.style.maxWidth = '100%';
+						vid.style.maxHeight = '100%';
+					} else {
+						//Back to normal - undo specific workarounds
+						vid.style.position = '';
+						vid.style.top = '';
+						vid.style.bottom = '';
+						vid.style.left = '';
+						vid.style.right = '';
+						vid.style.maxWidth = '';
+						vid.style.maxHeight = '';
+					}
+				});
+			}
+		},100);
+	}
+	
+	//For case of country-picker from lower right corner:
+	var pickers = document.querySelectorAll('.country[storefront]');
+	i = pickers.length;
+	while( i-- ) {
+		pickers[i].addEventListener('click', function(evt) {
+			location.href = "store://" + this.getAttribute('storefront');
+			evt.preventDefault();
+		});
+	}
 
 }, false); // end Pageshow.
