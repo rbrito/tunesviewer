@@ -83,7 +83,7 @@ class TunesViewer:
 
 		self.storeFront = "143441-1,12"
 
-		self.downloadbox = DownloadBox(self) # Only one downloadbox is constructed
+    self.downloadbox = DownloadBox(self) # Only one downloadbox is constructed
 		self.findbox = FindBox(self)
 		self.findInPage = FindInPageBox()
 		self.findInPage.connect('find', self.find_in_page_cb)
@@ -423,7 +423,6 @@ class TunesViewer:
 		gomenu = gtk.Menu()
 		gom = gtk.MenuItem("_Go")
 		gom.set_submenu(gomenu)
-
 		# ## iTunes U subdirectory
 		# self.itunesuDir = gtk.Menu()
 		# itunesu = gtk.MenuItem.new_with_mnemonic("iTunes_U")
@@ -438,7 +437,7 @@ class TunesViewer:
 		# #self.podcastDir.append(gtk.MenuItem("directory here"))
 		# gomenu.append(podcasts)
 
-		## Go back
+    ## Go back
 		back = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_GO_BACK,None)
 		key, mod = gtk.accelerator_parse("<Alt>Left")
 		back.add_accelerator("activate", agr, key, mod,
