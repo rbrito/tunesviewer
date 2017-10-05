@@ -91,6 +91,10 @@ class ConfigBox:
 		labels.append(["View Streaming or Follow-link"])
 		labels.append(["Download or Follow-link"])
 		self.combo = gtk.ComboBox(model=labels)
+		
+		renderer_text = gtk.CellRendererText()
+		self.combo.pack_start(renderer_text, True)
+		self.combo.add_attribute(renderer_text, "text",0)
 		self.combo.set_active(1)
 		dhbox.pack_start(gtk.Label("Default action: "), False, False, 0)
 		dhbox.pack_start(self.combo, True, True, 0)
@@ -130,8 +134,12 @@ class ConfigBox:
 		progs.append(["miro %u"])
 		progs.append(["rhythmbox %i"])
 		progs.append(["banshee %i"])
-		self.podcastprogbox = gtk.ComboBox(model=progs)
-		self.podcastprogbox.set_entry_text_column(1)
+		#Entry for custom program entry http://python-gtk-3-tutorial.readthedocs.io/en/latest/combobox.html
+		self.podcastprogbox = gtk.ComboBox.new_with_model_and_entry(progs)
+		renderer_text = gtk.CellRendererText()
+		#self.podcastprogbox.pack_start(renderer_text, True)
+		#self.podcastprogbox.add_attribute(renderer_text, "text",0)
+		self.podcastprogbox.set_entry_text_column(0)
 		
 		dtab.pack_start(self.podcastprogbox, True, False, 0)
 		# End download tab
@@ -260,8 +268,7 @@ class ConfigBox:
 			self.downloadfolder = DOWNLOADS_DIR
 		self.defaultcommand = self.combo.get_active()
 		self.notifyseconds = int(self.notifyEntry.get_text())
-		#TODO: fix:
-		#self.podcastprog = self.podcastprogbox.get_child().get_text()
+		self.podcastprog = self.podcastprogbox.get_child().get_text()
 		try:
 			self.iconsizeN = int(self.iconsize.get_text())
 			self.imagesizeN = int(self.imagesize.get_text())
@@ -375,7 +382,9 @@ class ConfigBox:
 		self.filenamesel.set_text(self.downloadfile)
 		self.combo.set_active(int(self.defaultcommand))
 		self.notifyEntry.set_text(str(self.notifyseconds))
-		self.podcastprogbox.set_title(self.podcastprog)
+		#https://stackoverflow.com/questions/46500595/
+		#self.podcastprogbox.set_title(self.podcastprog)
+		self.podcastprogbox.get_child().set_text(self.podcastprog);
 		self.imagesize.set_text(str(self.imagesizeN))
 		self.iconsize.set_text(str(self.iconsizeN))
 		self.homeEntry.set_text(self.home)
