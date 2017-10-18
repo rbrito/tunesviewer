@@ -16,7 +16,7 @@
 
 import logging
 
-from gi.repository import WebKit as webkit
+from gi.repository import WebKit2 as webkit
 from gi.repository import Gtk as gtk
 
 class Inspector(gtk.Window):
