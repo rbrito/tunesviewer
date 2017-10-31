@@ -726,7 +726,6 @@ class TunesViewer:
 			)
 			client.tags_context({
 				'Platform': platform.platform(), #Linux version
-				'issue': useros, # Ubuntu version
 				'CPU': platform.processor()
 			})
 
