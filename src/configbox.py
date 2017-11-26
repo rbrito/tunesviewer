@@ -426,7 +426,7 @@ class ConfigBox:
 			self.mainwin.statusbar.hide()
 		self.mainwin.treeview.get_column(6).set_property('visible', self.releasedCol)
 		self.mainwin.treeview.get_column(7).set_property('visible', self.modifiedCol)
-		self.mainwin.descView.set_full_content_zoom(self.zoomAll) #Not just text zoom
+		#self.mainwin.descView.set_full_content_zoom(self.zoomAll) #Not just text zoom
 
 
 	def delete_event(self, widget, event, data=None):

@@ -22,15 +22,15 @@ A subclass of Webkit Webview, injects javascript into page.
 
 import logging
 import os
-
-
-from gi.repository import WebKit as webkit
+import gi
+gi.require_version('WebKit2', '4.0');
+from gi.repository import WebKit2
 
 from constants import USER_AGENT
 from inspector import Inspector
 from common import openDefault, type_of
 
-class WebKitView(webkit.WebView):
+class WebKitView(WebKit2.WebView):
 	"""
 	The main browser view. Shows the page, or a description of the
 	podcast page.
@@ -45,8 +45,8 @@ class WebKitView(webkit.WebView):
 		http://nullege.com/codes/show/src%40p%40r%40PrisPy-HEAD%40PrisPy.py/33/webkit.WebView/python
 		"""
 		self.opener = opener
-		webkit.WebView.__init__(self)
-		self.set_highlight_text_matches(True)
+		WebKit2.WebView.__init__(self)
+		#self.set_highlight_text_matches(True)
 		settings = self.get_settings()
 		self.ua = settings.get_property('user-agent')
 		if self.ua.find("AppleWebKit") > -1:
@@ -69,20 +69,22 @@ class WebKitView(webkit.WebView):
 		self.set_settings(settings)
 
 		# These signals are documented in webkit.WebView.__doc__
-		self.connect("load-finished", self.webKitLoaded)
-		self.connect("navigation-policy-decision-requested", self.webkitGo)
-		self.connect("new-window-policy-decision-requested", self.newWin) #requires webkit 1.1.4
-		self.connect("download-requested", self.downloadReq)
+		self.connect("load-changed", self.webKitLoadChange)
+		self.connect("decide-policy", self.webkitDecision)
+		#self.connect("new-window-policy-decision-requested", self.newWin) #requires webkit 1.1.4
+		#self.connect("download-requested", self.downloadReq)
 		current = os.path.dirname(os.path.realpath(__file__))
 		self.injectJavascript = file(os.path.join(current, "Javascript.js"),
 					     "r").read()
 
-	def webKitLoaded(self, view, frame):
+	def webKitLoadChange(self, view, event):
 		"""
 		Onload code.
-		Note that this is run many times.
+		Note that this is run for start, finish, and in between:
+		https://people.gnome.org/~gcampagna/docs/WebKit2-3.0/WebKit2.WebView-load-changed.html
 		"""
-		pass
+		if 'WEBKIT_LOAD_FINISHED' == event.value_name:
+			self.webkitLoading = False
 	
 	def newWin(self, view, frame, request, nav_action, policy_decision):
 		"""
@@ -123,8 +125,25 @@ class WebKitView(webkit.WebView):
 			"<script>Raven.config('https://c3f5d8482e5f44c58d1a9e560dead0c5@sentry.io/211830').install();</script>" +
 			"</head>");
 
-		self.load_html_string(html, url_to_load)
-		self.webkitLoading = False
+		self.load_html(html, url_to_load)
+		#This seems to inf loop probably because WebKit2 is ASYNC?:
+		#self.webkitLoading = False
+
+	def webkitDecision(self, webview, policyDecision, policyDecisionType):
+		""" As documented in https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html decide-policy signal """
+		print(policyDecisionType)
+		print(policyDecisionType.value_name)
+		#while True:
+		#	print(eval(raw_input('>')))
+		if not self.webkitLoading and 'WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION' == policyDecisionType.value_name:
+			# Don't load in browser, let this program download/convert it...
+			logging.debug("Noload")
+			print(policyDecision.get_request().get_uri())
+			logging.debug(policyDecision.get_request().get_uri())
+			policyDecision.ignore()
+			self.opener.gotoURL(policyDecision.get_request().get_uri(), True)
+		#policyDecision.use()
+		return
 
 	def webkitGo(self, view, frame, net_req, nav_act, pol_dec):
 		logging.debug("webkit-request.")

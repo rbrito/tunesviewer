@@ -35,6 +35,9 @@ from StringIO import StringIO
 from threading import Thread
 
 # Import third-party modules (GTK and siblings for GUI)
+import gi
+gi.require_version('Gdk', '3.0')
+gi.require_version('Gtk', '3.0')
 from gi.repository import GLib as glib
 from gi.repository import GObject as gobject
 from gi.repository import Gdk as gdk
