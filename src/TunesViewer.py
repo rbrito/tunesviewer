@@ -1352,6 +1352,7 @@ class TunesViewer:
 			return
 		elif url.startswith("copyurl://"):
 			tocopy = urllib.unquote(url[10:].replace("[http:]","http:").replace("[https:]","https:"))
+			tocopy = tocopy.replace("http//", "http://").replace("https//", "https://")
 			gtk.Clipboard.get(gdk.SELECTION_CLIPBOARD).set_text(tocopy, -1)
 			logging.debug("copied "+tocopy)
 			return
