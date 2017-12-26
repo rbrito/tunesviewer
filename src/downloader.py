@@ -280,13 +280,18 @@ class Downloader:
 				return
 			except IOError as e:
 				logging.warn(str(e))
-				self.Err = ("Download error, retrying in a few seconds: " + str(e))
+				if e.errno == 36:
+					#Encrypted filesystems have 143 length names max: https://askubuntu.com/questions/728465
+					self.localfile = self.localfile[0:139] + self.localfile[-4:]
+				else:
+					self.Err = ("Download error, retrying in a few seconds: " + str(e))
+					time.sleep(8) # Then repeat
+				
 				try:
 					self._outfile.close()
 					self._netfile.close()
 				except Exception:
 					pass
-				time.sleep(8) # Then repeat
 
 		logging.debug("Finished one")
 		try:
