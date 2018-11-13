@@ -26,7 +26,7 @@ from gi.repository import GLib as glib
 
 # Path of the program (bad assumption)
 TV_PATH = "/usr/bin/tunesviewer"
-TV_VERSION = "2.1" #also needs changing in debian/changelog
+TV_VERSION = "2.1.1" #also needs changing in debian/changelog
 
 # Directory under which we write configuration files
 USER_PREFS_DIR = glib.get_user_config_dir()
@@ -47,12 +47,12 @@ USER_AGENT = 'iTunes/12.6.2'
 DEFAULT_OPENER = "vlc --http-user-agent=%s" % (USER_AGENT, )
 
 # URLs
-HOME_URL = "http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewGenre?id=40000000"
+HOME_URL = "https://itunes.apple.com/WebObjects/MZStore.woa/wa/viewGenre?id=40000000"
 
-SEARCH_U = "http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&restrict=true&term=%s&media=iTunesU"
-SEARCH_P = "http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&term=%s&media=podcast"
-SEARCH_URL1 = "http://phobos.apple.com/WebObjects/MZSearch.woa/wa/advancedSearch?media=iTunesU&searchButton=submit&allTitle=%s&descriptionTerm=%s&institutionTerm=%s"
-SEARCH_URL2 = "http://ax.search.itunes.apple.com/WebObjects/MZSearch.woa/wa/advancedSearch?media=podcast&titleTerm=%s&authorTerm=%s&descriptionTerm=%s&genreIndex=&languageTerm="
+SEARCH_U = "https://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&restrict=true&term=%s&media=iTunesU"
+SEARCH_P = "https://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/search?submit=media&term=%s&media=podcast"
+SEARCH_URL1 = "https://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/advancedSearch?media=iTunesU&searchButton=submit&allTitle=%s&descriptionTerm=%s&institutionTerm=%s"
+SEARCH_URL2 = "https://search.itunes.apple.com/WebObjects/MZSearch.woa/wa/advancedSearch?media=podcast&titleTerm=%s&authorTerm=%s&descriptionTerm=%s&genreIndex=&languageTerm="
 
 #Project Urls
 HELP_URL = "http://tunesviewer.sourceforge.net/help/"
