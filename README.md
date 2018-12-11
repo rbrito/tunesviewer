@@ -26,8 +26,10 @@ media and podcasts in Linux.
 Tunesviewer works well even on older computers, but you *must* have
 `pygtk` >= 2.16 and `lxml` available. This shouldn't be a problem for
 recent versions of Ubuntu, Fedora etc., as these prerequisites should be
-taken care of automatically by package managers.
-
+taken care of automatically by package managers. Unfortunately the current
+Tunesviewer 2.0 does not run on Ubuntu 17.10 and similar systems due to 
+WebKit packaging. A new version with WebKit2 is in the research phase.
+    
 ## Installation:
 
 1.  Download the install package: ([.deb installer][0] for Ubuntu/Debian

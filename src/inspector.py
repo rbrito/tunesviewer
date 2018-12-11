@@ -16,7 +16,7 @@
 
 import logging
 
-from gi.repository import WebKit as webkit
+from gi.repository import WebKit2
 from gi.repository import Gtk as gtk
 
 class Inspector(gtk.Window):
@@ -26,19 +26,6 @@ class Inspector(gtk.Window):
         """
         gtk.Window.__init__(self)
         self._web_inspector = inspector
-
-        self._web_inspector.connect("inspect-web-view",
-                                    self._inspect_web_view_cb)
-        self._web_inspector.connect("show-window",
-                                    self._show_window_cb)
-        self._web_inspector.connect("attach-window",
-                                    self._attach_window_cb)
-        self._web_inspector.connect("detach-window",
-                                    self._detach_window_cb)
-        self._web_inspector.connect("close-window",
-                                    self._close_window_cb)
-        self._web_inspector.connect("finished",
-                                    self._finished_cb)
 
         self.connect("delete-event", self._close_window_cb)
 
@@ -50,7 +37,7 @@ class Inspector(gtk.Window):
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.props.hscrollbar_policy = gtk.PolicyType.AUTOMATIC
         scrolled_window.props.vscrollbar_policy = gtk.PolicyType.AUTOMATIC
-        webview = webkit.WebView()
+        webview = WebKit2.WebView()
         scrolled_window.add(webview)
         scrolled_window.show_all()
 

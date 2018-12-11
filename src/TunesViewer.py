@@ -35,6 +35,9 @@ from StringIO import StringIO
 from threading import Thread
 
 # Import third-party modules (GTK and siblings for GUI)
+import gi
+gi.require_version('Gdk', '3.0')
+gi.require_version('Gtk', '3.0')
 from gi.repository import GLib as glib
 from gi.repository import GObject as gobject
 from gi.repository import Gdk as gdk
@@ -83,7 +86,7 @@ class TunesViewer:
 
 		self.storeFront = "143441-1,12"
 
-    self.downloadbox = DownloadBox(self) # Only one downloadbox is constructed
+		self.downloadbox = DownloadBox(self) # Only one downloadbox is constructed
 		self.findbox = FindBox(self)
 		self.findInPage = FindInPageBox()
 		self.findInPage.connect('find', self.find_in_page_cb)
@@ -423,6 +426,7 @@ class TunesViewer:
 		gomenu = gtk.Menu()
 		gom = gtk.MenuItem("_Go")
 		gom.set_submenu(gomenu)
+
 		# ## iTunes U subdirectory
 		# self.itunesuDir = gtk.Menu()
 		# itunesu = gtk.MenuItem.new_with_mnemonic("iTunes_U")
@@ -437,7 +441,7 @@ class TunesViewer:
 		# #self.podcastDir.append(gtk.MenuItem("directory here"))
 		# gomenu.append(podcasts)
 
-    ## Go back
+		## Go back
 		back = gtk.ImageMenuItem.new_from_stock(gtk.STOCK_GO_BACK,None)
 		key, mod = gtk.accelerator_parse("<Alt>Left")
 		back.add_accelerator("activate", agr, key, mod,
@@ -725,7 +729,6 @@ class TunesViewer:
 			)
 			client.tags_context({
 				'Platform': platform.platform(), #Linux version
-				'issue': useros, # Ubuntu version
 				'CPU': platform.processor()
 			})
 
@@ -1349,6 +1352,7 @@ class TunesViewer:
 			return
 		elif url.startswith("copyurl://"):
 			tocopy = urllib.unquote(url[10:].replace("[http:]","http:").replace("[https:]","https:"))
+			tocopy = tocopy.replace("http//", "http://").replace("https//", "https://")
 			gtk.Clipboard.get(gdk.SELECTION_CLIPBOARD).set_text(tocopy, -1)
 			logging.debug("copied "+tocopy)
 			return
