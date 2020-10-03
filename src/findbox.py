@@ -84,6 +84,7 @@ class FindBox:
 		#vbox.pack_start(table)
 		self.window.connect("delete_event", self.delete_event)
 
+#--------------------------------------------------------------------------HIDES WINDOW-------------
 	##
 	# Cancels close, only hides window.
 	def delete_event(self, widget, event, data=None):
