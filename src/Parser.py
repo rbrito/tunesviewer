@@ -97,6 +97,8 @@ class Parser:
 							url = i.get("url")
 						elif i.tag.endswith("duration"):
 							duration = i.text
+						else:
+							logging.warn("Unknown tag: " + i.tag)
 					self.addItem(title,
 						     author,
 						     duration,
@@ -232,6 +234,8 @@ class Parser:
 									id = t
 							elif j.text == "metadata": # for the special case end page after html link
 								i.extend(j.getnext().getchildren()) # look inside this <dict><key></key><string></string>... also.
+							else:
+								logging.warn("Unknown property: " + j.text)
 					self.addItem(name,
 						     artist,
 						     time_convert(duration),
@@ -336,6 +340,10 @@ class Parser:
 					elif buttons[0].get("course-feed-url") and buttons[1].get("course-feed-url") is None:
 						# Single "subscribe", not a listing-page.
 						self.podcast = buttons[0].get("course-feed-url")
+					else:
+						logging.warn("Unable to detect podcast url")
+				else:
+					logging.warn("Unable to detect podcast url")
 
 		logging.debug("Parse took " + str(time.time()-sttime) + "s.")
 
@@ -549,11 +557,15 @@ class Parser:
 					title = element.get("preview-title")
 				elif element.get("item-name"):
 					title = element.get("item-name")
+				else:
+					logging.warn("Unable to extract title")
 				author = ""
 				if element.get("preview-artist"):
 					author = element.get("preview-artist")
 				elif element.get("artist-name"):
 					author = element.get("artist-name")
+				else:
+					logging.warn("Unable to extract author")
 				duration = ""
 				if element.get("preview-duration"):
 					duration = time_convert(element.get("preview-duration"))

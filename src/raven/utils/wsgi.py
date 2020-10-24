@@ -21,6 +21,9 @@ def get_headers(environ):
             yield key[5:].replace('_', '-').title(), value
         elif key in ('CONTENT_TYPE', 'CONTENT_LENGTH'):
             yield key.replace('_', '-').title(), value
+        else:
+            # ignore other headers
+            pass
 
 
 def get_environ(environ):
@@ -53,6 +56,9 @@ def get_host(environ):
         result = result[:-3]
     elif result.endswith(':443') and scheme == 'https':
         result = result[:-4]
+    else:
+        # stripping of default-port not required
+        pass
     return result
 
 

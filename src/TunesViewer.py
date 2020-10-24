@@ -1342,7 +1342,9 @@ class TunesViewer:
 					extType = type_of(url)
 				elif key.text == "itemName" and key.getnext() is not None:
 					name = key.getnext().text
-					
+				else:
+					logging.warn("Unknown property: " + key.txt)
+
 			if extType==".rtf":
 				extType = ".zip"
 			self.downloadFile(name, artist, duration, extType, comment, url)
@@ -1355,9 +1357,11 @@ class TunesViewer:
 		elif url.startswith("store://"):
 			self.storeFront = url[8:]
 			url = self.config.home #Go back to frontpage
+		else:
+			logging.warn("Unknown URL: " + url)
 		if self.downloading:
 			return
-		elif url.startswith("web"):
+		if url.startswith("web"):
 			logging.debug(url)
 			openDefault(url[3:])
 			return
@@ -1551,6 +1555,8 @@ class TunesViewer:
 					mediacount += 1
 				elif row[8]:
 					linkscount += 1
+				else:
+					pass
 			#specific item should be selected?
 			for i in self.liststore:
 				if i[11] == parser.itemId:

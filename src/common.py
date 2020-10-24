@@ -103,6 +103,8 @@ def safeFilename(name, dos):
 		name = root[:255-len(ext)] + ext
 	elif len(name) == 0:
 		name = "(unknown)"
+	else:
+		pass
 	return name
 
 

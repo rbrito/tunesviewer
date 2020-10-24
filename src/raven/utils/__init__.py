@@ -79,6 +79,8 @@ def get_version_from_app(module_name, app):
         version = app.VERSION
     elif hasattr(app, 'version'):
         version = app.version
+    else:
+        logging.warn("Could not detect version from attribute")
 
     if callable(version):
         version = version()

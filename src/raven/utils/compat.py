@@ -146,6 +146,8 @@ else:
             del frame
         elif _locs_ is None:
             _locs_ = _globs_
+        else:
+            pass
         exec("""exec _code_ in _globs_, _locs_""")
 
     exec_("""def reraise(tp, value, tb=None):

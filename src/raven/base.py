@@ -626,7 +626,7 @@ class Client(object):
         if exc_info is not None:
             if self.skip_error_for_logging(exc_info):
                 return
-            elif not self.should_capture(exc_info):
+            if not self.should_capture(exc_info):
                 self.logger.info(
                     'Not capturing exception due to filters: %s', exc_info[0],
                     exc_info=sys.exc_info())
@@ -835,7 +835,8 @@ class Client(object):
             return False
         elif any(exc_name.startswith(e[:-1]) for e in wildcard_exclusions):
             return False
-        return True
+        else:
+            return True
 
     def capture_exceptions(self, function_or_exceptions=None, **kwargs):
         """
@@ -869,6 +870,9 @@ class Client(object):
             function = function_or_exceptions
         elif function_or_exceptions is not None:
             exceptions = function_or_exceptions
+        else:
+            # nothing to do
+            pass
 
         # In python3.2 contextmanager acts both as contextmanager and decorator
         @contextlib.contextmanager
