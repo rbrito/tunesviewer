@@ -189,6 +189,8 @@ class Downloader:
 		elif self._combo.get_active() == 4:
 			logging.debug("del")
 			self.deletefile()
+		else:
+			logging.warn("Unknown combo-box selection: " + self._combo.get_active())
 
 	def cancel(self, obj):
 		"""
@@ -303,6 +305,8 @@ class Downloader:
 			elif self._combo.get_active() == 3:
 				# Copy to Device
 				self.copy2device()
+			else:
+				logging.warn("Unknown combo-box selection: " + self._combo.get_active())
 		#else:
 			#This set_text isn't needed, it caused error when it was cancelled, and self._progress destroyed.
 			#Shouldn't be accessing gui from a thread anyway.
@@ -339,4 +343,7 @@ class Downloader:
 			self._progress.set_text("%s%% of %s (%s remaining)" %
 						(str(round(self.count/self.filesize * 100, 1)),
 						 self.readsize, remaining))
+		else:
+			# do nothing
+			pass
 		return True

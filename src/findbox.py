@@ -100,3 +100,5 @@ class FindBox:
 				self.mainwin.gotoURL(constants.SEARCH_URL1 % (self.title.get_text(), self.description.get_text(), self.institution.get_text()), True)
 			else:
 				self.mainwin.gotoURL(constants.SEARCH_URL2 % (self.podtitle.get_text(), self.podauthor.get_text(), self.poddesc.get_text()), True)
+		else:
+			logging.warn("Unknown value: " + value)
