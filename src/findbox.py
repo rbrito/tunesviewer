@@ -92,11 +92,11 @@ class FindBox:
 
 	def response(self, obj, value):
 		logging.debug(str(obj) + str(value))
-		if value == 0:
-			self.window.hide()
-		elif value == 1:
-			#Use the search
-			if self.notebook.get_current_page() == 0:
-				self.mainwin.gotoURL(constants.SEARCH_URL1 % (self.title.get_text(), self.description.get_text(), self.institution.get_text()), True)
-			else:
+		match value:
+			case 0:
+				self.window.hide()
+			case 1:
+				if self.notebook.get_current_page() == 0:
+					self.mainwin.gotoURL(constants.SEARCH_URL1 % (self.title.get_text(), self.description.get_text(), self.institution.get_text()), True)
+					return
 				self.mainwin.gotoURL(constants.SEARCH_URL2 % (self.podtitle.get_text(), self.podauthor.get_text(), self.poddesc.get_text()), True)
