@@ -29,9 +29,7 @@ from common import *
 
 class ItemDetails:
 	def __init__(self, mainwin, selection):
-		if selection is None:
-			logging.debug("No selection.")
-		else:
+		if selection:
 			self.mainwin = mainwin
 			self.selection = selection
 			self.window = gtk.Dialog()
@@ -54,6 +52,9 @@ class ItemDetails:
 			#Start thread:
 			t = Thread(target=self.update, args=())
 			t.start()
+		else:
+			
+			logging.debug("No selection.")
 
 	def updateText(self, selection, filesize):
 		if selection:
